@@ -1,0 +1,28 @@
+{
+	"name": "typezer",
+	"version": "1.0.0",
+	"description": "Parse Typescript files and retrieve a synthetic description of defined types and variables",
+	"main": "library/index.js",
+	"scripts": {
+		"test": "sucrase-node test"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/digital-loukoum/typezer.git"
+	},
+	"keywords": [
+		"typescript",
+		"parse",
+		"types",
+		"definitions"
+	],
+	"author": "Gin Quin",
+	"license": "GPL-3.0",
+	"bugs": {
+		"url": "https://github.com/digital-loukoum/typezer/issues"
+	},
+	"homepage": "https://github.com/digital-loukoum/typezer#readme",
+	"dependencies": {
+		"sucrase": "^3.18.1"
+	}
+}
