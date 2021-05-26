@@ -1,13 +1,30 @@
-import typezer from "../source"
-// import { readFileSync, readdirSync } from "fs"
+import { readFileSync } from "fs"
+import { createSourceFile, ScriptTarget, SyntaxKind } from "./typescript"
+import TypeSniffer from "./sniffers/TypeSniffer"
 
-typezer("test/samples/Zabu.ts")
+function typezer(...files: string[]) {
+	files.forEach(file => {
+		console.log("Parse:", file)
+		const sourceFile = createSourceFile(
+			file,
+			readFileSync(file).toString(),
+			ScriptTarget.ES2020,
+			/*setParentNodes */ true
+		)
 
-// export function delint(sourceFile) {
+		const result = new TypeSniffer(sourceFile).sniff()
+		console.log(result)
+	})
+}
+
+export default typezer
+
+//
+// export function delint(sourceFile: ts.SourceFile) {
 // 	console.log("sourceFile", sourceFile)
 // 	delintNode(sourceFile)
 //
-// 	function delintNode(node) {
+// 	function delintNode(node: Node) {
 // 		switch (node.kind) {
 // 			case SyntaxKind.ForStatement:
 // 			case SyntaxKind.ForInStatement:

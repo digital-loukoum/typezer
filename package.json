@@ -4,7 +4,9 @@
 	"description": "Parse Typescript files and retrieve a synthetic description of defined types and variables",
 	"main": "library/index.js",
 	"scripts": {
-		"test": "sucrase-node test"
+		"test": "esrun test",
+		"check": "tsc --noEmit",
+		"build": "tsc-esm"
 	},
 	"repository": {
 		"type": "git",
@@ -23,6 +25,11 @@
 	},
 	"homepage": "https://github.com/digital-loukoum/typezer#readme",
 	"dependencies": {
-		"sucrase": "^3.18.1"
+		"@types/node": "^15.6.1",
+		"typescript": "^4.2.4"
+	},
+	"devDependencies": {
+		"@digitak/esrun": "^1.1.3",
+		"@digitak/tsc-esm": "^1.0.3"
 	}
 }
