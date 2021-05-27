@@ -5,7 +5,15 @@ class Zabu {
 	private constitution = 7
 
 	yell() {
-		return this.nam
+		return this.name
+	}
+}
+
+type Sub = {
+	x: number
+	y: string
+	z: {
+		t: number
 	}
 }
 
