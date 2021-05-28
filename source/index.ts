@@ -12,8 +12,13 @@ function typezer(...files: string[]) {
 			/*setParentNodes */ true
 		)
 
-		const result = new TypeSniffer(sourceFile).sniff()
-		console.log(result)
+		try {
+			const result = new TypeSniffer(sourceFile).sniff()
+			console.log(result)
+			return result
+		} catch (error) {
+			return null
+		}
 	})
 }
 

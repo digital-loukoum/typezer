@@ -17,4 +17,6 @@ type Sub = {
 	}
 }
 
+type Alias = Zabu
+
 export default Zabu

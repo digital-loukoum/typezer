@@ -8,8 +8,7 @@ export function visit(node: Node, visitor: Visitor) {
 }
 
 export function visitRecursively(node: Node, visitor: Visitor) {
-	visit(node, visitor)
-	visitChildrenRecursively(node, visitor)
+	if (visit(node, visitor) !== false) visitChildrenRecursively(node, visitor)
 }
 export function visitChildren(node: Node, visitor: Visitor) {
 	forEachChild(node, node => visit(node, visitor))
