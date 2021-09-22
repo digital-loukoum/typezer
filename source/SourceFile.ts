@@ -26,7 +26,7 @@ export class SourceFile {
 		return exportedSymbols
 	}
 
-	getExportedValues(): ts.Symbol[] {
+	getExportedValuesSymbols(): ts.Symbol[] {
 		return this.getExportedSymbols().filter(symbol => {
 			// print`[bold.magenta:- ${symbol.name}] [blue:${symbol.flags}]`
 			const [declaration] = symbol.getDeclarations() || []
@@ -59,9 +59,5 @@ export class SourceFile {
 			// it is a valid value
 			return true
 		})
-	}
-
-	getExportedTypes(): ts.Symbol[] {
-		return this.getExportedSymbols()
 	}
 }

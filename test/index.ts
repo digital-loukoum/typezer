@@ -7,7 +7,7 @@ print`[bold.green:----------------]`
 
 typezer.sourceFiles.forEach((sourceFile, index) => {
 	print`${index ? "\n" : ""}[bold:[ [blue: ${sourceFile.name}] ]]`
-	console.log(sourceFile.getExportedValues().map(symbol => symbol.name))
+	console.log(sourceFile.getExportedValuesSymbols().map(symbol => symbol.name))
 
 	// sourceFile.getTypeDeclarations().forEach((typeDeclaration, index) => {
 	// 	print`${index ? "\n" : ""}[magenta]- ${typeDeclaration.name}`
