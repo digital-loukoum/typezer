@@ -1,6 +1,5 @@
-import ts, { symbolName } from "typescript"
+import ts from "typescript"
 import { TypeDeclaration, TypeDeclarationNode } from "./TypeDeclaration"
-import print from "cute-print"
 
 export class SourceFile {
 	constructor(private typeChecker: ts.TypeChecker, public sourceFile: ts.SourceFile) {}
@@ -28,7 +27,6 @@ export class SourceFile {
 
 	getExportedValuesSymbols(): ts.Symbol[] {
 		return this.getExportedSymbols().filter(symbol => {
-			// print`[bold.magenta:- ${symbol.name}] [blue:${symbol.flags}]`
 			const [declaration] = symbol.getDeclarations() || []
 			if (!declaration) return false // should never happen
 			const declaredType = this.typeChecker.getDeclaredTypeOfSymbol(symbol)
@@ -36,20 +34,9 @@ export class SourceFile {
 			// if the exported value is a type we dismiss it
 			if (declaredType.flags & ts.TypeFlags.Object) return false
 
-			let expression: ts.Node
-			if (ts.isExportAssignment(declaration)) {
-				expression = declaration.expression
-			} else if (
-				ts.isExportSpecifier(declaration) ||
-				ts.isVariableDeclaration(declaration) ||
-				ts.isFunctionDeclaration(declaration)
-			) {
-				expression = declaration
-			} else {
-				throw new Error(
-					`Export node kind is unknown: '${ts.SyntaxKind[declaration.kind]}'`
-				)
-			}
+			let expression = ts.isExportAssignment(declaration)
+				? declaration.expression // default export
+				: declaration // other named exports
 
 			// if the exported value is a function we dismiss it
 			const type = this.typeChecker.getTypeAtLocation(expression)
