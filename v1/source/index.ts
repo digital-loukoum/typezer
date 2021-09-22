@@ -1,4 +1,5 @@
 import ts from "typescript"
+import TypeSniffer from "./sniffers/TypeSniffer"
 
 function typezer(...files: string[]) {
 	console.log(files)
@@ -13,9 +14,9 @@ function typezer(...files: string[]) {
 		console.log(`\n- ${ts.SyntaxKind[sourceFile.kind]}: ${sourceFile.fileName}`)
 
 		try {
-			// const result = new TypeSniffer(program, sourceFile).sniff()
-			// console.log("Result:", result)
-			// return result
+			const result = new TypeSniffer(program, sourceFile).sniff()
+			console.log("Result:", result)
+			return result
 		} catch (error) {
 			console.error("Error:", error)
 			return null

@@ -1,6 +1,7 @@
-import { forEachChild, SyntaxKind } from "./typescript"
-import type { Node } from "./typescript"
+import typescript from "typescript"
+import type { Node } from "typescript"
 import type { Visitor } from "./Visitor"
+const { forEachChild, SyntaxKind } = typescript
 
 export function visit(node: Node, visitor: Visitor) {
 	const kind = SyntaxKind[node.kind] as keyof typeof SyntaxKind
@@ -17,3 +18,4 @@ export function visitChildren(node: Node, visitor: Visitor) {
 export function visitChildrenRecursively(node: Node, visitor: Visitor) {
 	forEachChild(node, node => visit(node, visitor))
 }
+console.log("")

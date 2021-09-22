@@ -2,9 +2,12 @@
 	"name": "typezer",
 	"version": "1.0.0",
 	"description": "Parse Typescript files and retrieve a synthetic description of defined types and variables",
+	"type": "module",
 	"main": "library/index.js",
 	"scripts": {
-		"test": "esrun --watch test",
+		"dev": "esrun --watch test",
+		"test": "esrun test",
+		"test:inspect": "esrun --inspect test",
 		"check": "tsc --noEmit",
 		"build": "tsc-esm"
 	},
@@ -26,10 +29,11 @@
 	"homepage": "https://github.com/digital-loukoum/typezer#readme",
 	"dependencies": {
 		"@types/node": "^15.6.1",
+		"polka": "^0.5.2",
 		"typescript": "^4.2.4"
 	},
 	"devDependencies": {
-		"@digitak/esrun": "^1.2.1",
+		"@digitak/esrun": "^1.2.7",
 		"@digitak/tsc-esm": "^1.0.3"
 	}
 }
