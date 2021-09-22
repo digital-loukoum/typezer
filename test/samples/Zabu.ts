@@ -25,13 +25,15 @@ import { Coco } from "./Coco"
 // 	x = 12
 // }
 
-type MutableX = {
+export interface MutableX {
 	x: Number
 }
 
-type UnknownX<T = unknown> = {
+export type UnknownX<T = unknown> = {
 	x: T
 }
+
+export const z = 12
 
 type Id<T = null> = number
 
@@ -39,18 +41,17 @@ type MutableY = {
 	y?: Number
 }
 
-type MutableXY = Pick<MutableX & MutableY, 'x' | 'y'>
+type MutableXY = Pick<MutableX & MutableY, "x" | "y">
 
 const now = () => new Date()
 
-
 class Zabu extends Coco<Date> {
 	static staticValue = 23
-	
-	id: Id<"12">
+
+	id: Id<"12"> = 12
 	x = 12
 	y?: UnknownX<number>
-	z!: string
+	z!: String
 
 	yIsDefined() {
 		return this.z != null

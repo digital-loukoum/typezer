@@ -5,7 +5,7 @@
 	"type": "module",
 	"main": "library/index.js",
 	"scripts": {
-		"dev": "esrun --watch test",
+		"dev": "esrun --watch:source/**/*.ts,test/**/*.ts test",
 		"test": "esrun test",
 		"test:inspect": "esrun --inspect test",
 		"check": "tsc --noEmit",
@@ -34,6 +34,7 @@
 	},
 	"devDependencies": {
 		"@digitak/esrun": "^1.2.7",
-		"@digitak/tsc-esm": "^1.0.3"
+		"@digitak/tsc-esm": "^1.0.3",
+		"cute-print": "^1.0.4"
 	}
 }

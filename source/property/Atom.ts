@@ -1,0 +1,12 @@
+export type Atom =
+	| "String"
+	| "Number"
+	| "Boolean"
+	| "Date"
+	| "BigInteger"
+	| "Blob"
+	| "Any"
+	| "Unknown"
+	| "Undefined"
+	| "Null"
+	| "Never"
