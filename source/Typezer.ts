@@ -1,7 +1,5 @@
 import ts from "typescript"
 import { SourceFile } from "./SourceFile"
-import type { TypeDeclaration } from "./TypeDeclaration"
-const { SyntaxKind } = ts
 
 export class Typezer {
 	public program: ts.Program
