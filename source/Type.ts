@@ -33,15 +33,16 @@ export class Type {
 	// }
 
 	toProperty(): Property {
+		// console.log("toProperty:", this.type)
 		console.log(`type.flags`, this.type.flags)
 		console.log(`this.type.getSymbol()?.name`, this.type.getSymbol()?.name)
 		console.log(`this.type.getSymbol()?.flags`, this.type.getSymbol()?.flags)
-		console.log(
-			`typeArguments`,
-			this.typeChecker
-				.getTypeArguments(this.type as ts.TypeReference)
-				.map(subtype => new Type(this.typeChecker, subtype).toProperty())
-		)
+		// console.log(
+		// 	`typeArguments`,
+		// 	this.typeChecker
+		// 		.getTypeArguments(this.type as ts.TypeReference)
+		// 		.map(subtype => new Type(this.typeChecker, subtype).toProperty())
+		// )
 		const { flags } = this.type
 
 		if (flags & ts.TypeFlags.Any) return new AnyProperty()
@@ -86,16 +87,16 @@ export class Type {
 		}
 		console.log("Is not tuple...")
 
-		if (this.isRecord()) {
-			console.log("IS RECORD!")
-			const [keyType, valueType] = this.type.aliasTypeArguments || []
-			return new RecordProperty(new Type(this.typeChecker, valueType).toProperty())
-			// console.log(this.type.aliasTypeArguments)
-		}
-		console.log("Is not record...")
+		// if (this.isRecord()) {
+		// 	console.log("IS RECORD!")
+		// 	const [keyType, valueType] = this.type.aliasTypeArguments || []
+		// 	return new RecordProperty(new Type(this.typeChecker, valueType).toProperty())
+		// 	// console.log(this.type.aliasTypeArguments)
+		// }
+		// console.log("Is not record...")
 
 		if (this.type.aliasTypeArguments) {
-			console.log(`-- aliasTypeArguments`, this.type.aliasTypeArguments)
+			// console.log(`-- aliasTypeArguments`, this.type.aliasTypeArguments)
 		}
 
 		if (this.type.isIntersection()) {
@@ -121,6 +122,7 @@ export class Type {
 		const properties: Properties = {}
 
 		this.type.getProperties().forEach((property, index) => {
+			console.log("property.getDeclarations().length", property.getDeclarations()?.length)
 			const [declaration] = property.getDeclarations() ?? []
 			if (!declaration) {
 				throw new Error(`No declaration found for property '${property.name}'`) // should not happen

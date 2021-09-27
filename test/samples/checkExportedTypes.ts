@@ -4,15 +4,15 @@
 // export const string = "12"
 // export const boolean = false
 
-type X<X> = {
-	x: X
-	y: X
+type XY<T> = {
+	x: T
+	y: T
 }
-type XY<X, Y> = {
-	x: X
-	y: Y
-}
-type Z<O> = XY<O, O>
+// type XY<X, Y> = {
+// 	x: X
+// 	y: Y
+// }
+// type Z<O> = XY<O, O>
 
 // molecules
 // export const object = {
@@ -46,7 +46,8 @@ type Z<O> = XY<O, O>
 // 	number1: "12",
 // 	number2: "12",
 // }
-export const objectX: X<string> = {
+// export let zabu: Record<string, string> = { x: "351321" }
+export const objectXY: XY<string> = {
 	x: "12",
 	y: "12",
 }
