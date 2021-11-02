@@ -149,7 +149,7 @@ export class InterfaceProperty extends Property {
 }
 
 export class TypeAliasProperty extends Property {
-	constructor(public aliasOf: Property) {
+	constructor(public properties: Properties) {
 		super("TypeAlias")
 	}
 }

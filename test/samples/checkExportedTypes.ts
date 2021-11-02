@@ -4,10 +4,18 @@ type Generic<T> = {
 	// generic?: Generic<T>
 	// nogeneric?: NoGeneric
 
-	zabu: () => void
+	// zabu: () => void
 }
 
-type NoGeneric = {
+export class Coco {
+	x = "aazd"
+	generic: Generic<string> = {
+		x: "12",
+		y: "212",
+	}
+}
+
+export type NoGeneric = {
 	x: number
 	generic?: Generic<string>
 }
@@ -33,16 +41,3 @@ type NoGeneric = {
 // export function z(x: NoGeneric): void {}
 // export const t = z
 // export const zaze = 12
-
-export let n: Generic<number>
-
-interface Coco {
-	x: string
-}
-
-let c: Coco
-
-enum Zabu {
-	X,
-	Y,
-}

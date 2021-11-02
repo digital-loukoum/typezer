@@ -1,6 +1,13 @@
 import ts from "typescript"
 import { Properties } from "./Property"
 import { Type } from "./Type"
+import {
+	ClassDeclaration,
+	createTypeDeclaration,
+	TypeAliasDeclaration,
+	TypeDeclaration,
+} from "./TypeDeclaration"
+import { getExportedTypeNodeName } from "./utilities"
 
 export class SourceFile {
 	constructor(public sourceFile: ts.SourceFile) {}
@@ -9,53 +16,26 @@ export class SourceFile {
 		return this.sourceFile.fileName
 	}
 
-	getExportedNodes(
+	getTypeDeclarations(
 		parent: ts.Node = this.sourceFile,
-		exportedNodes: Record<string, ts.Node> = {}
+		exportedNodes: Record<string, TypeDeclaration> = {}
 	): typeof exportedNodes {
-		let visitingExportNode = false
-
-		parent.forEachChild(child => {
+		parent.forEachChild(node => {
 			// export default...
-			if (child.kind == ts.SyntaxKind.ExportAssignment) {
-				child.forEachChild(node => {
-					exportedNodes["default"] = node
-				})
-			}
+			// if (node.kind == ts.SyntaxKind.ExportAssignment) {
+			// 	node.forEachnode(node => {
+			// 		exportedNodes["default"] = node
+			// 	})
+			// }
 
-			// export [const | let | var | class | type | interface] ...
-			// next node is the declaration...
-			if (child.kind == ts.SyntaxKind.ExportKeyword) {
-				visitingExportNode = true
-				return
+			const name = getExportedTypeNodeName(node)
+			if (name) {
+				exportedNodes[name] = createTypeDeclaration(node)
 			}
-			// ...the declaration
-			if (visitingExportNode) {
-				// export type (class, type, interface)
-				if (child.kind == ts.SyntaxKind.Identifier) exportedNodes[child.getText()] = child
-				// export value or class
-				else if (child.kind == ts.SyntaxKind.VariableDeclarationList) {
-					child.forEachChild(node => {
-						exportedNodes[node.getChildren()[0].getText()] = node
-					})
-				}
-			} else this.getExportedNodes(child, exportedNodes)
-
-			visitingExportNode = false
 		})
 
 		return exportedNodes
 	}
-
-	getExportedValueTypes(): Record<string, Type> {
-		return Object.fromEntries(
-			Object.entries(this.getExportedNodes()).map(([key, node]) => [
-				key,
-				Type.fromNode(node),
-			])
-		)
-	}
-
 	// getTypeDeclarations(): Type[] {
 	// 	const statements = this.sourceFile.statements.filter(
 	// 		statement =>

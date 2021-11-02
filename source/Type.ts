@@ -21,6 +21,7 @@ import {
 	VoidProperty,
 } from "./Property"
 import { getTypeChecker } from "./typeChecker"
+import { getPropertyName } from "./utilities"
 
 export type TypeNodeDeclaration =
 	| ts.TypeAliasDeclaration
@@ -28,26 +29,21 @@ export type TypeNodeDeclaration =
 	| ts.InterfaceDeclaration
 
 export class Type {
-	public type: ts.Type
-	public node?: ts.Node
-
-	constructor(type: ts.Type) {
-		this.type = type
-	}
+	constructor(public type: ts.Type, public node: ts.Node) {}
 
 	static fromNode(node: ts.Node): Type {
-		const type = new Type(getTypeChecker().getTypeAtLocation(node))
+		const type = new Type(getTypeChecker().getTypeAtLocation(node), node)
 		type.node = node
 		return type
 	}
 
-	static fromSymbol(symbol: ts.Symbol): Type {
-		const declarations = symbol.getDeclarations()
-		if (!declarations) throw `No declarations for symbol ${symbol.getName()}`
-		return new Type(
-			getTypeChecker().getTypeAtLocation(declarations[declarations.length - 1])
-		)
-	}
+	// static fromSymbol(symbol: ts.Symbol): Type {
+	// 	const declarations = symbol.getDeclarations()
+	// 	if (!declarations) throw `No declarations for symbol ${symbol.getName()}`
+	// 	return new Type(
+	// 		getTypeChecker().getTypeAtLocation(declarations[declarations.length - 1])
+	// 	)
+	// }
 
 	toProperty(): Property {
 		// console.log("toProperty:", this.type)
@@ -66,12 +62,12 @@ export class Type {
 		// )
 		const { flags } = this.type
 
-		if (this.node?.kind == ts.SyntaxKind.ClassDeclaration)
-			return new ClassProperty(this.getProperties())
-		if (this.node?.kind == ts.SyntaxKind.InterfaceDeclaration)
-			return new InterfaceProperty(this.getProperties())
-		if (this.node?.kind == ts.SyntaxKind.TypeAliasDeclaration)
-			return new TypeAliasProperty(new Type(this.type).toProperty())
+		// if (this.node?.kind == ts.SyntaxKind.ClassDeclaration)
+		// 	return new ClassProperty(this.getProperties())
+		// if (this.node?.kind == ts.SyntaxKind.InterfaceDeclaration)
+		// 	return new InterfaceProperty(this.getProperties())
+		// if (this.node?.kind == ts.SyntaxKind.TypeAliasDeclaration)
+		// 	return new TypeAliasProperty(this.getProperties())
 
 		if (flags & ts.TypeFlags.Any) return new AnyProperty()
 		if (flags & ts.TypeFlags.Void) return new VoidProperty()
@@ -160,10 +156,8 @@ export class Type {
 
 		const properties: Properties = {}
 
-		this.type.getProperties().forEach((property, index) => {
+		this.type.getProperties().forEach(property => {
 			const propertyType = this.getTypeOfSymbol(property)
-			// const type = new Type(declaration)
-			// console.log(getTypeChecker().typeToString(propertyType))
 			properties[property.name] = propertyType.toProperty()
 		})
 
@@ -173,9 +167,10 @@ export class Type {
 
 	private getTypeOfSymbol(symbol: ts.Symbol): Type {
 		console.log(`GETTING TYPE OF SYMBOL ${symbol.getName()}!!!!`)
-		if (this.node) {
-			return new Type(getTypeChecker().getTypeOfSymbolAtLocation(symbol, this.node))
-		} else return Type.fromSymbol(symbol)
+		return new Type(
+			getTypeChecker().getTypeOfSymbolAtLocation(symbol, this.node),
+			this.node
+		)
 	}
 
 	private toObjectProperty(): ObjectProperty {
@@ -205,7 +200,7 @@ export class Type {
 					signature.parameters.map(parameter =>
 						this.getTypeOfSymbol(parameter).toProperty()
 					) || [],
-				returnType: new Type(signature.getReturnType()).toProperty(),
+				returnType: new Type(signature.getReturnType(), this.node).toProperty(),
 			}))
 		)
 	}
