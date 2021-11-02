@@ -9,7 +9,7 @@ export class SourceFile {
 		return this.sourceFile.fileName
 	}
 
-	getExportedValueNodes(
+	getExportedNodes(
 		parent: ts.Node = this.sourceFile,
 		exportedNodes: Record<string, ts.Node> = {}
 	): typeof exportedNodes {
@@ -23,18 +23,23 @@ export class SourceFile {
 				})
 			}
 
-			// export [const | let | var] ...
-			// next node is the declaration
+			// export [const | let | var | class | type | interface] ...
+			// next node is the declaration...
 			if (child.kind == ts.SyntaxKind.ExportKeyword) {
 				visitingExportNode = true
 				return
 			}
-
-			if (visitingExportNode && child.kind == ts.SyntaxKind.VariableDeclarationList) {
-				child.forEachChild(node => {
-					exportedNodes[node.getChildren()[0].getText()] = node
-				})
-			} else this.getExportedValueNodes(child, exportedNodes)
+			// ...the declaration
+			if (visitingExportNode) {
+				// export type (class, type, interface)
+				if (child.kind == ts.SyntaxKind.Identifier) exportedNodes[child.getText()] = child
+				// export value or class
+				else if (child.kind == ts.SyntaxKind.VariableDeclarationList) {
+					child.forEachChild(node => {
+						exportedNodes[node.getChildren()[0].getText()] = node
+					})
+				}
+			} else this.getExportedNodes(child, exportedNodes)
 
 			visitingExportNode = false
 		})
@@ -44,7 +49,7 @@ export class SourceFile {
 
 	getExportedValueTypes(): Record<string, Type> {
 		return Object.fromEntries(
-			Object.entries(this.getExportedValueNodes()).map(([key, node]) => [
+			Object.entries(this.getExportedNodes()).map(([key, node]) => [
 				key,
 				Type.fromNode(node),
 			])

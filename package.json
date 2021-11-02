@@ -35,6 +35,8 @@
 	"devDependencies": {
 		"@digitak/esrun": "^1.2.7",
 		"@digitak/tsc-esm": "^1.0.3",
-		"cute-print": "^1.0.4"
+		"cute-print": "^1.0.4",
+		"ts-json-schema-generator": "^0.96.0",
+		"typescript-json-schema": "^0.51.0"
 	}
 }
