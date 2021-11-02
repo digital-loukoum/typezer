@@ -14,14 +14,10 @@ import {
 	UnknownProperty,
 	TupleProperty,
 	RecordProperty,
-	ClassProperty,
-	InterfaceProperty,
-	TypeAliasProperty,
 	FunctionProperty,
 	VoidProperty,
 } from "./Property"
-import { getTypeChecker } from "./typeChecker"
-import { getPropertyName } from "./utilities"
+import { getTypeChecker, isArrayType } from "./typeChecker"
 
 export type TypeNodeDeclaration =
 	| ts.TypeAliasDeclaration
@@ -37,37 +33,9 @@ export class Type {
 		return type
 	}
 
-	// static fromSymbol(symbol: ts.Symbol): Type {
-	// 	const declarations = symbol.getDeclarations()
-	// 	if (!declarations) throw `No declarations for symbol ${symbol.getName()}`
-	// 	return new Type(
-	// 		getTypeChecker().getTypeAtLocation(declarations[declarations.length - 1])
-	// 	)
-	// }
-
 	toProperty(): Property {
-		// console.log("toProperty:", this.type)
-		console.log(`type.flags`, this.type.flags)
-		console.log(`this.type.getSymbol()?.name`, this.type.getSymbol()?.name)
-		console.log(`this.type.getSymbol()?.flags`, this.type.getSymbol()?.flags)
-		console.log(
-			`getSignaturesOfType(type).length`,
-			getTypeChecker().getSignaturesOfType(this.type, ts.SignatureKind.Call).length
-		)
-		// console.log(
-		// 	`typeArguments`,
-		// 	getTypeChecker()
-		// 		.getTypeArguments(this.type as ts.TypeReference)
-		// 		.map(subtype => new Type(subtype).toProperty())
-		// )
 		const { flags } = this.type
-
-		// if (this.node?.kind == ts.SyntaxKind.ClassDeclaration)
-		// 	return new ClassProperty(this.getProperties())
-		// if (this.node?.kind == ts.SyntaxKind.InterfaceDeclaration)
-		// 	return new InterfaceProperty(this.getProperties())
-		// if (this.node?.kind == ts.SyntaxKind.TypeAliasDeclaration)
-		// 	return new TypeAliasProperty(this.getProperties())
+		// console.log("this.type", this.type)
 
 		if (flags & ts.TypeFlags.Any) return new AnyProperty()
 		if (flags & ts.TypeFlags.Void) return new VoidProperty()
@@ -86,9 +54,9 @@ export class Type {
 
 		if (flags & ts.TypeFlags.Object) {
 			return (
-				this.toFunctionProperty() ||
 				this.toArrayProperty() ||
 				this.toTupleProperty() ||
+				// this.toFunctionProperty() ||
 				this.toMapProperty() ||
 				this.toSetProperty() ||
 				this.toRecordProperty() ||
@@ -117,15 +85,6 @@ export class Type {
 		// 	)
 		// }
 
-		// if (this.isTuple()) {
-		// 	return new TupleProperty(
-		// 		getTypeChecker()
-		// 			.getTypeArguments(this.type as ts.TypeReference)
-		// 			.map(subtype => new Type(subtype).toProperty())
-		// 	)
-		// }
-		// console.log("Is not tuple...")
-
 		// if (this.isRecord()) {
 		// 	console.log("IS RECORD!")
 		// 	const [keyType, valueType] = this.type.aliasTypeArguments || []
@@ -133,10 +92,6 @@ export class Type {
 		// 	// console.log(this.type.aliasTypeArguments)
 		// }
 		// console.log("Is not record...")
-
-		// if (this.type.aliasTypeArguments) {
-		// console.log(`-- aliasTypeArguments`, this.type.aliasTypeArguments)
-		// }
 
 		// if (this.type.isIntersection()) {
 		// 	console.log("IS INTERSECTION")
@@ -157,8 +112,20 @@ export class Type {
 		const properties: Properties = {}
 
 		this.type.getProperties().forEach(property => {
+			console.log(`[${property.name}]`)
+			// console.log("property", property)
 			const propertyType = this.getTypeOfSymbol(property)
 			properties[property.name] = propertyType.toProperty()
+
+			// optional
+			if (property.flags & ts.SymbolFlags.Optional) {
+				properties[property.name].optional = true
+			}
+
+			// modifiers
+			property.valueDeclaration?.modifiers?.forEach(modifier => {
+				properties[property.name].addModifier(modifier)
+			})
 		})
 
 		Type.propertiesCache.set(this.type, properties)
@@ -166,7 +133,6 @@ export class Type {
 	}
 
 	private getTypeOfSymbol(symbol: ts.Symbol): Type {
-		console.log(`GETTING TYPE OF SYMBOL ${symbol.getName()}!!!!`)
 		return new Type(
 			getTypeChecker().getTypeOfSymbolAtLocation(symbol, this.node),
 			this.node
@@ -174,14 +140,16 @@ export class Type {
 	}
 
 	private toObjectProperty(): ObjectProperty {
-		const objectType = this.type as ts.ObjectType
-
-		console.log(`objectType.flags`, objectType.objectFlags)
+		// const objectType = this.type as ts.ObjectType
+		// console.log(`objectType.flags`, objectType.objectFlags)
 		return new ObjectProperty(this.getProperties())
 	}
 
 	private toArrayProperty(): ArrayProperty | null {
-		return null
+		if (!isArrayType(this.type)) return null
+		const [itemsType] = getTypeChecker().getTypeArguments(this.type as ts.TypeReference)
+		if (!itemsType) return null
+		return new ArrayProperty(new Type(itemsType, this.node).toProperty())
 	}
 
 	private toFunctionProperty(): FunctionProperty | null {
@@ -190,9 +158,6 @@ export class Type {
 			ts.SignatureKind.Call
 		)
 		if (!signatures.length) return null
-
-		console.log("!!!", signatures[0].getTypeParameters()?.length)
-		console.log("!!!", signatures[0].parameters.length)
 
 		return new FunctionProperty(
 			signatures.map(signature => ({
@@ -223,19 +188,18 @@ export class Type {
 
 	private toTupleProperty(): TupleProperty | null {
 		return null
+		// private isTuple(): boolean {
+		// 	if (!(this.type.flags & ts.TypeFlags.Object)) return false
+		// 	const objectType = this.type as ts.ObjectType
+
+		// 	if (objectType.objectFlags & ts.ObjectFlags.Reference) {
+		// 		const referenceType = this.type as ts.TypeReference
+		// 		return new Type(referenceType.target).isTuple()
+		// 	}
+
+		// 	return !!(objectType.objectFlags & ts.ObjectFlags.Tuple)
+		// }
 	}
-
-	// private isTuple(): boolean {
-	// 	if (!(this.type.flags & ts.TypeFlags.Object)) return false
-	// 	const objectType = this.type as ts.ObjectType
-
-	// 	if (objectType.objectFlags & ts.ObjectFlags.Reference) {
-	// 		const referenceType = this.type as ts.TypeReference
-	// 		return new Type(referenceType.target).isTuple()
-	// 	}
-
-	// 	return !!(objectType.objectFlags & ts.ObjectFlags.Tuple)
-	// }
 
 	// private isRecord(): boolean {
 	// 	if (!(this.type.flags & ts.TypeFlags.Object)) return false
@@ -245,20 +209,5 @@ export class Type {
 
 	// 	const objectType = this.type as ts.ObjectType
 	// 	return !!(objectType.objectFlags & ts.ObjectFlags.Mapped)
-	// }
-
-	// getProperties(): Record<string, any> {
-	// 	const properties: Record<string, any> = {}
-
-	// 	for (const property of this.type.getProperties()) {
-	// 		const   = getTypeChecker().getTypeOfSymbolAtLocation(property, this.node)
-	// 		const name = property.name
-	// 		const type = getTypeChecker().typeToString(propertyType)
-	// 		const subProperties = propertyType
-	// 			.getProperties()
-	// 			.map(property => property.escapedName)
-	// 		properties[name] = [type, propertyType.isLiteral()]
-	// 	}
-	// 	return properties
 	// }
 }

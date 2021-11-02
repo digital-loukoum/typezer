@@ -1,24 +1,34 @@
-type Generic<T> = {
-	x: T
-	y: T
-	// generic?: Generic<T>
-	// nogeneric?: NoGeneric
+class ArrayOfString extends Array<string> {}
 
-	// zabu: () => void
+export interface Zabu {
+	x: string[]
+	y: ArrayOfString
 }
 
-export class Coco {
-	x = "aazd"
-	generic: Generic<string> = {
-		x: "12",
-		y: "212",
-	}
-}
+// export type ArrayOfStringAlias = ArrayOfString
 
-export type NoGeneric = {
-	x: number
-	generic?: Generic<string>
-}
+// export interface Coco extends Zabu {}
+// type Generic<T> = {
+// 	x: T
+// 	y: T
+// 	// generic?: Generic<T>
+// 	// nogeneric?: NoGeneric
+
+// 	// zabu: () => void
+// }
+
+// export class Coco {
+// 	x? = "aazd"
+// 	generic: Generic<string> = {
+// 		x: "12",
+// 		y: "212",
+// 	}
+// }
+
+// export type NoGeneric = {
+// 	x: number
+// 	generic?: Generic<string>
+// }
 
 // export const generic: Generic<string> = {
 // 	x: "12",
