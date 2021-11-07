@@ -1,9 +1,22 @@
-class ArrayOfString extends Array<string> {}
+// class ArrayOfString extends Array<string> {}
 
-export interface Zabu {
-	x: string[]
-	y: ArrayOfString
-}
+// class MagicString extends String {
+// 	constructor(value: string, public length: number) {
+// 		super(value)
+// 	}
+// }
+
+// export type MS = MagicString
+
+export type S = String
+export type D = Date
+
+// let z: MagicString = "12"
+
+// export interface Zabu {
+// 	x: MagicString[]
+// 	y: ArrayOfString
+// }
 
 // export type ArrayOfStringAlias = ArrayOfString
 

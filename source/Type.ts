@@ -17,7 +17,12 @@ import {
 	FunctionProperty,
 	VoidProperty,
 } from "./Property"
-import { getTypeChecker, isArrayType } from "./typeChecker"
+import {
+	getArrayType,
+	getTypeChecker,
+	getPrimitiveType,
+	someBaseType,
+} from "./typeChecker"
 
 export type TypeNodeDeclaration =
 	| ts.TypeAliasDeclaration
@@ -37,22 +42,25 @@ export class Type {
 		const { flags } = this.type
 		// console.log("this.type", this.type)
 
-		if (flags & ts.TypeFlags.Any) return new AnyProperty()
-		if (flags & ts.TypeFlags.Void) return new VoidProperty()
-		if (flags & ts.TypeFlags.Unknown) return new UnknownProperty()
-		if (flags & ts.TypeFlags.StringLike) return new StringProperty()
-		if (flags & ts.TypeFlags.NumberLike) return new NumberProperty()
-		if (flags & ts.TypeFlags.BooleanLike) return new BooleanProperty()
-		if (flags & ts.TypeFlags.BigIntLike) return new BigIntegerProperty()
+		const primitiveType = getPrimitiveType(this.type)
+		// console.log("primitiveType", primitiveType)
 
-		// if (flags & ts.TypeFlags.Enum) return new EnumProperty()
+		if (primitiveType) {
+			if (flags & ts.TypeFlags.Any) return new AnyProperty()
+			if (flags & ts.TypeFlags.Void) return new VoidProperty()
+			if (flags & ts.TypeFlags.Unknown) return new UnknownProperty()
+			if (flags & ts.TypeFlags.StringLike) return new StringProperty()
+			if (flags & ts.TypeFlags.NumberLike) return new NumberProperty()
+			if (flags & ts.TypeFlags.BooleanLike) return new BooleanProperty()
+			if (flags & ts.TypeFlags.BigIntLike) return new BigIntegerProperty()
 
-		// TODO: catch the error
-		if (flags & ts.TypeFlags.Null) throw new Error(`Property always null`)
-		if (flags & ts.TypeFlags.Undefined) throw new Error(`Property always undefined`)
-		if (flags & ts.TypeFlags.Never) throw new Error(`Property of type 'never'`)
+			// if (flags & ts.TypeFlags.Enum) return new EnumProperty()
 
-		if (flags & ts.TypeFlags.Object) {
+			// TODO: catch the error
+			if (flags & ts.TypeFlags.Null) throw new Error(`Property always null`)
+			if (flags & ts.TypeFlags.Undefined) throw new Error(`Property always undefined`)
+			if (flags & ts.TypeFlags.Never) throw new Error(`Property of type 'never'`)
+		} else {
 			return (
 				this.toArrayProperty() ||
 				this.toTupleProperty() ||
@@ -63,7 +71,6 @@ export class Type {
 				this.toObjectProperty()
 			)
 		}
-
 		return new UnknownProperty()
 
 		// const symbol = this.type.getSymbol()
@@ -146,8 +153,7 @@ export class Type {
 	}
 
 	private toArrayProperty(): ArrayProperty | null {
-		if (!isArrayType(this.type)) return null
-		const [itemsType] = getTypeChecker().getTypeArguments(this.type as ts.TypeReference)
+		const itemsType = getArrayType(this.type)
 		if (!itemsType) return null
 		return new ArrayProperty(new Type(itemsType, this.node).toProperty())
 	}

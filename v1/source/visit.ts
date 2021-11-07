@@ -18,4 +18,3 @@ export function visitChildren(node: Node, visitor: Visitor) {
 export function visitChildrenRecursively(node: Node, visitor: Visitor) {
 	forEachChild(node, node => visit(node, visitor))
 }
-console.log("")

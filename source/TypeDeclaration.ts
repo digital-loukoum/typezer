@@ -31,6 +31,16 @@ export class ClassDeclaration {
 	}
 }
 
+export class PrimitiveClassDeclaration {
+	readonly type = "PrimitiveClass"
+	public properties: Properties
+	public extends = []
+
+	constructor(node: ts.ClassDeclaration) {
+		this.properties = Type.fromNode(node).getProperties()
+	}
+}
+
 export class InterfaceDeclaration {
 	readonly type = "Interface"
 	public properties: Properties = {}

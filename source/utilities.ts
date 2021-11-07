@@ -1,4 +1,5 @@
 import ts from "typescript"
+import { getTypeChecker } from "./typeChecker"
 
 export function isTypeNode(node: ts.Node): boolean {
 	return [
@@ -27,3 +28,30 @@ export function getPropertyName(node: ts.Node): string {
 	})
 	return name
 }
+
+export enum PrimitiveTypes {
+	any = 1,
+
+	unknown = 7,
+	undefined = 8,
+	null = 10,
+	string = 11,
+	number,
+
+	boolean = 18,
+	void = 20,
+	never,
+
+	String = 63,
+	Number,
+	Boolean,
+
+	Array = 77,
+}
+export const primitiveTypeIds = [
+	1, // Any
+	11, // string
+	12, // number
+	63, // String
+	64, // Number
+]
