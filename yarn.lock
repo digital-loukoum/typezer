@@ -19,10 +19,10 @@
   dependencies:
     "@cspotcode/source-map-consumer" "0.8.0"
 
-"@digitak/esrun@^2.0.5":
-  version "2.0.5"
-  resolved "https://registry.yarnpkg.com/@digitak/esrun/-/esrun-2.0.5.tgz#a8f0de72d2667ab908015721db311039ff87334a"
-  integrity sha512-9zpuRrIb4rri1SIk3ntNGFs4+7OFQdxnf/JJrpcConJK/JCNiW5mB69tOUk79VRxDvB8VJHKxY5xZTxyn26Hkg==
+"@digitak/esrun@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@digitak/esrun/-/esrun-3.0.2.tgz#25a9e0692901eff682d8e7cd2e67bab9a88c929c"
+  integrity sha512-0lpWgpfJOgSYMVm6wBsLg+tSJmpHvYA4d7Ibu/zy8qeHyDHc/rpKGHi5E4zbzygy6JlOgUp0JEaDTcWwujFaYw==
   dependencies:
     "@digitak/grubber" "^2.0.4"
     "@digitak/tsc-esm" "^2.0.3"

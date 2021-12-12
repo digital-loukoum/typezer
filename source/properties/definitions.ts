@@ -4,6 +4,7 @@ import { Property } from "./Property"
 import { PropertySignature } from "./PropertySignature"
 import ts from "typescript"
 import { typeMatchFeatures } from "../typeChecker/typeMatchFeatures"
+import { typeToString } from "../typeChecker/typeToString"
 
 // ---------------------- //
 // --    PRIMITIVES    -- //
@@ -39,7 +40,7 @@ export class BooleanProperty extends BaseProperty {
 		// "boolean"
 		if (type.flags & ts.TypeFlags.BooleanLike) return new BooleanProperty()
 		// "Boolean" - detection by name
-		if (type.symbol.name == "Boolean") return new BooleanProperty()
+		if (typeToString(type) == "Boolean") return new BooleanProperty()
 	}
 }
 
@@ -58,7 +59,10 @@ export class NumberProperty extends BaseProperty {
 		// "number"
 		if (type.flags & ts.TypeFlags.NumberLike) return new NumberProperty()
 		// "Number" - detection by name and features
-		if (type.symbol.name == "Number" && typeMatchFeatures(type, NumberProperty.features))
+		if (
+			typeToString(type) == "Number" &&
+			typeMatchFeatures(type, NumberProperty.features)
+		)
 			return new NumberProperty()
 	}
 }
@@ -70,7 +74,7 @@ export class BigIntegerProperty extends BaseProperty {
 		// "bigint"
 		if (type.flags & ts.TypeFlags.BigIntLike) return new BigIntegerProperty()
 		// "BigInt" - detection by name
-		if (type.symbol.name == "BigInt") return new BigIntegerProperty()
+		if (typeToString(type) == "BigInt") return new BigIntegerProperty()
 	}
 }
 
@@ -129,7 +133,10 @@ export class StringProperty extends BaseProperty {
 		// "string"
 		if (type.flags & ts.TypeFlags.StringLike) return new StringProperty()
 		// "String" - detection by name and features
-		if (type.symbol.name == "String" && typeMatchFeatures(type, StringProperty.features))
+		if (
+			typeToString(type) == "String" &&
+			typeMatchFeatures(type, StringProperty.features)
+		)
 			return new StringProperty()
 	}
 }
@@ -154,7 +161,7 @@ export class RegularExpressionProperty extends BaseProperty {
 	static fromType(type: ts.Type) {
 		// detection by name and features
 		if (
-			type.symbol.name == "RegExp" &&
+			typeToString(type) == "RegExp" &&
 			typeMatchFeatures(type, RegularExpressionProperty.features)
 		) {
 			return new RegularExpressionProperty()
@@ -213,7 +220,7 @@ export class DateProperty extends BaseProperty {
 
 	static fromType(type: ts.Type) {
 		// detection by name and features
-		if (type.symbol.name == "Date" && typeMatchFeatures(type, DateProperty.features)) {
+		if (typeToString(type) == "Date" && typeMatchFeatures(type, DateProperty.features)) {
 			return new DateProperty()
 		}
 	}
@@ -224,7 +231,7 @@ export class ArrayBufferProperty extends BaseProperty {
 
 	static fromType(type: ts.Type) {
 		// detection by name
-		if (type.symbol.name == "ArrayBuffer") {
+		if (typeToString(type) == "ArrayBuffer") {
 			return new ArrayBufferProperty()
 		}
 	}

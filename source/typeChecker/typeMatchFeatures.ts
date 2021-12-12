@@ -8,7 +8,6 @@ export function typeMatchFeatures(type: ts.Type, ...features: string[][]) {
 	const properties = type.getProperties().map(symbol => symbol.name)
 
 	nextFeaturesFamily: for (const featuresFamily of features) {
-		console.log("comparing", Object.keys(properties), "with", featuresFamily)
 		for (const feature of featuresFamily) {
 			if (!properties.includes(feature)) continue nextFeaturesFamily
 		}
