@@ -5,6 +5,8 @@ import { PropertySignature } from "./PropertySignature"
 import ts from "typescript"
 import { typeMatchFeatures } from "../typeChecker/typeMatchFeatures"
 import { typeToString } from "../typeChecker/typeToString"
+import { getArrayType } from "../typeChecker"
+import { Type } from "../Type"
 
 // ---------------------- //
 // --    PRIMITIVES    -- //
@@ -12,7 +14,7 @@ import { typeToString } from "../typeChecker/typeToString"
 export class UnknownProperty extends BaseProperty {
 	readonly type = "Unknown"
 
-	static fromType(type: ts.Type) {
+	static fromType({ type }: Type) {
 		if (type.flags & ts.TypeFlags.Unknown) return new UnknownProperty()
 	}
 }
@@ -20,7 +22,7 @@ export class UnknownProperty extends BaseProperty {
 export class VoidProperty extends BaseProperty {
 	readonly type = "Void"
 
-	static fromType(type: ts.Type) {
+	static fromType({ type }: Type) {
 		if (type.flags & ts.TypeFlags.Void) return new VoidProperty()
 	}
 }
@@ -28,7 +30,7 @@ export class VoidProperty extends BaseProperty {
 export class AnyProperty extends BaseProperty {
 	readonly type = "Any"
 
-	static fromType(type: ts.Type) {
+	static fromType({ type }: Type) {
 		if (type.flags & ts.TypeFlags.Any) return new AnyProperty()
 	}
 }
@@ -36,7 +38,7 @@ export class AnyProperty extends BaseProperty {
 export class BooleanProperty extends BaseProperty {
 	readonly type = "Boolean"
 
-	static fromType(type: ts.Type) {
+	static fromType({ type }: Type) {
 		// "boolean"
 		if (type.flags & ts.TypeFlags.BooleanLike) return new BooleanProperty()
 		// "Boolean" - detection by name
@@ -55,7 +57,7 @@ export class NumberProperty extends BaseProperty {
 		"toLocaleString",
 	]
 
-	static fromType(type: ts.Type) {
+	static fromType({ type }: Type) {
 		// "number"
 		if (type.flags & ts.TypeFlags.NumberLike) return new NumberProperty()
 		// "Number" - detection by name and features
@@ -70,7 +72,7 @@ export class NumberProperty extends BaseProperty {
 export class BigIntegerProperty extends BaseProperty {
 	readonly type = "BigInteger"
 
-	static fromType(type: ts.Type) {
+	static fromType({ type }: Type) {
 		// "bigint"
 		if (type.flags & ts.TypeFlags.BigIntLike) return new BigIntegerProperty()
 		// "BigInt" - detection by name
@@ -129,7 +131,7 @@ export class StringProperty extends BaseProperty {
 		"trimEnd",
 	]
 
-	static fromType(type: ts.Type) {
+	static fromType({ type }: Type) {
 		// "string"
 		if (type.flags & ts.TypeFlags.StringLike) return new StringProperty()
 		// "String" - detection by name and features
@@ -158,7 +160,7 @@ export class RegularExpressionProperty extends BaseProperty {
 		"dotAll",
 	]
 
-	static fromType(type: ts.Type) {
+	static fromType({ type }: Type) {
 		// detection by name and features
 		if (
 			typeToString(type) == "RegExp" &&
@@ -218,7 +220,7 @@ export class DateProperty extends BaseProperty {
 		"getVarDate",
 	]
 
-	static fromType(type: ts.Type) {
+	static fromType({ type }: Type) {
 		// detection by name and features
 		if (typeToString(type) == "Date" && typeMatchFeatures(type, DateProperty.features)) {
 			return new DateProperty()
@@ -229,7 +231,7 @@ export class DateProperty extends BaseProperty {
 export class ArrayBufferProperty extends BaseProperty {
 	readonly type = "ArrayBuffer"
 
-	static fromType(type: ts.Type) {
+	static fromType({ type }: Type) {
 		// detection by name
 		if (typeToString(type) == "ArrayBuffer") {
 			return new ArrayBufferProperty()
@@ -247,7 +249,7 @@ export class RecordProperty extends BaseProperty {
 		super()
 	}
 
-	static fromType(type: ts.Type) {
+	static fromType({ type }: Type) {
 		return undefined
 	}
 }
@@ -258,8 +260,11 @@ export class ArrayProperty extends BaseProperty {
 		super()
 	}
 
-	static fromType(type: ts.Type) {
-		return undefined
+	static fromType({ type, node }: Type) {
+		const itemsType = getArrayType(type)
+		if (itemsType) {
+			return new ArrayProperty(new Type(itemsType, node).toProperty())
+		}
 	}
 }
 
@@ -269,7 +274,7 @@ export class TupleProperty extends BaseProperty {
 		super()
 	}
 
-	static fromType(type: ts.Type) {
+	static fromType({ type }: Type) {
 		return undefined
 	}
 }
@@ -280,8 +285,9 @@ export class ObjectProperty extends BaseProperty {
 		super()
 	}
 
-	static fromType(type: ts.Type) {
+	static fromType(type: Type) {
 		return undefined
+		return new ObjectProperty(type.getProperties())
 	}
 }
 
@@ -291,7 +297,7 @@ export class MapProperty extends BaseProperty {
 		super()
 	}
 
-	static fromType(type: ts.Type) {
+	static fromType({ type }: Type) {
 		return undefined
 	}
 }
@@ -302,7 +308,7 @@ export class SetProperty extends BaseProperty {
 		super()
 	}
 
-	static fromType(type: ts.Type) {
+	static fromType({ type }: Type) {
 		return undefined
 	}
 }
@@ -313,7 +319,7 @@ export class UnionProperty extends BaseProperty {
 		super()
 	}
 
-	static fromType(type: ts.Type) {
+	static fromType({ type }: Type) {
 		return undefined
 	}
 }
@@ -324,7 +330,7 @@ export class FunctionProperty extends BaseProperty {
 		super()
 	}
 
-	static fromType(type: ts.Type) {
+	static fromType({ type }: Type) {
 		return undefined
 	}
 }

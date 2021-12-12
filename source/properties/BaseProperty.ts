@@ -1,8 +1,9 @@
 import type { PropertyModifier } from "./PropertyModifier"
 import ts from "typescript"
+import { Type } from "../Type"
 
 export abstract class BaseProperty {
-	static fromType: (type: ts.Type) => BaseProperty | undefined
+	static fromType: (type: Type) => BaseProperty | undefined
 
 	abstract readonly type: string
 

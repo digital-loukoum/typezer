@@ -23,7 +23,8 @@ export class Type {
 
 		for (const originalType of originalBaseTypes) {
 			for (const propertyConstructor of Object.values(propertyConstructors)) {
-				const property = propertyConstructor.fromType(originalType)
+				console.log("Checking", propertyConstructor.name, "...")
+				const property = propertyConstructor.fromType(new Type(originalType, this.node))
 				if (property) return property
 			}
 		}
