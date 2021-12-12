@@ -1,5 +1,5 @@
 import ts from "typescript"
-import { Properties, Property } from "./Property"
+import { Properties, Property } from "./properties"
 import { Type } from "./Type"
 
 export type TypeDeclaration =

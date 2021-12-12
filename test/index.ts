@@ -1,7 +1,5 @@
 import Typezer from "../source"
 import print from "cute-print"
-import { inspect } from "util"
-import { Type } from "../source/Type"
 
 const typezer = new Typezer("test/samples/checkExportedTypes.ts")
 

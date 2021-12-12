@@ -8,8 +8,8 @@
 
 // export type MS = MagicString
 
-export type S = String
-export type D = Date
+export type Type = string
+// export type S = String
 
 // let z: MagicString = "12"
 

@@ -1,0 +1,12 @@
+export type PropertyModifier =
+	| "abstract"
+	| "async"
+	| "const"
+	| "default"
+	| "export"
+	| "private"
+	| "protected"
+	| "public"
+	| "override"
+	| "readonly"
+	| "static"
