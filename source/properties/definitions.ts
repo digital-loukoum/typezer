@@ -7,6 +7,7 @@ import { typeMatchFeatures } from "../typeChecker/typeMatchFeatures"
 import { typeToString } from "../typeChecker/typeToString"
 import { getArrayType } from "../typeChecker"
 import { Type } from "../Type"
+import { getTupleType } from "../typeChecker/getTupleType"
 
 // ---------------------- //
 // --    PRIMITIVES    -- //
@@ -275,8 +276,11 @@ export class TupleProperty extends BaseProperty {
 		super()
 	}
 
-	static fromType({ type }: Type) {
-		return undefined
+	static fromType({ type, node }: Type) {
+		const types = getTupleType(type)
+		if (types) {
+			return new TupleProperty(types.map(type => new Type(type, node).toProperty()))
+		}
 	}
 }
 
@@ -299,7 +303,7 @@ export class MapProperty extends BaseProperty {
 		super()
 	}
 
-	static fromType({ type }: Type) {
+	static fromType({ type, node }: Type) {
 		return undefined
 	}
 }
@@ -310,7 +314,7 @@ export class SetProperty extends BaseProperty {
 		super()
 	}
 
-	static fromType({ type }: Type) {
+	static fromType({ type, node }: Type) {
 		return undefined
 	}
 }
@@ -321,7 +325,7 @@ export class UnionProperty extends BaseProperty {
 		super()
 	}
 
-	static fromType({ type }: Type) {
+	static fromType({ type, node }: Type) {
 		return undefined
 	}
 }
@@ -332,7 +336,7 @@ export class FunctionProperty extends BaseProperty {
 		super()
 	}
 
-	static fromType({ type }: Type) {
+	static fromType({ type, node }: Type) {
 		return undefined
 	}
 }
