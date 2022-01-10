@@ -8,7 +8,7 @@ class MagicString extends String {
 
 // export type MS = MagicString
 
-export type Type = Record<string, Record<number, Date>>
+export type Type = { [key: number | string]: boolean }
 // export type S = String
 
 // let z: MagicString = "12"

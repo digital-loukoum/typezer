@@ -9,6 +9,7 @@ import { getArrayType, getTypeChecker } from "../typeChecker"
 import { Type } from "../Type"
 import { getTupleType } from "../typeChecker/getTupleType"
 import { getRecordType } from "../typeChecker/getRecordType"
+import { getMappedType } from "../typeChecker/getMappedType"
 
 // ---------------------- //
 // --    PRIMITIVES    -- //
@@ -266,6 +267,7 @@ export class RecordProperty extends BaseProperty {
 	}
 
 	static fromType({ type, node }: Type) {
+		console.log("type", type)
 		const recordType = getRecordType(type)
 		if (recordType) {
 			const [keyType, valueType] = recordType
@@ -273,6 +275,21 @@ export class RecordProperty extends BaseProperty {
 				new Type(keyType, node).toProperty(),
 				new Type(valueType, node).toProperty()
 			)
+		}
+
+		const mappedType = getMappedType(type)
+		if (mappedType) {
+			const [keyType, valueType] = mappedType
+
+			let keyProperty: Property
+			if (keyType.length == 1) keyProperty = new Type(keyType[0], node).toProperty()
+			else {
+				keyProperty = new UnionProperty(
+					keyType.map(type => new Type(type, node).toProperty())
+				)
+			}
+
+			return new RecordProperty(keyProperty, new Type(valueType, node).toProperty())
 		}
 	}
 }
