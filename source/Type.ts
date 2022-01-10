@@ -20,16 +20,24 @@ export class Type {
 
 	toProperty(): Property {
 		const originalBaseTypes = getOriginalBaseTypes(this.type)
+		let priority = Infinity
+		let property: Property | undefined = undefined
 
 		for (const originalType of originalBaseTypes) {
 			for (const propertyConstructor of Object.values(propertyConstructors)) {
 				console.log("Checking", propertyConstructor.name, "...")
-				const property = propertyConstructor.fromType(new Type(originalType, this.node))
-				if (property) return property
+				const newProperty = propertyConstructor.fromType(
+					new Type(originalType, this.node)
+				)
+				if (newProperty && propertyConstructor.priority < priority) {
+					property = newProperty
+					priority = propertyConstructor.priority
+				}
 			}
 		}
 
-		return new propertyConstructors.ObjectProperty({})
+		if (!property) throw new Error("Could not find type of property")
+		return property
 
 		// if (this.isRecord()) {
 		// 	console.log("IS RECORD!")

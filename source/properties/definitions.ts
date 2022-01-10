@@ -255,6 +255,7 @@ export class RecordProperty extends BaseProperty {
 }
 
 export class ArrayProperty extends BaseProperty {
+	static readonly priority = 10 // after tuple
 	readonly type = "Array"
 	constructor(public of: Property) {
 		super()
@@ -280,13 +281,14 @@ export class TupleProperty extends BaseProperty {
 }
 
 export class ObjectProperty extends BaseProperty {
+	static readonly priority = 100 // only if all other checks failed
 	readonly type = "Object"
+
 	constructor(public properties: Properties) {
 		super()
 	}
 
 	static fromType(type: Type) {
-		return undefined
 		return new ObjectProperty(type.getProperties())
 	}
 }

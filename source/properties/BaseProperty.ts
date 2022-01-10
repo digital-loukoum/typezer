@@ -4,6 +4,7 @@ import { Type } from "../Type"
 
 export abstract class BaseProperty {
 	static fromType: (type: Type) => BaseProperty | undefined
+	static readonly priority: number = 0 // higher the number, lower the priority
 
 	abstract readonly type: string
 
