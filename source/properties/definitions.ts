@@ -5,13 +5,15 @@ import { PropertySignature } from "./PropertySignature"
 import ts from "typescript"
 import { typeMatchFeatures } from "../typeChecker/typeMatchFeatures"
 import { typeToString } from "../typeChecker/typeToString"
-import { getArrayType } from "../typeChecker"
+import { getArrayType, getTypeChecker } from "../typeChecker"
 import { Type } from "../Type"
 import { getTupleType } from "../typeChecker/getTupleType"
+import { getRecordType } from "../typeChecker/getRecordType"
 
 // ---------------------- //
 // --    PRIMITIVES    -- //
 // ---------------------- //
+
 export class UnknownProperty extends BaseProperty {
 	readonly type = "Unknown"
 
@@ -243,15 +245,35 @@ export class ArrayBufferProperty extends BaseProperty {
 // ----------------------- //
 // --    COMPOSABLES    -- //
 // ----------------------- //
-// molecules
-export class RecordProperty extends BaseProperty {
-	readonly type = "Record"
-	constructor(public of: Property) {
+
+export class ObjectProperty extends BaseProperty {
+	static readonly priority = 100 // only if all other checks failed
+	readonly type = "Object"
+
+	constructor(public properties: Properties) {
 		super()
 	}
 
-	static fromType({ type }: Type) {
-		return undefined
+	static fromType(type: Type) {
+		return new ObjectProperty(type.getProperties())
+	}
+}
+
+export class RecordProperty extends BaseProperty {
+	readonly type = "Record"
+	constructor(public key: Property, public value: Property) {
+		super()
+	}
+
+	static fromType({ type, node }: Type) {
+		const recordType = getRecordType(type)
+		if (recordType) {
+			const [keyType, valueType] = recordType
+			return new RecordProperty(
+				new Type(keyType, node).toProperty(),
+				new Type(valueType, node).toProperty()
+			)
+		}
 	}
 }
 
@@ -281,19 +303,6 @@ export class TupleProperty extends BaseProperty {
 		if (types) {
 			return new TupleProperty(types.map(type => new Type(type, node).toProperty()))
 		}
-	}
-}
-
-export class ObjectProperty extends BaseProperty {
-	static readonly priority = 100 // only if all other checks failed
-	readonly type = "Object"
-
-	constructor(public properties: Properties) {
-		super()
-	}
-
-	static fromType(type: Type) {
-		return new ObjectProperty(type.getProperties())
 	}
 }
 

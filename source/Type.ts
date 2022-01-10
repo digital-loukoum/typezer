@@ -25,7 +25,7 @@ export class Type {
 
 		for (const originalType of originalBaseTypes) {
 			for (const propertyConstructor of Object.values(propertyConstructors)) {
-				console.log("Checking", propertyConstructor.name, "...")
+				// console.log("Checking", propertyConstructor.name, "...")
 				const newProperty = propertyConstructor.fromType(
 					new Type(originalType, this.node)
 				)
