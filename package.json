@@ -28,14 +28,13 @@
 	},
 	"homepage": "https://github.com/digital-loukoum/typezer#readme",
 	"dependencies": {
-		"@types/node": "^15.6.1",
-		"polka": "^0.5.2",
-		"typescript": "^4.2.4"
+		"typescript": "^4.5"
 	},
 	"devDependencies": {
 		"@digitak/esrun": "^3.0.2",
+		"@digitak/print": "^1.1.4",
 		"@digitak/tsc-esm": "^2.0.3",
-		"cute-print": "^1.0.4",
+		"@types/node": "^15.6.1",
 		"ts-json-schema-generator": "^0.96.0",
 		"ts-to-zod": "^1.7.0",
 		"typescript-json-schema": "^0.51.0"
