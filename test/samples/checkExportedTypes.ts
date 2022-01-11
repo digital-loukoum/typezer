@@ -8,8 +8,7 @@
 
 // export type MS = MagicString
 
-export type Type = Map<number, string>
-export type Type2 = Set<number>
+export type Type = (x: number, y: number) => string
 // export type S = String
 
 // let z: MagicString = "12"

@@ -470,6 +470,8 @@ export class FunctionProperty extends BaseProperty {
 	}
 
 	static fromType({ type, node }: Type) {
-		return undefined
+		const signatures = type.getCallSignatures()
+		if (signatures?.length) {
+		}
 	}
 }
