@@ -8,7 +8,11 @@
 
 // export type MS = MagicString
 
-export type Type = (x: number, y: number) => string
+type A = {
+	a: A
+}
+
+export type Type = A
 // export type S = String
 
 // let z: MagicString = "12"

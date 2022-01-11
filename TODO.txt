@@ -1,9 +1,12 @@
-- Types récursifs
+- New architecture
+- Recursive types (join type / property class)
+- Decorators
 - Types of values (list of exports, list of exported values, list of exported types)
 - Find a specific export
-- Write tests
-- Fetch tests from another similar library
+- Simple tests
+- Heavy tests
 
 FUTURE
+- Messages when trying to use generics
 - Template literals
 - Extending primitive types with additional properties

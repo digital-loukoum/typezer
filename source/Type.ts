@@ -20,11 +20,14 @@ export class Type {
 		return type
 	}
 
+	// dictionary of types by id
+	static readonly types = new Map<number, Type>()
+
 	toProperty(): Property {
 		const originalBaseTypes = getOriginalBaseTypes(this.type)
 		let priority = -Infinity
 		let property: Property | undefined = undefined
-		console.log(typeToString(this.type))
+		console.log(typeToString(this.type), (this.type as any).id)
 
 		for (const originalType of originalBaseTypes) {
 			for (const propertyConstructor of Object.values(propertyConstructors)) {
@@ -45,8 +48,6 @@ export class Type {
 		if (!property) return ObjectProperty.fromType(this)
 		return property
 	}
-
-	static propertiesCache = new Map<ts.Type, Properties>()
 
 	getProperties(): Properties {
 		// const cached = Type.propertiesCache.get(this.type)
