@@ -1,14 +1,15 @@
 // class ArrayOfString extends Array<string> {}
 
-class MagicString extends String {
-	constructor(value: string, public length: number) {
-		super(value)
-	}
-}
+// class MagicString extends String {
+// 	constructor(value: string, public length: number) {
+// 		super(value)
+// 	}
+// }
 
 // export type MS = MagicString
 
-export type Type = { [key: number | string]: boolean }
+export type Type = Map<number, string>
+export type Type2 = Set<number>
 // export type S = String
 
 // let z: MagicString = "12"

@@ -25,7 +25,6 @@ export class Type {
 
 		for (const originalType of originalBaseTypes) {
 			for (const propertyConstructor of Object.values(propertyConstructors)) {
-				// console.log("Checking", propertyConstructor.name, "...")
 				const newProperty = propertyConstructor.fromType(
 					new Type(originalType, this.node)
 				)
@@ -38,23 +37,6 @@ export class Type {
 
 		if (!property) throw new Error("Could not find type of property")
 		return property
-
-		// if (this.isRecord()) {
-		// 	console.log("IS RECORD!")
-		// 	const [keyType, valueType] = this.type.aliasTypeArguments || []
-		// 	return new RecordProperty(new Type(valueType).toProperty())
-		// 	// console.log(this.type.aliasTypeArguments)
-		// }
-		// console.log("Is not record...")
-
-		// if (this.type.isIntersection()) {
-		// 	console.log("IS INTERSECTION")
-		// 	const properties: Properties = {}
-		// 	this.type.types.forEach(type =>
-		// 		Object.assign(properties, new Type(type).getProperties())
-		// 	)
-		// 	return new ObjectProperty(properties)
-		// }
 	}
 
 	static propertiesCache = new Map<ts.Type, Properties>()

@@ -12,6 +12,71 @@ import { getRecordType } from "../typeChecker/getRecordType"
 import { getMappedType } from "../typeChecker/getMappedType"
 
 // ---------------------- //
+// --     LITERALS     -- //
+// ---------------------- //
+export class StringLiteralProperty extends BaseProperty {
+	readonly type = "StringLiteral"
+	static priority = -1
+
+	constructor(public value: string) {
+		super()
+	}
+
+	static fromType({ type }: Type) {
+		if (type.isStringLiteral()) return new StringLiteralProperty(type.value)
+	}
+}
+
+export class NumberLiteralProperty extends BaseProperty {
+	readonly type = "NumberLiteral"
+	static priority = -1
+
+	constructor(public value: number) {
+		super()
+	}
+
+	static fromType({ type }: Type) {
+		if (type.isNumberLiteral()) return new NumberLiteralProperty(type.value)
+	}
+}
+
+export class BigIntegerLiteralProperty extends BaseProperty {
+	readonly type = "BigIntegerLiteral"
+	static priority = -1
+
+	constructor(public value: string) {
+		super()
+	}
+
+	static fromType({ type }: Type) {
+		if (type.isLiteral() && type.flags & ts.TypeFlags.BigIntLiteral) {
+			let value =
+				typeof type.value == "object"
+					? (type.value.negative ? "-" : "") + type.value.base10Value
+					: String(type.value)
+			return new BigIntegerLiteralProperty(value)
+		}
+	}
+}
+
+export class BooleanLiteralProperty extends BaseProperty {
+	readonly type = "BooleanLiteral"
+	static priority = -1
+
+	constructor(public value: boolean) {
+		super()
+	}
+
+	static fromType({ type }: Type) {
+		if (type.flags & ts.TypeFlags.BooleanLiteral) {
+			return new BooleanLiteralProperty(
+				(type as any).intrinsicName == "true" ? true : false
+			)
+		}
+	}
+}
+
+// ---------------------- //
 // --    PRIMITIVES    -- //
 // ---------------------- //
 
@@ -86,7 +151,7 @@ export class BigIntegerProperty extends BaseProperty {
 
 export class StringProperty extends BaseProperty {
 	readonly type = "String"
-	static features = [
+	static readonly features = [
 		"toString",
 		"charAt",
 		"charCodeAt",
@@ -149,7 +214,7 @@ export class StringProperty extends BaseProperty {
 
 export class RegularExpressionProperty extends BaseProperty {
 	readonly type = "RegularExpression"
-	static features = [
+	static readonly features = [
 		"exec",
 		"test",
 		"source",
@@ -177,7 +242,7 @@ export class RegularExpressionProperty extends BaseProperty {
 
 export class DateProperty extends BaseProperty {
 	readonly type = "Date"
-	static features = [
+	static readonly features = [
 		"toString",
 		"toDateString",
 		"toTimeString",
@@ -238,6 +303,7 @@ export class ArrayBufferProperty extends BaseProperty {
 	static fromType({ type }: Type) {
 		// detection by name
 		if (typeToString(type) == "ArrayBuffer") {
+			// TODO Maybe there is a better way to detect array buffers
 			return new ArrayBufferProperty()
 		}
 	}
@@ -267,7 +333,6 @@ export class RecordProperty extends BaseProperty {
 	}
 
 	static fromType({ type, node }: Type) {
-		console.log("type", type)
 		const recordType = getRecordType(type)
 		if (recordType) {
 			const [keyType, valueType] = recordType
@@ -325,23 +390,62 @@ export class TupleProperty extends BaseProperty {
 
 export class MapProperty extends BaseProperty {
 	readonly type = "Map"
+	static readonly features = [
+		"clear",
+		"delete",
+		"forEach",
+		"get",
+		"has",
+		"set",
+		"size",
+		"entries",
+		"keys",
+		"values",
+	]
+
 	constructor(public key: Property, public value: Property) {
 		super()
 	}
 
 	static fromType({ type, node }: Type) {
-		return undefined
+		if (
+			type.symbol?.getEscapedName() == "Map" &&
+			typeMatchFeatures(type, MapProperty.features)
+		) {
+			const [key, value] = getTypeChecker()
+				.getTypeArguments(type as ts.TypeReference)
+				.map(type => new Type(type, node).toProperty())
+			return new MapProperty(key, value)
+		}
 	}
 }
 
 export class SetProperty extends BaseProperty {
 	readonly type = "Set"
+	static readonly features = [
+		"add",
+		"clear",
+		"delete",
+		"forEach",
+		"has",
+		"size",
+		"entries",
+		"keys",
+		"values",
+	]
+
 	constructor(public of: Property) {
 		super()
 	}
 
 	static fromType({ type, node }: Type) {
-		return undefined
+		if (
+			type.symbol?.getEscapedName() == "Set" &&
+			typeMatchFeatures(type, SetProperty.features)
+		) {
+			const [key] = getTypeChecker().getTypeArguments(type as ts.TypeReference)
+			return new SetProperty(new Type(key, node).toProperty())
+		}
 	}
 }
 
@@ -352,6 +456,9 @@ export class UnionProperty extends BaseProperty {
 	}
 
 	static fromType({ type, node }: Type) {
+		if (type.isUnion()) {
+			return new UnionProperty(type.types.map(type => new Type(type, node).toProperty()))
+		}
 		return undefined
 	}
 }
