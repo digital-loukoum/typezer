@@ -1,8 +1,10 @@
 import ts from "typescript"
 import { propertyConstructors, Property, Properties } from "./properties"
 import { BaseProperty } from "./properties/BaseProperty"
+import { ObjectProperty } from "./properties/definitions"
 import { getTypeChecker } from "./typeChecker"
 import { getOriginalBaseTypes } from "./typeChecker/getOriginalBaseType"
+import { typeToString } from "./typeChecker/typeToString"
 
 export type TypeNodeDeclaration =
 	| ts.TypeAliasDeclaration
@@ -20,22 +22,27 @@ export class Type {
 
 	toProperty(): Property {
 		const originalBaseTypes = getOriginalBaseTypes(this.type)
-		let priority = Infinity
+		let priority = -Infinity
 		let property: Property | undefined = undefined
+		console.log(typeToString(this.type))
 
 		for (const originalType of originalBaseTypes) {
 			for (const propertyConstructor of Object.values(propertyConstructors)) {
+				// objects are used in last resort
+				if (propertyConstructor == ObjectProperty) continue
+
 				const newProperty = propertyConstructor.fromType(
 					new Type(originalType, this.node)
 				)
-				if (newProperty && propertyConstructor.priority < priority) {
+				if (newProperty && propertyConstructor.priority > priority) {
 					property = newProperty
 					priority = propertyConstructor.priority
 				}
 			}
 		}
 
-		if (!property) throw new Error("Could not find type of property")
+		// if the property could not be guessed, it's a generic object
+		if (!property) return ObjectProperty.fromType(this)
 		return property
 	}
 

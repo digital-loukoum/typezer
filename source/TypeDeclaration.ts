@@ -57,7 +57,6 @@ export class TypeAliasDeclaration {
 
 	constructor(node: ts.TypeAliasDeclaration) {
 		const type = Type.fromNode(node)
-		console.log("type", type.type)
 		this.aliasOf = type.toProperty()
 	}
 }

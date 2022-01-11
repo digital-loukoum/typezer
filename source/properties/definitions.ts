@@ -16,7 +16,7 @@ import { getMappedType } from "../typeChecker/getMappedType"
 // ---------------------- //
 export class StringLiteralProperty extends BaseProperty {
 	readonly type = "StringLiteral"
-	static priority = -1
+	static priority = 1
 
 	constructor(public value: string) {
 		super()
@@ -29,7 +29,7 @@ export class StringLiteralProperty extends BaseProperty {
 
 export class NumberLiteralProperty extends BaseProperty {
 	readonly type = "NumberLiteral"
-	static priority = -1
+	static priority = 1
 
 	constructor(public value: number) {
 		super()
@@ -42,7 +42,7 @@ export class NumberLiteralProperty extends BaseProperty {
 
 export class BigIntegerLiteralProperty extends BaseProperty {
 	readonly type = "BigIntegerLiteral"
-	static priority = -1
+	static priority = 1
 
 	constructor(public value: string) {
 		super()
@@ -61,7 +61,7 @@ export class BigIntegerLiteralProperty extends BaseProperty {
 
 export class BooleanLiteralProperty extends BaseProperty {
 	readonly type = "BooleanLiteral"
-	static priority = -1
+	static priority = 1
 
 	constructor(public value: boolean) {
 		super()
@@ -314,7 +314,6 @@ export class ArrayBufferProperty extends BaseProperty {
 // ----------------------- //
 
 export class ObjectProperty extends BaseProperty {
-	static readonly priority = 100 // only if all other checks failed
 	readonly type = "Object"
 
 	constructor(public properties: Properties) {
@@ -360,7 +359,7 @@ export class RecordProperty extends BaseProperty {
 }
 
 export class ArrayProperty extends BaseProperty {
-	static readonly priority = 10 // after tuple
+	static readonly priority = -10 // after tuple
 	readonly type = "Array"
 	constructor(public of: Property) {
 		super()
@@ -469,9 +468,17 @@ export class FunctionProperty extends BaseProperty {
 		super()
 	}
 
-	static fromType({ type, node }: Type) {
-		const signatures = type.getCallSignatures()
-		if (signatures?.length) {
+	static fromType(typed: Type) {
+		const rawSignatures = typed.type.getCallSignatures()
+		if (rawSignatures?.length) {
+			const signatures: PropertySignature[] = rawSignatures.map(signature => {
+				const parameters = signature
+					.getParameters()
+					.map(symbol => typed.getTypeOfSymbol(symbol).toProperty())
+				const returnType = new Type(signature.getReturnType(), typed.node).toProperty()
+				return { parameters, returnType }
+			})
+			return new FunctionProperty(signatures)
 		}
 	}
 }

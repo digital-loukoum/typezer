@@ -1,6 +1,9 @@
-- Functions
 - Types récursifs
+- Types of values (list of exports, list of exported values, list of exported types)
+- Find a specific export
+- Write tests
+- Fetch tests from another similar library
 
 FUTURE
 - Template literals
-
+- Extending primitive types with additional properties
