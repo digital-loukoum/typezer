@@ -1,6 +1,4 @@
-- New architecture
-- Recursive types (join type / property class)
-- Enumerations
+- Type declarations should also be types (or composable types)
 - Decorators
 - Types of values (list of exports, list of exported values, list of exported types)
 - Find a specific export

@@ -8,11 +8,12 @@
 
 // export type MS = MagicString
 
-type A = {
-	a: A
-}
+let zabu = 651
 
-export type Type = A
+export enum Zabu {
+	Y,
+	Z = zabu,
+}
 // export type S = String
 
 // let z: MagicString = "12"

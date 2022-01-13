@@ -3,6 +3,8 @@ import { createModifier } from "../Modifier/createModifier"
 import { Modifier } from "../Modifier/Modifier"
 
 export abstract class BaseType {
+	public id!: number
+
 	/**
 	 * When multiple types match, priority is used to determine which one should prevail
 	 */

@@ -4,19 +4,10 @@ import { nodeToProperties } from "../../utilities/nodeToProperties"
 import { Properties } from "../Properties/Properties"
 import { createType } from "../Type/createType"
 import { Type } from "../Type/Type"
+import { EnumerationType } from "../Type/Types"
 
 export class ClassDeclaration {
 	readonly type = "Class"
-	public properties: Properties
-	public extends = []
-
-	constructor(tsNode: ts.ClassDeclaration) {
-		this.properties = nodeToProperties(tsNode)
-	}
-}
-
-export class PrimitiveClassDeclaration {
-	readonly type = "PrimitiveClass"
 	public properties: Properties
 	public extends = []
 
@@ -49,7 +40,12 @@ export class EnumerationDeclaration {
 	readonly type = "Enumeration"
 	public properties: Properties
 
-	constructor(node: ts.EnumDeclaration) {
-		throw "TODO: enumerations"
+	constructor(tsNode: ts.EnumDeclaration) {
+		const tsType = getTypeChecker().getTypeAtLocation(tsNode)
+		console.log("tsNode", tsNode)
+		console.log("tsType", tsType)
+		const properties = EnumerationType.fromTsType(tsType, tsNode)?.properties
+		if (!properties) throw new Error(`Could not find properties of enumeration`)
+		this.properties = properties
 	}
 }

@@ -1,2 +1,6 @@
 import * as Types from "./Types"
-export type Type = typeof Types[keyof typeof Types]["prototype"]
+import * as SpecialTypes from "./SpecialTypes"
+
+export type Type =
+	| typeof Types[keyof typeof Types]["prototype"]
+	| typeof SpecialTypes[keyof typeof SpecialTypes]["prototype"]

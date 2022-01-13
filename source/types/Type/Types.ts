@@ -487,3 +487,40 @@ export class FunctionType extends BaseType {
 		}
 	}
 }
+
+export class EnumerationType extends BaseType {
+	readonly type = "Enumeration"
+	constructor(public properties: Properties) {
+		super()
+	}
+
+	static fromTsType(tsType: ts.Type, tsNode: ts.Node) {
+		if (tsType.flags & ts.TypeFlags.EnumLike) {
+			const properties: Properties = {}
+
+			if (tsType.isUnion()) {
+				tsType.types.forEach(tsProperty => {
+					const name = String(tsProperty.symbol.escapedName)
+					properties[name] = createType(tsProperty, tsNode)
+				})
+			} else {
+				// enumeration of numbers that may not be constant
+				tsType.symbol.exports?.forEach((tsSymbol, tsName) => {
+					const name = String(tsName)
+					const value = getTypeChecker().getConstantValue(
+						tsSymbol.valueDeclaration as ts.EnumMember
+					)
+					if (value === undefined) {
+						properties[name] = new NumberType()
+					} else if (typeof value == "string") {
+						properties[name] = new StringLiteralType(value)
+					} else {
+						properties[name] = new NumberLiteralType(value)
+					}
+				})
+			}
+
+			return new EnumerationType(properties)
+		}
+	}
+}
