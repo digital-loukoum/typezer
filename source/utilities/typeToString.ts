@@ -1,5 +1,5 @@
 import ts from "typescript"
-import { getTypeChecker } from "."
+import { getTypeChecker } from "./typeChecker"
 
 export function typeToString(type: ts.Type): string {
 	return getTypeChecker().typeToString(

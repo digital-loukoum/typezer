@@ -1,19 +1,20 @@
 import ts from "typescript"
-import { SourceFile } from "./SourceFile"
-import { setTypeChecker } from "./typeChecker"
+import { createSourceFile } from "./types/SourceFile/createSourceFile"
+import { SourceFile } from "./types/SourceFile/SourceFile"
+import { setTypeChecker } from "./utilities/typeChecker"
 
 export class Typezer {
-	public program: ts.Program
+	public tsProgram: ts.Program
 	public sourceFiles: readonly SourceFile[]
 
 	constructor(...files: string[]) {
-		this.program = ts.createProgram(files, {
+		this.tsProgram = ts.createProgram(files, {
 			skipDefaultLibCheck: true,
 		})
-		setTypeChecker(this.program.getTypeChecker())
-		this.sourceFiles = this.program
+		setTypeChecker(this.tsProgram.getTypeChecker())
+		this.sourceFiles = this.tsProgram
 			.getSourceFiles()
-			.filter(sourceFile => !sourceFile.fileName.includes("node_modules"))
-			.map(sourceFile => new SourceFile(sourceFile))
+			.filter(tsSourceFile => !tsSourceFile.fileName.includes("node_modules"))
+			.map(tsSourceFile => createSourceFile(tsSourceFile))
 	}
 }

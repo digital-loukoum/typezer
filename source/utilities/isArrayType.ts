@@ -1,5 +1,5 @@
 import type ts from "typescript"
-import { getTypeChecker } from "."
+import { getTypeChecker } from "./typeChecker"
 
 export function isArrayType(type: ts.Type): boolean {
 	// @ts-ignore

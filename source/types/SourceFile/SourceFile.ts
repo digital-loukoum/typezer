@@ -1,22 +1,17 @@
 import ts from "typescript"
-import { Type } from "./Type"
-import {
-	ClassDeclaration,
-	createTypeDeclaration,
-	TypeAliasDeclaration,
-	TypeDeclaration,
-} from "./TypeDeclaration"
-import { getExportedTypeNodeName } from "./utilities"
+import { getExportedTypeNodeName } from "../../utilities/getExportedTypeNodeName"
+import { createTypeDeclaration } from "../TypeDeclaration/createTypeDeclaration"
+import { TypeDeclaration } from "../TypeDeclaration/TypeDeclaration"
 
 export class SourceFile {
-	constructor(public sourceFile: ts.SourceFile) {}
+	constructor(public tsSourceFile: ts.SourceFile) {}
 
 	get name(): string {
-		return this.sourceFile.fileName
+		return this.tsSourceFile.fileName
 	}
 
 	getTypeDeclarations(
-		parent: ts.Node = this.sourceFile,
+		parent: ts.Node = this.tsSourceFile,
 		exportedNodes: Record<string, TypeDeclaration> = {}
 	): typeof exportedNodes {
 		parent.forEachChild(node => {

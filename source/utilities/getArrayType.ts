@@ -1,5 +1,6 @@
 import type ts from "typescript"
-import { getTypeChecker, isArrayType } from "../typeChecker"
+import { isArrayType } from "./isArrayType"
+import { getTypeChecker } from "./typeChecker"
 
 /**
  * @returns the subtype of the array if it is an array, null otherwise

@@ -1,2 +1,1 @@
-import { Typezer } from "./Typezer"
-export default Typezer
+export { Typezer } from "./Typezer"

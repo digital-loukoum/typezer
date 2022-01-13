@@ -1,26 +1,3 @@
-import ts from "typescript"
-import { Properties, Property } from "./properties"
-import { Type } from "./Type"
-
-export type TypeDeclaration =
-	| ClassDeclaration
-	| InterfaceDeclaration
-	| EnumerationDeclaration
-	| TypeAliasDeclaration
-
-export function createTypeDeclaration(node: ts.Node): TypeDeclaration {
-	if (ts.isClassDeclaration(node)) {
-		return new ClassDeclaration(node)
-	} else if (ts.isTypeAliasDeclaration(node)) {
-		return new TypeAliasDeclaration(node)
-	} else if (ts.isEnumDeclaration(node)) {
-		return new EnumerationDeclaration(node)
-	} else if (ts.isInterfaceDeclaration(node)) {
-		return new InterfaceDeclaration(node)
-	}
-	throw `The given node is not a type: ${ts.SyntaxKind[node.kind]}`
-}
-
 export class ClassDeclaration {
 	readonly type = "Class"
 	public properties: Properties

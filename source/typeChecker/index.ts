@@ -1,6 +1,0 @@
-export { getTypeChecker, setTypeChecker } from "./typeChecker"
-export { isArrayType } from "./isArrayType"
-export { isTupleType } from "./isTupleType"
-export { getPrimitiveType } from "./getPrimitiveType"
-export { getArrayType } from "./getArrayType"
-export { someBaseType } from "./someBaseType"

@@ -1,4 +1,4 @@
-export type PropertyModifier =
+export type Modifier =
 	| "abstract"
 	| "async"
 	| "const"

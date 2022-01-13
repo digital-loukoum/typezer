@@ -1,6 +1,0 @@
-export * as propertyConstructors from "./definitions"
-export type { Property } from "./Property"
-export type { PropertyConstructor } from "./PropertyConstructor"
-export type { PropertyType } from "./PropertyType"
-export type { PropertyModifier } from "./PropertyModifier"
-export type { Properties } from "./Properties"
