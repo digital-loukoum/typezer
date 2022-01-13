@@ -1,11 +1,11 @@
 import ts from "typescript"
+import { TypeDeclaration } from "./TypeDeclaration"
 import {
+	ClassDeclaration,
 	EnumerationDeclaration,
 	InterfaceDeclaration,
 	TypeAliasDeclaration,
-} from "../../TypeDeclaration"
-import { TypeDeclaration } from "./TypeDeclaration"
-import { ClassDeclaration } from "./TypeDeclarations"
+} from "./TypeDeclarations"
 
 export function createTypeDeclaration(node: ts.Node): TypeDeclaration {
 	if (ts.isClassDeclaration(node)) {

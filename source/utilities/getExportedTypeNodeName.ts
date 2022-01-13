@@ -1,4 +1,5 @@
-import ts, { isTypeNode } from "typescript"
+import ts from "typescript"
+import { isTypeNode } from "./isTypeNode"
 
 export function getExportedTypeNodeName(node: ts.Node): string | false {
 	if (!isTypeNode(node)) return false

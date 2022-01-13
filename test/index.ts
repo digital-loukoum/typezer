@@ -1,4 +1,4 @@
-import Typezer from "../source"
+import { Typezer } from "../source"
 import { print } from "@digitak/print"
 
 const typezer = new Typezer("test/samples/checkExportedTypes.ts")

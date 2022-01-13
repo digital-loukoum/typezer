@@ -1,10 +1,17 @@
+import ts from "typescript"
+import { getTypeChecker } from "../../utilities/typeChecker"
+import { nodeToProperties } from "../../utilities/nodeToProperties"
+import { Properties } from "../Properties/Properties"
+import { createType } from "../Type/createType"
+import { Type } from "../Type/Type"
+
 export class ClassDeclaration {
 	readonly type = "Class"
 	public properties: Properties
 	public extends = []
 
-	constructor(node: ts.ClassDeclaration) {
-		this.properties = Type.fromNode(node).getProperties()
+	constructor(tsNode: ts.ClassDeclaration) {
+		this.properties = nodeToProperties(tsNode)
 	}
 }
 
@@ -13,8 +20,8 @@ export class PrimitiveClassDeclaration {
 	public properties: Properties
 	public extends = []
 
-	constructor(node: ts.ClassDeclaration) {
-		this.properties = Type.fromNode(node).getProperties()
+	constructor(tsNode: ts.ClassDeclaration) {
+		this.properties = nodeToProperties(tsNode)
 	}
 }
 
@@ -23,18 +30,18 @@ export class InterfaceDeclaration {
 	public properties: Properties = {}
 	public extends = []
 
-	constructor(node: ts.InterfaceDeclaration) {
-		this.properties = Type.fromNode(node).getProperties()
+	constructor(tsNode: ts.InterfaceDeclaration) {
+		this.properties = nodeToProperties(tsNode)
 	}
 }
 
 export class TypeAliasDeclaration {
 	readonly type = "TypeAlias"
-	public aliasOf: Property
+	public aliasOf: Type
 
-	constructor(node: ts.TypeAliasDeclaration) {
-		const type = Type.fromNode(node)
-		this.aliasOf = type.toProperty()
+	constructor(tsNode: ts.TypeAliasDeclaration) {
+		const tsType = getTypeChecker().getTypeAtLocation(tsNode)
+		this.aliasOf = createType(tsType, tsNode)
 	}
 }
 
