@@ -10,9 +10,12 @@
 
 let zabu = 651
 
-export enum Zabu {
-	Y,
-	Z = zabu,
+export class Toto {
+	constructor(toto: number) {}
+
+	Caca = class Pipi {
+		constructor(public x = 12, public y = "Hello") {}
+	}
 }
 // export type S = String
 

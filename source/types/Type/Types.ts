@@ -4,12 +4,14 @@ import { getMappedType } from "../../utilities/getMappedType"
 import { getRecordType } from "../../utilities/getRecordType"
 import { getTupleType } from "../../utilities/getTupleType"
 import { getTypeOfSymbol } from "../../utilities/getTypeOfSymbol"
+import { mismatch } from "../../utilities/mismatch"
 import { getTypeChecker } from "../../utilities/typeChecker"
 import { typeMatchFeatures } from "../../utilities/typeMatchFeatures"
 import { typeToString } from "../../utilities/typeToString"
 import { createProperties } from "../Properties/createProperties"
 import { Properties } from "../Properties/Properties"
 import { Signature } from "../Signature/Signature"
+import { ValidationErrors } from "../ValidationError/ValidationError"
 import { BaseType } from "./BaseType"
 import { createManyTypes } from "./createManyTypes"
 import { createType } from "./createType"
@@ -30,6 +32,15 @@ export class StringLiteralType extends BaseType {
 	static fromTsType(tsType: ts.Type) {
 		if (tsType.isStringLiteral()) return new StringLiteralType(tsType.value)
 	}
+
+	toString(): string {
+		return '"' + this.value + '"'
+	}
+
+	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
+		if (value !== this.value) errors.mismatch(value, this.value, path)
+		return errors
+	}
 }
 
 export class NumberLiteralType extends BaseType {
@@ -42,6 +53,15 @@ export class NumberLiteralType extends BaseType {
 
 	static fromTsType(tsType: ts.Type) {
 		if (tsType.isNumberLiteral()) return new NumberLiteralType(tsType.value)
+	}
+
+	toString(): string {
+		return String(this.value)
+	}
+
+	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
+		if (value !== this.value) errors.mismatch(value, this.value, path)
+		return errors
 	}
 }
 
@@ -62,6 +82,15 @@ export class BigIntegerLiteralType extends BaseType {
 			return new BigIntegerLiteralType(value)
 		}
 	}
+
+	toString(): string {
+		return String(this.value)
+	}
+
+	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
+		if (value !== this.value) errors.mismatch(value, this.value, path)
+		return errors
+	}
 }
 
 export class BooleanLiteralType extends BaseType {
@@ -79,6 +108,15 @@ export class BooleanLiteralType extends BaseType {
 			)
 		}
 	}
+
+	toString(): string {
+		return String(this.value)
+	}
+
+	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
+		if (value !== this.value) errors.mismatch(value, this.value, path)
+		return errors
+	}
 }
 
 // ---------------------- //
@@ -91,6 +129,10 @@ export class UnknownType extends BaseType {
 	static fromTsType(tsType: ts.Type) {
 		if (tsType.flags & ts.TypeFlags.Unknown) return new UnknownType()
 	}
+
+	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
+		return errors
+	}
 }
 
 export class VoidType extends BaseType {
@@ -99,6 +141,36 @@ export class VoidType extends BaseType {
 	static fromTsType(tsType: ts.Type) {
 		if (tsType.flags & ts.TypeFlags.Void) return new VoidType()
 	}
+
+	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
+		return errors
+	}
+}
+
+export class NullType extends BaseType {
+	readonly type = "Null"
+
+	static fromTsType(tsType: ts.Type) {
+		if (tsType.flags & ts.TypeFlags.Null) return new NullType()
+	}
+
+	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
+		if (value !== null) errors.mismatch(value, "null", path)
+		return errors
+	}
+}
+
+export class UndefinedType extends BaseType {
+	readonly type = "Undefined"
+
+	static fromTsType(tsType: ts.Type) {
+		if (tsType.flags & ts.TypeFlags.Undefined) return new UndefinedType()
+	}
+
+	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
+		if (value !== undefined) errors.mismatch(value, "undefined", path)
+		return errors
+	}
 }
 
 export class AnyType extends BaseType {
@@ -106,6 +178,10 @@ export class AnyType extends BaseType {
 
 	static fromTsType(tsType: ts.Type) {
 		if (tsType.flags & ts.TypeFlags.Any) return new AnyType()
+	}
+
+	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
+		return errors
 	}
 }
 
@@ -117,6 +193,11 @@ export class BooleanType extends BaseType {
 		if (tsType.flags & ts.TypeFlags.BooleanLike) return new BooleanType()
 		// "Boolean" - detection by name
 		if (typeToString(tsType) == "Boolean") return new BooleanType()
+	}
+
+	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
+		if (typeof value !== "boolean") errors.mismatch(value, "a boolean", path)
+		return errors
 	}
 }
 
@@ -141,6 +222,11 @@ export class NumberType extends BaseType {
 		)
 			return new NumberType()
 	}
+
+	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
+		if (typeof value !== "number") errors.mismatch(value, "a number", path)
+		return errors
+	}
 }
 
 export class BigIntegerType extends BaseType {
@@ -151,6 +237,11 @@ export class BigIntegerType extends BaseType {
 		if (tsType.flags & ts.TypeFlags.BigIntLike) return new BigIntegerType()
 		// "BigInt" - detection by name
 		if (typeToString(tsType) == "BigInt") return new BigIntegerType()
+	}
+
+	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
+		if (typeof value !== "bigint") errors.mismatch(value, "a big integer", path)
+		return errors
 	}
 }
 
@@ -215,6 +306,11 @@ export class StringType extends BaseType {
 		)
 			return new StringType()
 	}
+
+	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
+		if (typeof value !== "string") errors.mismatch(value, "a string", path)
+		return errors
+	}
 }
 
 export class RegularExpressionType extends BaseType {
@@ -242,6 +338,11 @@ export class RegularExpressionType extends BaseType {
 		) {
 			return new RegularExpressionType()
 		}
+	}
+
+	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
+		if (!(value instanceof RegExp)) errors.mismatch(value, "a regular expression", path)
+		return errors
 	}
 }
 
@@ -300,6 +401,11 @@ export class DateType extends BaseType {
 			return new DateType()
 		}
 	}
+
+	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
+		if (!(value instanceof Date)) errors.mismatch(value, "a date", path)
+		return errors
+	}
 }
 
 export class ArrayBufferType extends BaseType {
@@ -311,6 +417,11 @@ export class ArrayBufferType extends BaseType {
 			// TODO Maybe there is a better way to detect array buffers
 			return new ArrayBufferType()
 		}
+	}
+
+	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
+		if (!(value instanceof ArrayBuffer)) errors.mismatch(value, "an array buffer", path)
+		return errors
 	}
 }
 
@@ -327,6 +438,16 @@ export class ObjectType extends BaseType {
 
 	static fromTsType(tsType: ts.Type, tsNode: ts.Node) {
 		return new ObjectType(createProperties(tsType, tsNode))
+	}
+
+	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
+		if (!value || typeof value !== "object") errors.mismatch(value, "an object", path)
+		else {
+			for (const key in this.properties) {
+				this.properties[key].validate(value[key], path.concat(key), errors)
+			}
+		}
+		return errors
 	}
 }
 
@@ -358,6 +479,20 @@ export class RecordType extends BaseType {
 			return new RecordType(keyType, valueType)
 		}
 	}
+
+	toString(): string {
+		return `Record<${this.key.toString()}, ${this.value.toString()}>`
+	}
+
+	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
+		if (!value || typeof value !== "object") errors.mismatch(value, "an record", path)
+		else {
+			for (const key in value) {
+				this.value.validate(value[key], path.concat(key), errors)
+			}
+		}
+		return errors
+	}
 }
 
 export class ArrayType extends BaseType {
@@ -373,6 +508,20 @@ export class ArrayType extends BaseType {
 			return new ArrayType(createType(itemsType, tsNode))
 		}
 	}
+
+	toString(): string {
+		return `Array<${this.of.toString()}>`
+	}
+
+	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
+		if (!Array.isArray(value)) errors.mismatch(value, "an array", path)
+		else {
+			value.forEach((item, index) => {
+				this.of.validate(item, path.concat(String(index)), errors)
+			})
+		}
+		return errors
+	}
 }
 
 export class TupleType extends BaseType {
@@ -386,6 +535,20 @@ export class TupleType extends BaseType {
 		if (tsTypes) {
 			return new TupleType(createManyTypes(tsTypes, tsNode))
 		}
+	}
+
+	toString(): string {
+		return `[${this.of.map(type => type.toString()).join(", ")}]`
+	}
+
+	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
+		if (!Array.isArray(value)) errors.mismatch(value, "a tuple", path)
+		else {
+			this.of.forEach((type, index) => {
+				type.validate(value[index], path.concat(String(index)), errors)
+			})
+		}
+		return errors
 	}
 }
 
@@ -420,6 +583,22 @@ export class MapType extends BaseType {
 			return new MapType(key, value)
 		}
 	}
+
+	toString(): string {
+		return `Map<${(this.key.toString(), this.value.toString())}>`
+	}
+
+	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
+		if (!(value instanceof Map)) errors.mismatch(value, "a map", path)
+		else {
+			for (const [key, item] of value.entries()) {
+				const keyPath = path.concat(!key || typeof key != "object" ? String(key) : "")
+				this.key.validate(key, keyPath, errors)
+				this.value.validate(item, keyPath, errors)
+			}
+		}
+		return errors
+	}
 }
 
 export class SetType extends BaseType {
@@ -452,6 +631,21 @@ export class SetType extends BaseType {
 			return new SetType(of)
 		}
 	}
+
+	toString(): string {
+		return `Set<${this.of.toString()}>`
+	}
+
+	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
+		if (!(value instanceof Set)) errors.mismatch(value, "a set", path)
+		else {
+			const keyPath = path.concat("")
+			for (const key of value) {
+				this.of.validate(key, keyPath, errors)
+			}
+		}
+		return errors
+	}
 }
 
 export class UnionType extends BaseType {
@@ -465,31 +659,24 @@ export class UnionType extends BaseType {
 			return new UnionType(createManyTypes(tsType.types, tsNode))
 		}
 	}
-}
 
-export class FunctionType extends BaseType {
-	readonly type = "Function"
-	constructor(public signatures: Signature[]) {
-		super()
+	toString(): string {
+		return this.types.map(type => type.toString()).join(" | ")
 	}
 
-	static fromTsType(tsType: ts.Type, tsNode: ts.Node) {
-		const rawSignatures = tsType.getCallSignatures()
-		if (rawSignatures?.length) {
-			const signatures: Signature[] = rawSignatures.map(signature => {
-				const parameters = signature
-					.getParameters()
-					.map(tsSymbol => createType(getTypeOfSymbol(tsSymbol, tsNode), tsNode))
-				const returnType = createType(signature.getReturnType(), tsNode)
-				return { parameters, returnType }
-			})
-			return new FunctionType(signatures)
+	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
+		for (const type of this.types) {
+			const typeErrors = type.validate(value, path, new ValidationErrors())
+			if (!typeErrors.length) return errors
 		}
+		errors.mismatch(value, this.toString(), path)
+		return errors
 	}
 }
 
 export class EnumerationType extends BaseType {
 	readonly type = "Enumeration"
+
 	constructor(public properties: Properties) {
 		super()
 	}
@@ -522,5 +709,78 @@ export class EnumerationType extends BaseType {
 
 			return new EnumerationType(properties)
 		}
+	}
+
+	toString(): string {
+		return `Enum<${Object.values(this.properties)
+			.map(type => type.toString())
+			.join(" | ")}>`
+	}
+
+	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
+		for (const type of Object.values(this.properties)) {
+			const typeErrors = type.validate(value, path, new ValidationErrors())
+			if (!typeErrors.length) return errors
+		}
+		errors.mismatch(value, this.toString(), path)
+		return errors
+	}
+}
+
+export class FunctionType extends BaseType {
+	readonly type = "Function"
+
+	constructor(public signatures: Signature[]) {
+		super()
+	}
+
+	static fromTsType(tsType: ts.Type, tsNode: ts.Node) {
+		const rawSignatures = tsType.getCallSignatures()
+		if (rawSignatures?.length) {
+			const signatures: Signature[] = rawSignatures.map(signature => {
+				const parameters = signature
+					.getParameters()
+					.map(tsSymbol => createType(getTypeOfSymbol(tsSymbol, tsNode), tsNode))
+				const returnType = createType(signature.getReturnType(), tsNode)
+				return { parameters, returnType }
+			})
+			return new FunctionType(signatures)
+		}
+	}
+
+	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
+		if (typeof value !== "function") errors.mismatch(value, "a function", path)
+		return errors
+	}
+}
+
+export class ClassType extends BaseType {
+	readonly type = "Class"
+
+	constructor(public signatures: Signature[], public properties: Properties) {
+		super()
+	}
+
+	static fromTsType(tsType: ts.Type, tsNode: ts.Node) {
+		const rawSignatures = tsType.getConstructSignatures()
+
+		if (rawSignatures?.length) {
+			const signatures: Signature[] = rawSignatures.map(signature => {
+				const parameters = signature
+					.getParameters()
+					.map(tsSymbol => createType(getTypeOfSymbol(tsSymbol, tsNode), tsNode))
+				const returnType = createType(signature.getReturnType(), tsNode)
+				return { parameters, returnType }
+			})
+
+			const properties = createProperties(tsType, tsNode)
+
+			return new ClassType(signatures, properties)
+		}
+	}
+
+	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
+		if (typeof value !== "function") errors.mismatch(value, "a class", path)
+		return errors
 	}
 }

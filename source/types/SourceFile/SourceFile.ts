@@ -1,7 +1,7 @@
 import ts from "typescript"
 import { getExportedTypeNodeName } from "../../utilities/getExportedTypeNodeName"
-import { createTypeDeclaration } from "../TypeDeclaration/createTypeDeclaration"
-import { TypeDeclaration } from "../TypeDeclaration/TypeDeclaration"
+import { createDeclaration } from "../Declaration/createDeclaration"
+import { Declaration } from "../Declaration/Declaration"
 
 export class SourceFile {
 	constructor(public tsSourceFile: ts.SourceFile) {}
@@ -12,7 +12,7 @@ export class SourceFile {
 
 	getTypeDeclarations(
 		parent: ts.Node = this.tsSourceFile,
-		exportedNodes: Record<string, TypeDeclaration> = {}
+		exportedNodes: Record<string, Declaration> = {}
 	): typeof exportedNodes {
 		parent.forEachChild(node => {
 			// export default...
@@ -24,7 +24,7 @@ export class SourceFile {
 
 			const name = getExportedTypeNodeName(node)
 			if (name) {
-				exportedNodes[name] = createTypeDeclaration(node)
+				exportedNodes[name] = createDeclaration(node)
 			}
 		})
 

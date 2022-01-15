@@ -1,6 +1,7 @@
 import ts from "typescript"
 import { createModifier } from "../Modifier/createModifier"
 import { Modifier } from "../Modifier/Modifier"
+import type { ValidationErrors } from "../ValidationError/ValidationError"
 
 export abstract class BaseType {
 	public id!: number
@@ -31,4 +32,14 @@ export abstract class BaseType {
 		this.modifiers ??= []
 		this.modifiers.push(createModifier(tsModifier))
 	}
+
+	toString(): string {
+		return this.type
+	}
+
+	abstract validate(
+		value: any,
+		path: string[],
+		errors: ValidationErrors
+	): ValidationErrors
 }
