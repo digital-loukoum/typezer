@@ -32,7 +32,7 @@ export function createType(tsType: ts.Type, tsNode: ts.Node): Type {
 
 	// if the type could not be guessed, it's a generic object
 	if (!type) {
-		console.log("tsType", tsType)
+		// console.log("tsType", tsType)
 		type = Types.ObjectType.fromTsType(tsType, tsNode)
 	}
 	type.id = id

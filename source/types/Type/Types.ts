@@ -15,6 +15,7 @@ import { ValidationErrors } from "../ValidationError/ValidationError"
 import { BaseType } from "./BaseType"
 import { createManyTypes } from "./createManyTypes"
 import { createType } from "./createType"
+import { createTypeFromPlainObject, PlainTypeObject } from "./createTypeFromPlainObject"
 import { Type } from "./Type"
 
 // ---------------------- //
@@ -22,7 +23,7 @@ import { Type } from "./Type"
 // ---------------------- //
 
 export class StringLiteralType extends BaseType {
-	readonly type = "StringLiteral"
+	static readonly type = "StringLiteral"
 	static priority = 1
 
 	constructor(public value: string) {
@@ -44,7 +45,7 @@ export class StringLiteralType extends BaseType {
 }
 
 export class NumberLiteralType extends BaseType {
-	readonly type = "NumberLiteral"
+	static readonly type = "NumberLiteral"
 	static priority = 1
 
 	constructor(public value: number) {
@@ -66,7 +67,7 @@ export class NumberLiteralType extends BaseType {
 }
 
 export class BigIntegerLiteralType extends BaseType {
-	readonly type = "BigIntegerLiteral"
+	static readonly type = "BigIntegerLiteral"
 	static priority = 1
 
 	constructor(public value: string) {
@@ -94,7 +95,7 @@ export class BigIntegerLiteralType extends BaseType {
 }
 
 export class BooleanLiteralType extends BaseType {
-	readonly type = "BooleanLiteral"
+	static readonly type = "BooleanLiteral"
 	static priority = 1
 
 	constructor(public value: boolean) {
@@ -124,31 +125,23 @@ export class BooleanLiteralType extends BaseType {
 // ---------------------- //
 
 export class UnknownType extends BaseType {
-	readonly type = "Unknown"
+	static readonly type = "Unknown"
 
 	static fromTsType(tsType: ts.Type) {
 		if (tsType.flags & ts.TypeFlags.Unknown) return new UnknownType()
 	}
-
-	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
-		return errors
-	}
 }
 
 export class VoidType extends BaseType {
-	readonly type = "Void"
+	static readonly type = "Void"
 
 	static fromTsType(tsType: ts.Type) {
 		if (tsType.flags & ts.TypeFlags.Void) return new VoidType()
 	}
-
-	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
-		return errors
-	}
 }
 
 export class NullType extends BaseType {
-	readonly type = "Null"
+	static readonly type = "Null"
 
 	static fromTsType(tsType: ts.Type) {
 		if (tsType.flags & ts.TypeFlags.Null) return new NullType()
@@ -161,7 +154,7 @@ export class NullType extends BaseType {
 }
 
 export class UndefinedType extends BaseType {
-	readonly type = "Undefined"
+	static readonly type = "Undefined"
 
 	static fromTsType(tsType: ts.Type) {
 		if (tsType.flags & ts.TypeFlags.Undefined) return new UndefinedType()
@@ -174,19 +167,15 @@ export class UndefinedType extends BaseType {
 }
 
 export class AnyType extends BaseType {
-	readonly type = "Any"
+	static readonly type = "Any"
 
 	static fromTsType(tsType: ts.Type) {
 		if (tsType.flags & ts.TypeFlags.Any) return new AnyType()
 	}
-
-	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
-		return errors
-	}
 }
 
 export class BooleanType extends BaseType {
-	readonly type = "Boolean"
+	static readonly type = "Boolean"
 
 	static fromTsType(tsType: ts.Type) {
 		// "boolean"
@@ -202,7 +191,7 @@ export class BooleanType extends BaseType {
 }
 
 export class NumberType extends BaseType {
-	readonly type = "Number"
+	static readonly type = "Number"
 	static readonly features = [
 		"toString",
 		"toFixed",
@@ -230,7 +219,7 @@ export class NumberType extends BaseType {
 }
 
 export class BigIntegerType extends BaseType {
-	readonly type = "BigInteger"
+	static readonly type = "BigInteger"
 
 	static fromTsType(tsType: ts.Type) {
 		// "bigint"
@@ -246,7 +235,7 @@ export class BigIntegerType extends BaseType {
 }
 
 export class StringType extends BaseType {
-	readonly type = "String"
+	static readonly type = "String"
 	static readonly features = [
 		"toString",
 		"charAt",
@@ -314,7 +303,7 @@ export class StringType extends BaseType {
 }
 
 export class RegularExpressionType extends BaseType {
-	readonly type = "RegularExpression"
+	static readonly type = "RegularExpression"
 	static readonly features = [
 		"exec",
 		"test",
@@ -347,7 +336,7 @@ export class RegularExpressionType extends BaseType {
 }
 
 export class DateType extends BaseType {
-	readonly type = "Date"
+	static readonly type = "Date"
 	static readonly features = [
 		"toString",
 		"toDateString",
@@ -409,7 +398,7 @@ export class DateType extends BaseType {
 }
 
 export class ArrayBufferType extends BaseType {
-	readonly type = "ArrayBuffer"
+	static readonly type = "ArrayBuffer"
 
 	static fromTsType(tsType: ts.Type) {
 		// detection by name
@@ -430,7 +419,7 @@ export class ArrayBufferType extends BaseType {
 // ----------------------- //
 
 export class ObjectType extends BaseType {
-	readonly type = "Object"
+	static readonly type = "Object"
 
 	constructor(public properties: Properties) {
 		super()
@@ -449,10 +438,20 @@ export class ObjectType extends BaseType {
 		}
 		return errors
 	}
+
+	static fromPlainObject(
+		object: PlainTypeObject & { properties: Record<string, PlainTypeObject> }
+	) {
+		const properties: Properties = {}
+		for (const key in object.properties) {
+			properties[key] = createTypeFromPlainObject(object.properties[key])
+		}
+		return new ObjectType(properties)
+	}
 }
 
 export class RecordType extends BaseType {
-	readonly type = "Record"
+	static readonly type = "Record"
 	constructor(public key: Type, public value: Type) {
 		super()
 	}
@@ -480,6 +479,15 @@ export class RecordType extends BaseType {
 		}
 	}
 
+	static fromPlainObject(
+		object: PlainTypeObject & { key: PlainTypeObject; value: PlainTypeObject }
+	) {
+		return new RecordType(
+			createTypeFromPlainObject(object.key),
+			createTypeFromPlainObject(object.value)
+		)
+	}
+
 	toString(): string {
 		return `Record<${this.key.toString()}, ${this.value.toString()}>`
 	}
@@ -497,7 +505,8 @@ export class RecordType extends BaseType {
 
 export class ArrayType extends BaseType {
 	static readonly priority = -10 // after tuple
-	readonly type = "Array"
+	static readonly type = "Array"
+
 	constructor(public of: Type) {
 		super()
 	}
@@ -507,6 +516,10 @@ export class ArrayType extends BaseType {
 		if (itemsType) {
 			return new ArrayType(createType(itemsType, tsNode))
 		}
+	}
+
+	static fromPlainObject(object: PlainTypeObject & { of: PlainTypeObject }) {
+		return new ArrayType(createTypeFromPlainObject(object.of))
 	}
 
 	toString(): string {
@@ -525,7 +538,8 @@ export class ArrayType extends BaseType {
 }
 
 export class TupleType extends BaseType {
-	readonly type = "Tuple"
+	static readonly type = "Tuple"
+
 	constructor(public of: Type[]) {
 		super()
 	}
@@ -535,6 +549,10 @@ export class TupleType extends BaseType {
 		if (tsTypes) {
 			return new TupleType(createManyTypes(tsTypes, tsNode))
 		}
+	}
+
+	static fromPlainObject(object: PlainTypeObject & { of: PlainTypeObject[] }) {
+		return new TupleType(object.of.map(object => createTypeFromPlainObject(object)))
 	}
 
 	toString(): string {
@@ -553,7 +571,7 @@ export class TupleType extends BaseType {
 }
 
 export class MapType extends BaseType {
-	readonly type = "Map"
+	static readonly type = "Map"
 	static readonly features = [
 		"clear",
 		"delete",
@@ -584,6 +602,15 @@ export class MapType extends BaseType {
 		}
 	}
 
+	static fromPlainObject(
+		object: PlainTypeObject & { key: PlainTypeObject; value: PlainTypeObject }
+	) {
+		return new MapType(
+			createTypeFromPlainObject(object.key),
+			createTypeFromPlainObject(object.value)
+		)
+	}
+
 	toString(): string {
 		return `Map<${(this.key.toString(), this.value.toString())}>`
 	}
@@ -602,7 +629,7 @@ export class MapType extends BaseType {
 }
 
 export class SetType extends BaseType {
-	readonly type = "Set"
+	static readonly type = "Set"
 	static readonly features = [
 		"add",
 		"clear",
@@ -632,6 +659,10 @@ export class SetType extends BaseType {
 		}
 	}
 
+	static fromPlainObject(object: PlainTypeObject & { of: PlainTypeObject }) {
+		return new SetType(createTypeFromPlainObject(object.of))
+	}
+
 	toString(): string {
 		return `Set<${this.of.toString()}>`
 	}
@@ -649,7 +680,7 @@ export class SetType extends BaseType {
 }
 
 export class UnionType extends BaseType {
-	readonly type = "Union"
+	static readonly type = "Union"
 	constructor(public types: Type[]) {
 		super()
 	}
@@ -658,6 +689,10 @@ export class UnionType extends BaseType {
 		if (tsType.isUnion()) {
 			return new UnionType(createManyTypes(tsType.types, tsNode))
 		}
+	}
+
+	static fromPlainObject(object: PlainTypeObject & { types: PlainTypeObject[] }) {
+		return new UnionType(object.types.map(object => createTypeFromPlainObject(object)))
 	}
 
 	toString(): string {
@@ -675,7 +710,7 @@ export class UnionType extends BaseType {
 }
 
 export class EnumerationType extends BaseType {
-	readonly type = "Enumeration"
+	static readonly type = "Enumeration"
 
 	constructor(public properties: Properties) {
 		super()
@@ -711,6 +746,16 @@ export class EnumerationType extends BaseType {
 		}
 	}
 
+	static fromPlainObject(
+		object: PlainTypeObject & { properties: Record<string, PlainTypeObject> }
+	) {
+		const properties: Properties = {}
+		for (const key in object.properties) {
+			properties[key] = createTypeFromPlainObject(object.properties[key])
+		}
+		return new EnumerationType(properties)
+	}
+
 	toString(): string {
 		return `Enum<${Object.values(this.properties)
 			.map(type => type.toString())
@@ -728,7 +773,7 @@ export class EnumerationType extends BaseType {
 }
 
 export class FunctionType extends BaseType {
-	readonly type = "Function"
+	static readonly type = "Function"
 
 	constructor(public signatures: Signature[]) {
 		super()
@@ -748,14 +793,35 @@ export class FunctionType extends BaseType {
 		}
 	}
 
+	static fromPlainObject(
+		object: PlainTypeObject & {
+			signatures: {
+				parameters: PlainTypeObject[]
+				returnType: PlainTypeObject
+			}[]
+		}
+	) {
+		const signatures: Signature[] = []
+		for (const { parameters, returnType } of object.signatures) {
+			signatures.push({
+				parameters: parameters.map(parameter => createTypeFromPlainObject(parameter)),
+				returnType: createTypeFromPlainObject(returnType),
+			})
+		}
+		return new FunctionType(signatures)
+	}
+
 	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
 		if (typeof value !== "function") errors.mismatch(value, "a function", path)
 		return errors
 	}
 }
 
+/**
+ * Class as value (not a type declaration, do not mix up with a class declaration)
+ */
 export class ClassType extends BaseType {
-	readonly type = "Class"
+	static readonly type = "Class"
 
 	constructor(public signatures: Signature[], public properties: Properties) {
 		super()
@@ -779,8 +845,62 @@ export class ClassType extends BaseType {
 		}
 	}
 
+	static fromPlainObject(
+		object: PlainTypeObject & {
+			properties: Record<string, PlainTypeObject>
+			signatures: {
+				parameters: PlainTypeObject[]
+				returnType: PlainTypeObject
+			}[]
+		}
+	) {
+		const signatures: Signature[] = []
+		for (const { parameters, returnType } of object.signatures) {
+			signatures.push({
+				parameters: parameters.map(parameter => createTypeFromPlainObject(parameter)),
+				returnType: createTypeFromPlainObject(returnType),
+			})
+		}
+
+		const properties: Properties = {}
+		for (const key in object.properties) {
+			properties[key] = createTypeFromPlainObject(object.properties[key])
+		}
+
+		return new ClassType(signatures, properties)
+	}
+
 	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
 		if (typeof value !== "function") errors.mismatch(value, "a class", path)
 		return errors
+	}
+}
+
+// ----------------------- //
+// --      SPECIALS     -- //
+// ----------------------- //
+
+export class ResolvingType extends BaseType {
+	static readonly type = "Resolving..."
+
+	constructor(id: number) {
+		super()
+		this.id = id
+	}
+
+	static fromTsType() {
+		return undefined
+	}
+}
+
+export class ReferenceType extends BaseType {
+	static readonly type = "Reference"
+
+	constructor(public reference: number) {
+		super()
+	}
+
+	static fromTsType() {
+		return undefined
 	}
 }

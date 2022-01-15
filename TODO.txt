@@ -1,22 +1,15 @@
-- Type declarations should also be types (or composable types). To test with recursive declaration types
-- Detect generics
-- Define generics with conditions at type or function declarations
-
 INTEGRATION
+- Import from JSON (create static typename property)
 - Types of values (list of exports, list of exported values, list of exported types)
 - Find a specific export
 - Simple tests
-- Export to JSON
-- Import from JSON (create static typename property)
-
-VALIDATION
-- Each type should have a validate method that takes a variable of type unknown as argument.
-- Basic generic validation based on generic constraints (no inference).
 
 FUTURE
+- Generics
+- Generics validation
 - Heavy tests
 - JSDoc
 - Decorators?
-- Namespaces
+- Namespace declarations
 - Template literals advanced (with validation)
 - Extending primitive types with additional properties

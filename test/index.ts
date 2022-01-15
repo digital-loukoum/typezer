@@ -15,6 +15,7 @@ typezer.sourceFiles.forEach((sourceFile, index) => {
 			console.dir(exportedTypes[key], {
 				depth: 999,
 			})
+			console.log(exportedTypes[key].value.toJson())
 		}
 	} catch (error) {
 		console.log(error)

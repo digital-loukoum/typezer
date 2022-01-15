@@ -20,7 +20,6 @@ export class ClassDeclaration extends BaseDeclaration {
 	static fromTsNode(tsNode: ts.Node) {
 		if (ts.isClassDeclaration(tsNode)) {
 			const tsType = getTypeChecker().getTypeAtLocation(tsNode)
-			console.log("class declaration:", tsType)
 			return new ClassDeclaration(createType(tsType, tsNode))
 		}
 	}
