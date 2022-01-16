@@ -1,9 +1,10 @@
 import ts from "typescript"
 import { enumerable } from "../../utilities/enumerable"
+import { getPlainObject } from "../../utilities/getPlainObject"
 import { createModifier } from "../Modifier/createModifier"
 import { Modifier } from "../Modifier/Modifier"
 import { ValidationErrors } from "../ValidationError/ValidationError"
-import type { PlainTypeObject } from "./createTypeFromPlainObject"
+import type { PlainType } from "./createTypeFromPlainObject"
 
 export abstract class BaseType {
 	public id!: number
@@ -28,7 +29,7 @@ export abstract class BaseType {
 	/**
 	 * Create a new Type from a POJO type
 	 */
-	static fromPlainObject(object: PlainTypeObject): BaseType {
+	static fromPlainObject(object: PlainType): BaseType {
 		const Type = this.constructor as any
 		return Object.assign(new Type(), object)
 	}
@@ -42,9 +43,9 @@ export abstract class BaseType {
 	 */
 	public optional?: boolean
 	public modifiers?: Modifier[]
-	// public decorators?: string[]
+	public decorators?: string[]
 
-	// @enumerable(true)
+	@enumerable(true)
 	get type(): string {
 		return (this.constructor as unknown as BaseType).type
 	}
@@ -63,27 +64,7 @@ export abstract class BaseType {
 		return JSON.stringify(this.toPlainObject(), null, "  ")
 	}
 
-	toPlainObject(): PlainTypeObject {
-		const object: PlainTypeObject & Record<string, any> = { id: this.id, type: this.type }
-		for (const key in this) {
-			if (key == "id") continue
-			const value = this[key]
-			if (Array.isArray(value)) {
-				object[key] = value.map(item =>
-					item instanceof BaseType ? item.toPlainObject() : item
-				)
-			} else if (value && typeof value == "object") {
-				const entries = Object.entries(value)
-				object[key] = Object.fromEntries(
-					entries.map(([key, item]) => [
-						key,
-						item instanceof BaseType ? item.toPlainObject() : item,
-					])
-				)
-			} else {
-				object[key] = value instanceof BaseType ? value.toPlainObject() : value
-			}
-		}
-		return object
+	toPlainObject(): PlainType {
+		return getPlainObject(this) as PlainType
 	}
 }

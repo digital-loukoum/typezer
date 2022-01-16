@@ -15,7 +15,7 @@ import { ValidationErrors } from "../ValidationError/ValidationError"
 import { BaseType } from "./BaseType"
 import { createManyTypes } from "./createManyTypes"
 import { createType } from "./createType"
-import { createTypeFromPlainObject, PlainTypeObject } from "./createTypeFromPlainObject"
+import { createTypeFromPlainObject, PlainType } from "./createTypeFromPlainObject"
 import { Type } from "./Type"
 
 // ---------------------- //
@@ -319,14 +319,20 @@ export class RegularExpressionType extends BaseType {
 		"dotAll",
 	]
 
+	constructor(public expression: string, public flags: string) {
+		super()
+	}
+
 	static fromTsType(tsType: ts.Type) {
-		// detection by name and features
 		if (
 			typeToString(tsType) == "RegExp" &&
 			typeMatchFeatures(tsType, RegularExpressionType.features)
 		) {
-			return new RegularExpressionType()
+			console.log("tsType (regular expresion)", tsType)
+			throw "TODO: Regular expression" // TODO
+			// return new RegularExpressionType()
 		}
+		return undefined
 	}
 
 	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
@@ -439,9 +445,7 @@ export class ObjectType extends BaseType {
 		return errors
 	}
 
-	static fromPlainObject(
-		object: PlainTypeObject & { properties: Record<string, PlainTypeObject> }
-	) {
+	static fromPlainObject(object: PlainType & { properties: Record<string, PlainType> }) {
 		const properties: Properties = {}
 		for (const key in object.properties) {
 			properties[key] = createTypeFromPlainObject(object.properties[key])
@@ -479,9 +483,7 @@ export class RecordType extends BaseType {
 		}
 	}
 
-	static fromPlainObject(
-		object: PlainTypeObject & { key: PlainTypeObject; value: PlainTypeObject }
-	) {
+	static fromPlainObject(object: PlainType & { key: PlainType; value: PlainType }) {
 		return new RecordType(
 			createTypeFromPlainObject(object.key),
 			createTypeFromPlainObject(object.value)
@@ -518,7 +520,7 @@ export class ArrayType extends BaseType {
 		}
 	}
 
-	static fromPlainObject(object: PlainTypeObject & { of: PlainTypeObject }) {
+	static fromPlainObject(object: PlainType & { of: PlainType }) {
 		return new ArrayType(createTypeFromPlainObject(object.of))
 	}
 
@@ -551,7 +553,7 @@ export class TupleType extends BaseType {
 		}
 	}
 
-	static fromPlainObject(object: PlainTypeObject & { of: PlainTypeObject[] }) {
+	static fromPlainObject(object: PlainType & { of: PlainType[] }) {
 		return new TupleType(object.of.map(object => createTypeFromPlainObject(object)))
 	}
 
@@ -602,9 +604,7 @@ export class MapType extends BaseType {
 		}
 	}
 
-	static fromPlainObject(
-		object: PlainTypeObject & { key: PlainTypeObject; value: PlainTypeObject }
-	) {
+	static fromPlainObject(object: PlainType & { key: PlainType; value: PlainType }) {
 		return new MapType(
 			createTypeFromPlainObject(object.key),
 			createTypeFromPlainObject(object.value)
@@ -659,7 +659,7 @@ export class SetType extends BaseType {
 		}
 	}
 
-	static fromPlainObject(object: PlainTypeObject & { of: PlainTypeObject }) {
+	static fromPlainObject(object: PlainType & { of: PlainType }) {
 		return new SetType(createTypeFromPlainObject(object.of))
 	}
 
@@ -691,7 +691,7 @@ export class UnionType extends BaseType {
 		}
 	}
 
-	static fromPlainObject(object: PlainTypeObject & { types: PlainTypeObject[] }) {
+	static fromPlainObject(object: PlainType & { types: PlainType[] }) {
 		return new UnionType(object.types.map(object => createTypeFromPlainObject(object)))
 	}
 
@@ -746,9 +746,7 @@ export class EnumerationType extends BaseType {
 		}
 	}
 
-	static fromPlainObject(
-		object: PlainTypeObject & { properties: Record<string, PlainTypeObject> }
-	) {
+	static fromPlainObject(object: PlainType & { properties: Record<string, PlainType> }) {
 		const properties: Properties = {}
 		for (const key in object.properties) {
 			properties[key] = createTypeFromPlainObject(object.properties[key])
@@ -794,10 +792,10 @@ export class FunctionType extends BaseType {
 	}
 
 	static fromPlainObject(
-		object: PlainTypeObject & {
+		object: PlainType & {
 			signatures: {
-				parameters: PlainTypeObject[]
-				returnType: PlainTypeObject
+				parameters: PlainType[]
+				returnType: PlainType
 			}[]
 		}
 	) {
@@ -846,11 +844,11 @@ export class ClassType extends BaseType {
 	}
 
 	static fromPlainObject(
-		object: PlainTypeObject & {
-			properties: Record<string, PlainTypeObject>
+		object: PlainType & {
+			properties: Record<string, PlainType>
 			signatures: {
-				parameters: PlainTypeObject[]
-				returnType: PlainTypeObject
+				parameters: PlainType[]
+				returnType: PlainType
 			}[]
 		}
 	) {
