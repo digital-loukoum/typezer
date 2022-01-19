@@ -1,5 +1,6 @@
 import { Typezer } from "../source"
 import { print } from "@digitak/print"
+import { definitions } from "../source/types/Definition/definitions"
 
 const typezer = new Typezer("test/samples/checkExportedTypes.ts")
 
@@ -15,7 +16,7 @@ typezer.sourceFiles.forEach((sourceFile, index) => {
 			console.dir(exportedTypes[key], {
 				depth: 999,
 			})
-			console.log(exportedTypes[key].value.toJson())
+			// console.log(exportedTypes[key].value.toJson())
 		}
 	} catch (error) {
 		console.log(error)
@@ -23,3 +24,5 @@ typezer.sourceFiles.forEach((sourceFile, index) => {
 })
 
 print`[bold.green:----------------]`
+print`[bold:[ [yellow: Definitions] ]]`
+console.dir(definitions, { depth: 99 })

@@ -8,6 +8,9 @@ import { mismatch } from "../../utilities/mismatch"
 import { getTypeChecker } from "../../utilities/typeChecker"
 import { typeMatchFeatures } from "../../utilities/typeMatchFeatures"
 import { typeToString } from "../../utilities/typeToString"
+import { Definition } from "../Definition/Definition"
+import { definitions } from "../Definition/definitions"
+import { getDefinitionNameId } from "../Definition/getDefinitionNameId"
 import { createProperties } from "../Properties/createProperties"
 import { Properties } from "../Properties/Properties"
 import { Signature } from "../Signature/Signature"
@@ -25,6 +28,7 @@ import { Type } from "./Type"
 export class StringLiteralType extends BaseType {
 	static readonly type = "StringLiteral"
 	static priority = 1
+	static isPrimitive = true
 
 	constructor(public value: string) {
 		super()
@@ -47,6 +51,7 @@ export class StringLiteralType extends BaseType {
 export class NumberLiteralType extends BaseType {
 	static readonly type = "NumberLiteral"
 	static priority = 1
+	static isPrimitive = true
 
 	constructor(public value: number) {
 		super()
@@ -69,6 +74,7 @@ export class NumberLiteralType extends BaseType {
 export class BigIntegerLiteralType extends BaseType {
 	static readonly type = "BigIntegerLiteral"
 	static priority = 1
+	static isPrimitive = true
 
 	constructor(public value: string) {
 		super()
@@ -97,6 +103,7 @@ export class BigIntegerLiteralType extends BaseType {
 export class BooleanLiteralType extends BaseType {
 	static readonly type = "BooleanLiteral"
 	static priority = 1
+	static isPrimitive = true
 
 	constructor(public value: boolean) {
 		super()
@@ -126,6 +133,7 @@ export class BooleanLiteralType extends BaseType {
 
 export class UnknownType extends BaseType {
 	static readonly type = "Unknown"
+	static isPrimitive = true
 
 	static fromTsType(tsType: ts.Type) {
 		if (tsType.flags & ts.TypeFlags.Unknown) return new UnknownType()
@@ -134,6 +142,7 @@ export class UnknownType extends BaseType {
 
 export class VoidType extends BaseType {
 	static readonly type = "Void"
+	static isPrimitive = true
 
 	static fromTsType(tsType: ts.Type) {
 		if (tsType.flags & ts.TypeFlags.Void) return new VoidType()
@@ -142,6 +151,7 @@ export class VoidType extends BaseType {
 
 export class NullType extends BaseType {
 	static readonly type = "Null"
+	static isPrimitive = true
 
 	static fromTsType(tsType: ts.Type) {
 		if (tsType.flags & ts.TypeFlags.Null) return new NullType()
@@ -155,6 +165,7 @@ export class NullType extends BaseType {
 
 export class UndefinedType extends BaseType {
 	static readonly type = "Undefined"
+	static isPrimitive = true
 
 	static fromTsType(tsType: ts.Type) {
 		if (tsType.flags & ts.TypeFlags.Undefined) return new UndefinedType()
@@ -168,6 +179,7 @@ export class UndefinedType extends BaseType {
 
 export class AnyType extends BaseType {
 	static readonly type = "Any"
+	static isPrimitive = true
 
 	static fromTsType(tsType: ts.Type) {
 		if (tsType.flags & ts.TypeFlags.Any) return new AnyType()
@@ -176,6 +188,7 @@ export class AnyType extends BaseType {
 
 export class BooleanType extends BaseType {
 	static readonly type = "Boolean"
+	static isPrimitive = true
 
 	static fromTsType(tsType: ts.Type) {
 		// "boolean"
@@ -192,6 +205,7 @@ export class BooleanType extends BaseType {
 
 export class NumberType extends BaseType {
 	static readonly type = "Number"
+	static isPrimitive = true
 	static readonly features = [
 		"toString",
 		"toFixed",
@@ -220,6 +234,7 @@ export class NumberType extends BaseType {
 
 export class BigIntegerType extends BaseType {
 	static readonly type = "BigInteger"
+	static isPrimitive = true
 
 	static fromTsType(tsType: ts.Type) {
 		// "bigint"
@@ -236,6 +251,7 @@ export class BigIntegerType extends BaseType {
 
 export class StringType extends BaseType {
 	static readonly type = "String"
+	static isPrimitive = true
 	static readonly features = [
 		"toString",
 		"charAt",
@@ -304,6 +320,7 @@ export class StringType extends BaseType {
 
 export class RegularExpressionType extends BaseType {
 	static readonly type = "RegularExpression"
+	static isPrimitive = true
 	static readonly features = [
 		"exec",
 		"test",
@@ -343,6 +360,7 @@ export class RegularExpressionType extends BaseType {
 
 export class DateType extends BaseType {
 	static readonly type = "Date"
+	static isPrimitive = true
 	static readonly features = [
 		"toString",
 		"toDateString",
@@ -405,6 +423,7 @@ export class DateType extends BaseType {
 
 export class ArrayBufferType extends BaseType {
 	static readonly type = "ArrayBuffer"
+	static isPrimitive = true
 
 	static fromTsType(tsType: ts.Type) {
 		// detection by name
@@ -893,12 +912,20 @@ export class ResolvingType extends BaseType {
 
 export class ReferenceType extends BaseType {
 	static readonly type = "Reference"
+	public reference: string
 
-	constructor(public reference: number) {
+	constructor(definition: Definition) {
 		super()
+		this.reference = getDefinitionNameId(definition.name, definition.id)
 	}
 
 	static fromTsType() {
 		return undefined
+	}
+
+	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
+		const definition = definitions[this.reference]
+		definition?.type.validate(value, path, errors)
+		return errors
 	}
 }

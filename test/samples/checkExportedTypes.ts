@@ -10,12 +10,13 @@
 
 let zabu = 651
 
-export class Toto {
-	constructor(toto: number) {}
+type Zut = {
+	x: number
+	z: Zut
+}
 
-	Caca = class Pipi {
-		constructor(public x = 12, public y = "Hello") {}
-	}
+export class Toto {
+	zut!: Zut
 }
 // export type S = String
 

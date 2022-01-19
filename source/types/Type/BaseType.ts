@@ -7,7 +7,7 @@ import { ValidationErrors } from "../ValidationError/ValidationError"
 import type { PlainType } from "./createTypeFromPlainObject"
 
 export abstract class BaseType {
-	public id!: number
+	public id?: number
 
 	/**
 	 * When multiple types match, priority is used to determine which one should prevail
@@ -18,6 +18,11 @@ export abstract class BaseType {
 	 * The name of the type
 	 */
 	static readonly type: string
+
+	/**
+	 * The name of the type
+	 */
+	static readonly isPrimitive?: boolean
 
 	/**
 	 * Create a new Type from a Typescript type

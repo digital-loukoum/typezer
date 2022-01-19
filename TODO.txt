@@ -1,4 +1,4 @@
-- Primitive types should not be references.
+- Do not implement references, implement circular references instead. 
 
 INTEGRATION
 - Import from JSON (create static typename property)
