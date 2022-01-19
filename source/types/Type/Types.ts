@@ -14,7 +14,7 @@ import { getDefinitionNameId } from "../Definition/getDefinitionNameId"
 import { createProperties } from "../Properties/createProperties"
 import { Properties } from "../Properties/Properties"
 import { Signature } from "../Signature/Signature"
-import { ValidationErrors } from "../ValidationError/ValidationError"
+import { Validator } from "../Validator/Validator"
 import { BaseType } from "./BaseType"
 import { createManyTypes } from "./createManyTypes"
 import { createType } from "./createType"
@@ -42,9 +42,9 @@ export class StringLiteralType extends BaseType {
 		return '"' + this.value + '"'
 	}
 
-	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
-		if (value !== this.value) errors.mismatch(value, this.value, path)
-		return errors
+	validate(value: any, path: string[] = [], validator = new Validator()) {
+		if (value !== this.value) validator.mismatch(value, this.value, path)
+		return validator
 	}
 }
 
@@ -65,9 +65,9 @@ export class NumberLiteralType extends BaseType {
 		return String(this.value)
 	}
 
-	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
-		if (value !== this.value) errors.mismatch(value, this.value, path)
-		return errors
+	validate(value: any, path: string[] = [], validator = new Validator()) {
+		if (value !== this.value) validator.mismatch(value, this.value, path)
+		return validator
 	}
 }
 
@@ -94,9 +94,9 @@ export class BigIntegerLiteralType extends BaseType {
 		return String(this.value)
 	}
 
-	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
-		if (value !== this.value) errors.mismatch(value, this.value, path)
-		return errors
+	validate(value: any, path: string[] = [], validator = new Validator()) {
+		if (value !== this.value) validator.mismatch(value, this.value, path)
+		return validator
 	}
 }
 
@@ -121,9 +121,9 @@ export class BooleanLiteralType extends BaseType {
 		return String(this.value)
 	}
 
-	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
-		if (value !== this.value) errors.mismatch(value, this.value, path)
-		return errors
+	validate(value: any, path: string[] = [], validator = new Validator()) {
+		if (value !== this.value) validator.mismatch(value, this.value, path)
+		return validator
 	}
 }
 
@@ -157,9 +157,9 @@ export class NullType extends BaseType {
 		if (tsType.flags & ts.TypeFlags.Null) return new NullType()
 	}
 
-	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
-		if (value !== null) errors.mismatch(value, "null", path)
-		return errors
+	validate(value: any, path: string[] = [], validator = new Validator()) {
+		if (value !== null) validator.mismatch(value, "null", path)
+		return validator
 	}
 }
 
@@ -171,9 +171,9 @@ export class UndefinedType extends BaseType {
 		if (tsType.flags & ts.TypeFlags.Undefined) return new UndefinedType()
 	}
 
-	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
-		if (value !== undefined) errors.mismatch(value, "undefined", path)
-		return errors
+	validate(value: any, path: string[] = [], validator = new Validator()) {
+		if (value !== undefined) validator.mismatch(value, "undefined", path)
+		return validator
 	}
 }
 
@@ -197,9 +197,9 @@ export class BooleanType extends BaseType {
 		if (typeToString(tsType) == "Boolean") return new BooleanType()
 	}
 
-	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
-		if (typeof value !== "boolean") errors.mismatch(value, "a boolean", path)
-		return errors
+	validate(value: any, path: string[] = [], validator = new Validator()) {
+		if (typeof value !== "boolean") validator.mismatch(value, "a boolean", path)
+		return validator
 	}
 }
 
@@ -226,9 +226,9 @@ export class NumberType extends BaseType {
 			return new NumberType()
 	}
 
-	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
-		if (typeof value !== "number") errors.mismatch(value, "a number", path)
-		return errors
+	validate(value: any, path: string[] = [], validator = new Validator()) {
+		if (typeof value !== "number") validator.mismatch(value, "a number", path)
+		return validator
 	}
 }
 
@@ -243,9 +243,9 @@ export class BigIntegerType extends BaseType {
 		if (typeToString(tsType) == "BigInt") return new BigIntegerType()
 	}
 
-	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
-		if (typeof value !== "bigint") errors.mismatch(value, "a big integer", path)
-		return errors
+	validate(value: any, path: string[] = [], validator = new Validator()) {
+		if (typeof value !== "bigint") validator.mismatch(value, "a big integer", path)
+		return validator
 	}
 }
 
@@ -312,9 +312,9 @@ export class StringType extends BaseType {
 			return new StringType()
 	}
 
-	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
-		if (typeof value !== "string") errors.mismatch(value, "a string", path)
-		return errors
+	validate(value: any, path: string[] = [], validator = new Validator()) {
+		if (typeof value !== "string") validator.mismatch(value, "a string", path)
+		return validator
 	}
 }
 
@@ -352,9 +352,10 @@ export class RegularExpressionType extends BaseType {
 		return undefined
 	}
 
-	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
-		if (!(value instanceof RegExp)) errors.mismatch(value, "a regular expression", path)
-		return errors
+	validate(value: any, path: string[] = [], validator = new Validator()) {
+		if (!(value instanceof RegExp))
+			validator.mismatch(value, "a regular expression", path)
+		return validator
 	}
 }
 
@@ -415,9 +416,9 @@ export class DateType extends BaseType {
 		}
 	}
 
-	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
-		if (!(value instanceof Date)) errors.mismatch(value, "a date", path)
-		return errors
+	validate(value: any, path: string[] = [], validator = new Validator()) {
+		if (!(value instanceof Date)) validator.mismatch(value, "a date", path)
+		return validator
 	}
 }
 
@@ -433,9 +434,10 @@ export class ArrayBufferType extends BaseType {
 		}
 	}
 
-	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
-		if (!(value instanceof ArrayBuffer)) errors.mismatch(value, "an array buffer", path)
-		return errors
+	validate(value: any, path: string[] = [], validator = new Validator()) {
+		if (!(value instanceof ArrayBuffer))
+			validator.mismatch(value, "an array buffer", path)
+		return validator
 	}
 }
 
@@ -454,22 +456,22 @@ export class ObjectType extends BaseType {
 		return new ObjectType(createProperties(tsType, tsNode))
 	}
 
-	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
-		if (!value || typeof value !== "object") errors.mismatch(value, "an object", path)
-		else {
-			for (const key in this.properties) {
-				this.properties[key].validate(value[key], path.concat(key), errors)
-			}
-		}
-		return errors
-	}
-
 	static fromPlainObject(object: PlainType & { properties: Record<string, PlainType> }) {
 		const properties: Properties = {}
 		for (const key in object.properties) {
 			properties[key] = createTypeFromPlainObject(object.properties[key])
 		}
 		return new ObjectType(properties)
+	}
+
+	validate(value: any, path: string[] = [], validator = new Validator()) {
+		if (!value || typeof value !== "object") validator.mismatch(value, "an object", path)
+		else {
+			for (const key in this.properties) {
+				validator.validate(this.properties[key], value[key], path.concat(key))
+			}
+		}
+		return validator
 	}
 }
 
@@ -513,14 +515,14 @@ export class RecordType extends BaseType {
 		return `Record<${this.key.toString()}, ${this.value.toString()}>`
 	}
 
-	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
-		if (!value || typeof value !== "object") errors.mismatch(value, "an record", path)
+	validate(value: any, path: string[] = [], validator = new Validator()) {
+		if (!value || typeof value !== "object") validator.mismatch(value, "an record", path)
 		else {
 			for (const key in value) {
-				this.value.validate(value[key], path.concat(key), errors)
+				validator.validate(this.value, value[key], path.concat(key))
 			}
 		}
-		return errors
+		return validator
 	}
 }
 
@@ -547,14 +549,14 @@ export class ArrayType extends BaseType {
 		return `Array<${this.of.toString()}>`
 	}
 
-	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
-		if (!Array.isArray(value)) errors.mismatch(value, "an array", path)
+	validate(value: any, path: string[] = [], validator = new Validator()) {
+		if (!Array.isArray(value)) validator.mismatch(value, "an array", path)
 		else {
 			value.forEach((item, index) => {
-				this.of.validate(item, path.concat(String(index)), errors)
+				validator.validate(this.of, item, path.concat(String(index)))
 			})
 		}
-		return errors
+		return validator
 	}
 }
 
@@ -580,14 +582,14 @@ export class TupleType extends BaseType {
 		return `[${this.of.map(type => type.toString()).join(", ")}]`
 	}
 
-	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
-		if (!Array.isArray(value)) errors.mismatch(value, "a tuple", path)
+	validate(value: any, path: string[] = [], validator = new Validator()) {
+		if (!Array.isArray(value)) validator.mismatch(value, "a tuple", path)
 		else {
 			this.of.forEach((type, index) => {
-				type.validate(value[index], path.concat(String(index)), errors)
+				validator.validate(type, value[index], path.concat(String(index)))
 			})
 		}
-		return errors
+		return validator
 	}
 }
 
@@ -634,16 +636,16 @@ export class MapType extends BaseType {
 		return `Map<${(this.key.toString(), this.value.toString())}>`
 	}
 
-	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
-		if (!(value instanceof Map)) errors.mismatch(value, "a map", path)
+	validate(value: any, path: string[] = [], validator = new Validator()) {
+		if (!(value instanceof Map)) validator.mismatch(value, "a map", path)
 		else {
 			for (const [key, item] of value.entries()) {
 				const keyPath = path.concat(!key || typeof key != "object" ? String(key) : "")
-				this.key.validate(key, keyPath, errors)
-				this.value.validate(item, keyPath, errors)
+				validator.validate(this.key, key, keyPath)
+				validator.validate(this.value, item, keyPath)
 			}
 		}
-		return errors
+		return validator
 	}
 }
 
@@ -686,15 +688,15 @@ export class SetType extends BaseType {
 		return `Set<${this.of.toString()}>`
 	}
 
-	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
-		if (!(value instanceof Set)) errors.mismatch(value, "a set", path)
+	validate(value: any, path: string[] = [], validator = new Validator()) {
+		if (!(value instanceof Set)) validator.mismatch(value, "a set", path)
 		else {
 			const keyPath = path.concat("")
 			for (const key of value) {
-				this.of.validate(key, keyPath, errors)
+				validator.validate(this.of, key, keyPath)
 			}
 		}
-		return errors
+		return validator
 	}
 }
 
@@ -718,13 +720,13 @@ export class UnionType extends BaseType {
 		return this.types.map(type => type.toString()).join(" | ")
 	}
 
-	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
+	validate(value: any, path: string[] = [], validator = new Validator()) {
 		for (const type of this.types) {
-			const typeErrors = type.validate(value, path, new ValidationErrors())
-			if (!typeErrors.length) return errors
+			const typeErrors = validator.fork().validate(type, value, path)
+			if (!typeErrors.length) return validator
 		}
-		errors.mismatch(value, this.toString(), path)
-		return errors
+		validator.mismatch(value, this.toString(), path)
+		return validator
 	}
 }
 
@@ -779,13 +781,13 @@ export class EnumerationType extends BaseType {
 			.join(" | ")}>`
 	}
 
-	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
+	validate(value: any, path: string[] = [], validator = new Validator()) {
 		for (const type of Object.values(this.properties)) {
-			const typeErrors = type.validate(value, path, new ValidationErrors())
-			if (!typeErrors.length) return errors
+			const typeErrors = validator.fork().validate(type, value, path)
+			if (!typeErrors.length) return validator
 		}
-		errors.mismatch(value, this.toString(), path)
-		return errors
+		validator.mismatch(value, this.toString(), path)
+		return validator
 	}
 }
 
@@ -828,9 +830,9 @@ export class FunctionType extends BaseType {
 		return new FunctionType(signatures)
 	}
 
-	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
-		if (typeof value !== "function") errors.mismatch(value, "a function", path)
-		return errors
+	validate(value: any, path: string[] = [], validator = new Validator()) {
+		if (typeof value !== "function") validator.mismatch(value, "a function", path)
+		return validator
 	}
 }
 
@@ -887,9 +889,9 @@ export class ClassType extends BaseType {
 		return new ClassType(signatures, properties)
 	}
 
-	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
-		if (typeof value !== "function") errors.mismatch(value, "a class", path)
-		return errors
+	validate(value: any, path: string[] = [], validator = new Validator()) {
+		if (typeof value !== "function") validator.mismatch(value, "a class", path)
+		return validator
 	}
 }
 
@@ -923,9 +925,11 @@ export class ReferenceType extends BaseType {
 		return undefined
 	}
 
-	validate(value: any, path: string[] = [], errors = new ValidationErrors()) {
+	validate(value: any, path: string[] = [], validator = new Validator()) {
 		const definition = definitions[this.reference]
-		definition?.type.validate(value, path, errors)
-		return errors
+		if (definition) {
+			validator.validate(definition.type, value, path)
+		}
+		return validator
 	}
 }
