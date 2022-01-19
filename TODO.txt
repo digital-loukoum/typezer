@@ -1,14 +1,9 @@
-- Do not implement references, implement circular references instead. 
-
 INTEGRATION
-- Import from JSON (create static typename property)
 - Types of values (list of exports, list of exported values, list of exported types)
 - Find a specific export
 - Simple tests
-- Validate recursive types with a WeakMap to store already validated items
 
 FUTURE
-- Pretty ids (double-id mapping)
 - Generics
 - Generics validation
 - Heavy tests

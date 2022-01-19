@@ -2,7 +2,7 @@ import { Type } from "../Type/Type"
 
 export class Validator {
 	errors: Array<string> = []
-	validated = new Map<Type, Set<unknown>>()
+	validated = new WeakMap<Type, Set<unknown>>()
 
 	validate(type: Type, value: unknown, path: string[]) {
 		let validatedValues = this.validated.get(type)

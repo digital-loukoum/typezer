@@ -722,8 +722,8 @@ export class UnionType extends BaseType {
 
 	validate(value: any, path: string[] = [], validator = new Validator()) {
 		for (const type of this.types) {
-			const typeErrors = validator.fork().validate(type, value, path)
-			if (!typeErrors.length) return validator
+			const check = validator.fork().validate(type, value, path)
+			if (!check.errors.length) return validator
 		}
 		validator.mismatch(value, this.toString(), path)
 		return validator
@@ -783,8 +783,8 @@ export class EnumerationType extends BaseType {
 
 	validate(value: any, path: string[] = [], validator = new Validator()) {
 		for (const type of Object.values(this.properties)) {
-			const typeErrors = validator.fork().validate(type, value, path)
-			if (!typeErrors.length) return validator
+			const check = validator.fork().validate(type, value, path)
+			if (!check.errors.length) return validator
 		}
 		validator.mismatch(value, this.toString(), path)
 		return validator

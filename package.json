@@ -28,6 +28,7 @@
 	},
 	"homepage": "https://github.com/digital-loukoum/typezer#readme",
 	"dependencies": {
+		"chokidar": "^3.5.3",
 		"typescript": "^4.5"
 	},
 	"devDependencies": {
