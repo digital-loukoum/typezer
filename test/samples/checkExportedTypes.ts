@@ -18,6 +18,8 @@ type Zut = {
 export class Toto {
 	zut!: Zut
 }
+
+export default 12
 // export type S = String
 
 // let z: MagicString = "12"

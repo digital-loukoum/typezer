@@ -35,9 +35,6 @@
 		"@digitak/esrun": "^3.0.2",
 		"@digitak/print": "^1.1.4",
 		"@digitak/tsc-esm": "^2.0.3",
-		"@types/node": "^15.6.1",
-		"ts-json-schema-generator": "^0.96.0",
-		"ts-to-zod": "^1.7.0",
-		"typescript-json-schema": "^0.51.0"
+		"@types/node": "^15.6.1"
 	}
 }

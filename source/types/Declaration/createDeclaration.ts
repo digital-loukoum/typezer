@@ -7,5 +7,5 @@ export function createDeclaration(tsNode: ts.Node): Declaration {
 		const declaration = Declaration.fromTsNode(tsNode)
 		if (declaration) return declaration
 	}
-	throw `The given node is not a type: ${ts.SyntaxKind[tsNode.kind]}`
+	throw `The given node is not a declaration: ${ts.SyntaxKind[tsNode.kind]}`
 }

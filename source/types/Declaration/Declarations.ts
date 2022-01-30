@@ -46,3 +46,25 @@ export class TypeDeclaration extends BaseDeclaration {
 		}
 	}
 }
+
+export class VariableDeclaration extends BaseDeclaration {
+	readonly declare = "variable"
+
+	static fromTsNode(tsNode: ts.Node) {
+		if (ts.isVariableStatement(tsNode)) {
+			const tsType = getTypeChecker().getTypeAtLocation(tsNode)
+			return new VariableDeclaration(createType(tsType, tsNode))
+		}
+	}
+}
+
+export class DefaultExportDeclaration extends BaseDeclaration {
+	readonly declare = "default"
+
+	static fromTsNode(tsNode: ts.Node) {
+		if (ts.isExportAssignment(tsNode)) {
+			const tsType = getTypeChecker().getTypeAtLocation(tsNode.getChildAt(0))
+			return new DefaultExportDeclaration(createType(tsType, tsNode))
+		}
+	}
+}

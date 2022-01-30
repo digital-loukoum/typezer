@@ -1,4 +1,5 @@
 import ts from "typescript"
+import { Declaration } from "./types/Declaration/Declaration"
 import { definitions } from "./types/Definition/definitions"
 import { createSourceFile } from "./types/SourceFile/createSourceFile"
 import { SourceFile } from "./types/SourceFile/SourceFile"
@@ -36,19 +37,30 @@ export class Typezer {
 			.map(tsSourceFile => createSourceFile(tsSourceFile))
 	}
 
-	getType(exportedTypeName: string, files?: string[]): Type | undefined {}
-	getAllTypes(files?: string[]): Type[] {
-		return []
+	getType(name: string): Type | undefined {
+		return this.getDeclaration(name)?.value
+	}
+	getAllTypes(): Type[] {
+		return this.getAllDeclarations().map(({ value }) => value)
 	}
 
-	getValue(exportedValueName: string, files?: string[]): Type | undefined {}
-	getAllValues(files?: string[]): Type[] {
-		return []
-	}
+	// getValue(name: string): Type | undefined {}
+	// getAllValues(): Type[] {
+	// 	return []
+	// }
 
-	getDeclaration(exportedName: string, files?: string[]): Type | undefined {}
-	getAllDeclarations(files?: string[]): Type[] {
-		return []
+	getDeclaration(name: string): Declaration | undefined {
+		for (const file of this.sourceFiles) {
+			const declaration = file.getDeclarations()[name]
+			if (declaration) return declaration
+		}
+	}
+	getAllDeclarations(): Declaration[] {
+		let declarations: Declaration[] = []
+		for (const file of this.sourceFiles) {
+			declarations = declarations.concat(Object.values(file.getDeclarations()))
+		}
+		return declarations
 	}
 
 	watchType(): this {
@@ -73,7 +85,7 @@ export class Typezer {
 
 	private createHost() {
 		const host = ts.createCompilerHost(this.options)
-		const { getSourceFile } = this.host
+		const { getSourceFile } = host
 		host.getSourceFile = (fileName: string, languageVersion: ts.ScriptTarget) => {
 			let sourceFile = this.sourceFileCache.get(fileName)
 			if (!sourceFile) {
