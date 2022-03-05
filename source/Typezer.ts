@@ -5,6 +5,7 @@ import { createSourceFile } from "./types/SourceFile/createSourceFile"
 import { SourceFile } from "./types/SourceFile/SourceFile"
 import { Type } from "./types/Type/Type"
 import { setTypeChecker } from "./utilities/typeChecker"
+import glob from "fast-glob"
 
 export class Typezer {
 	public tsProgram: ts.Program
@@ -19,6 +20,7 @@ export class Typezer {
 	private sourceFileCache = new Map<string, ts.SourceFile | undefined>()
 
 	constructor(files: string[], options: ts.CompilerOptions = {}) {
+		files = files.map(file => glob.sync(file)).flat()
 		this.options = {
 			skipDefaultLibCheck: true,
 			noEmit: true,

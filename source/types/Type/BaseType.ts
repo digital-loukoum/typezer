@@ -3,7 +3,7 @@ import { enumerable } from "../../utilities/enumerable"
 import { getPlainObject } from "../../utilities/getPlainObject"
 import { createModifier } from "../Modifier/createModifier"
 import { Modifier } from "../Modifier/Modifier"
-import { Validator } from "../Validator/Validator"
+import { Validator } from "../../validate/types/Validator/Validator"
 import type { PlainType } from "./createTypeFromPlainObject"
 
 export abstract class BaseType {
@@ -37,10 +37,6 @@ export abstract class BaseType {
 	static fromPlainObject(object: PlainType): BaseType {
 		const Type = this.constructor as any
 		return Object.assign(new Type(), object)
-	}
-
-	validate(value: any, path: string[] = [], validator = new Validator()) {
-		return validator
 	}
 
 	/**

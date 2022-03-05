@@ -1,4 +1,6 @@
 INTEGRATION
+- Fix "export default" bugs
+- Check if export to POJO works fine
 - Types of values (list of exports, list of exported values, list of exported types)
 - Find a specific export
 - Simple tests

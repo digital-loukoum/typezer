@@ -10,16 +10,16 @@
 
 let zabu = 651
 
-type Zut = {
+export type Zut = {
 	x: number
-	z: Zut
+	y: string
 }
 
 export class Toto {
 	zut!: Zut
 }
 
-export default 12
+// export default 12
 // export type S = String
 
 // let z: MagicString = "12"
