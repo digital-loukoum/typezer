@@ -8,9 +8,11 @@ import { getDefinitionNameId } from "../Definition/getDefinitionNameId"
 import { Type } from "./Type"
 import * as Types from "./Types"
 
-export function createType(tsType: ts.Type, tsNode: ts.Node): Type {
-	const { name, id } = getTypeNameAndId(tsType)
+export function createType(tsType: ts.Type, tsNode: ts.Node, name?: string): Type {
 	let definition: Definition | null = null
+	const nameAndId = getTypeNameAndId(tsType)
+	const { id } = nameAndId
+	name ??= nameAndId.name
 
 	if (name) {
 		const nameId = getDefinitionNameId(name, id)

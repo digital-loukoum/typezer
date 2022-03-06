@@ -3,8 +3,7 @@ import { enumerable } from "../../utilities/enumerable"
 import { getPlainObject } from "../../utilities/getPlainObject"
 import { createModifier } from "../Modifier/createModifier"
 import { Modifier } from "../Modifier/Modifier"
-import { Validator } from "../../validate/types/Validator/Validator"
-import type { PlainType } from "./createTypeFromPlainObject"
+import { Type } from "./Type"
 
 export abstract class BaseType {
 	public id?: number
@@ -29,14 +28,6 @@ export abstract class BaseType {
 	 */
 	static fromTsType(tsType: ts.Type, tsNode: ts.Node): BaseType | undefined {
 		throw new Error(`This function should be implemented by a child class`)
-	}
-
-	/**
-	 * Create a new Type from a POJO type
-	 */
-	static fromPlainObject(object: PlainType): BaseType {
-		const Type = this.constructor as any
-		return Object.assign(new Type(), object)
 	}
 
 	/**
@@ -65,7 +56,7 @@ export abstract class BaseType {
 		return JSON.stringify(this.toPlainObject(), null, "  ")
 	}
 
-	toPlainObject(): PlainType {
-		return getPlainObject(this) as PlainType
+	toPlainObject(): Type {
+		return getPlainObject(this) as Type
 	}
 }

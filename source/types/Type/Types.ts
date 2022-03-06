@@ -15,7 +15,6 @@ import { Signature } from "../Signature/Signature"
 import { BaseType } from "./BaseType"
 import { createManyTypes } from "./createManyTypes"
 import { createType } from "./createType"
-import { createTypeFromPlainObject, PlainType } from "./createTypeFromPlainObject"
 import { Type } from "./Type"
 
 // ---------------------- //
@@ -385,14 +384,6 @@ export class ObjectType extends BaseType {
 	static fromTsType(tsType: ts.Type, tsNode: ts.Node) {
 		return new ObjectType(createProperties(tsType, tsNode))
 	}
-
-	static fromPlainObject(object: PlainType & { properties: Record<string, PlainType> }) {
-		const properties: Properties = {}
-		for (const key in object.properties) {
-			properties[key] = createTypeFromPlainObject(object.properties[key])
-		}
-		return new ObjectType(properties)
-	}
 }
 
 export class RecordType extends BaseType {
@@ -424,13 +415,6 @@ export class RecordType extends BaseType {
 		}
 	}
 
-	static fromPlainObject(object: PlainType & { key: PlainType; value: PlainType }) {
-		return new RecordType(
-			createTypeFromPlainObject(object.key),
-			createTypeFromPlainObject(object.value)
-		)
-	}
-
 	toString(): string {
 		return `Record<${this.key.toString()}, ${this.value.toString()}>`
 	}
@@ -451,10 +435,6 @@ export class ArrayType extends BaseType {
 		}
 	}
 
-	static fromPlainObject(object: PlainType & { of: PlainType }) {
-		return new ArrayType(createTypeFromPlainObject(object.of))
-	}
-
 	toString(): string {
 		return `Array<${this.of.toString()}>`
 	}
@@ -472,10 +452,6 @@ export class TupleType extends BaseType {
 		if (tsTypes) {
 			return new TupleType(createManyTypes(tsTypes, tsNode))
 		}
-	}
-
-	static fromPlainObject(object: PlainType & { of: PlainType[] }) {
-		return new TupleType(object.of.map(object => createTypeFromPlainObject(object)))
 	}
 
 	toString(): string {
@@ -515,13 +491,6 @@ export class MapType extends BaseType {
 		}
 	}
 
-	static fromPlainObject(object: PlainType & { key: PlainType; value: PlainType }) {
-		return new MapType(
-			createTypeFromPlainObject(object.key),
-			createTypeFromPlainObject(object.value)
-		)
-	}
-
 	toString(): string {
 		return `Map<${(this.key.toString(), this.value.toString())}>`
 	}
@@ -558,10 +527,6 @@ export class SetType extends BaseType {
 		}
 	}
 
-	static fromPlainObject(object: PlainType & { of: PlainType }) {
-		return new SetType(createTypeFromPlainObject(object.of))
-	}
-
 	toString(): string {
 		return `Set<${this.of.toString()}>`
 	}
@@ -577,10 +542,6 @@ export class UnionType extends BaseType {
 		if (tsType.isUnion()) {
 			return new UnionType(createManyTypes(tsType.types, tsNode))
 		}
-	}
-
-	static fromPlainObject(object: PlainType & { types: PlainType[] }) {
-		return new UnionType(object.types.map(object => createTypeFromPlainObject(object)))
 	}
 
 	toString(): string {
@@ -625,14 +586,6 @@ export class EnumerationType extends BaseType {
 		}
 	}
 
-	static fromPlainObject(object: PlainType & { properties: Record<string, PlainType> }) {
-		const properties: Properties = {}
-		for (const key in object.properties) {
-			properties[key] = createTypeFromPlainObject(object.properties[key])
-		}
-		return new EnumerationType(properties)
-	}
-
 	toString(): string {
 		return `Enum<${Object.values(this.properties)
 			.map(type => type.toString())
@@ -659,24 +612,6 @@ export class FunctionType extends BaseType {
 			})
 			return new FunctionType(signatures)
 		}
-	}
-
-	static fromPlainObject(
-		object: PlainType & {
-			signatures: {
-				parameters: PlainType[]
-				returnType: PlainType
-			}[]
-		}
-	) {
-		const signatures: Signature[] = []
-		for (const { parameters, returnType } of object.signatures) {
-			signatures.push({
-				parameters: parameters.map(parameter => createTypeFromPlainObject(parameter)),
-				returnType: createTypeFromPlainObject(returnType),
-			})
-		}
-		return new FunctionType(signatures)
 	}
 }
 
@@ -706,31 +641,6 @@ export class ClassType extends BaseType {
 
 			return new ClassType(signatures, properties)
 		}
-	}
-
-	static fromPlainObject(
-		object: PlainType & {
-			properties: Record<string, PlainType>
-			signatures: {
-				parameters: PlainType[]
-				returnType: PlainType
-			}[]
-		}
-	) {
-		const signatures: Signature[] = []
-		for (const { parameters, returnType } of object.signatures) {
-			signatures.push({
-				parameters: parameters.map(parameter => createTypeFromPlainObject(parameter)),
-				returnType: createTypeFromPlainObject(returnType),
-			})
-		}
-
-		const properties: Properties = {}
-		for (const key in object.properties) {
-			properties[key] = createTypeFromPlainObject(object.properties[key])
-		}
-
-		return new ClassType(signatures, properties)
 	}
 }
 

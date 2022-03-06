@@ -36,6 +36,7 @@
 		"@digitak/esrun": "^3.0.2",
 		"@digitak/print": "^1.1.4",
 		"@digitak/tsc-esm": "^2.0.3",
-		"@types/node": "^15.6.1"
+		"@types/node": "^15.6.1",
+		"fartest": "^2.1.8"
 	}
 }

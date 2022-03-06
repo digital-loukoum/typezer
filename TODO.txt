@@ -1,9 +1,13 @@
 INTEGRATION
-- Fix "export default" bugs
-- Check if export to POJO works fine
+- Enhance: prettier definition names
+- Fix: definitions don't work with class and interface definitions
+- Fix: "export default" don't work fine in many situations
+- Make watcher work
+- Simple tests ()
+
+API
 - Types of values (list of exports, list of exported values, list of exported types)
 - Find a specific export
-- Simple tests
 
 FUTURE
 - Generics

@@ -1,22 +1,21 @@
 import ts from "typescript"
 import { Declaration } from "./types/Declaration/Declaration"
-import { definitions } from "./types/Definition/definitions"
+import { resetDefinitions } from "./types/Definition/definitions"
 import { createSourceFile } from "./types/SourceFile/createSourceFile"
 import { SourceFile } from "./types/SourceFile/SourceFile"
 import { Type } from "./types/Type/Type"
 import { setTypeChecker } from "./utilities/typeChecker"
 import glob from "fast-glob"
+import { Definition } from "./types/Definition/Definition"
 
 export class Typezer {
 	public tsProgram: ts.Program
 	public sourceFiles: readonly SourceFile[]
 	public host: ts.CompilerHost
 	public options: ts.CompilerOptions
+	public definitions: Record<string, Definition> = {}
 
-	get definitions() {
-		return definitions
-	}
-
+	private declarations: Declaration[]
 	private sourceFileCache = new Map<string, ts.SourceFile | undefined>()
 
 	constructor(files: string[], options: ts.CompilerOptions = {}) {
@@ -29,14 +28,22 @@ export class Typezer {
 
 		this.host = this.createHost()
 		this.tsProgram = ts.createProgram(files, this.options, this.host)
+		this.definitions = resetDefinitions()
 
 		setTypeChecker(this.tsProgram.getTypeChecker())
 
 		const tsSourceFiles = this.tsProgram.getSourceFiles()
 
+		// we find our local source files
 		this.sourceFiles = tsSourceFiles
 			.filter(tsSourceFile => !tsSourceFile.fileName.includes("node_modules"))
 			.map(tsSourceFile => createSourceFile(tsSourceFile))
+
+		// we discover all declarations
+		this.declarations = []
+		for (const file of this.sourceFiles) {
+			this.declarations = this.declarations.concat(file.getDeclarations())
+		}
 	}
 
 	getType(name: string): Type | undefined {
@@ -52,17 +59,10 @@ export class Typezer {
 	// }
 
 	getDeclaration(name: string): Declaration | undefined {
-		for (const file of this.sourceFiles) {
-			const declaration = file.getDeclarations()[name]
-			if (declaration) return declaration
-		}
+		return this.declarations.find(declaration => declaration.name == name)
 	}
 	getAllDeclarations(): Declaration[] {
-		let declarations: Declaration[] = []
-		for (const file of this.sourceFiles) {
-			declarations = declarations.concat(Object.values(file.getDeclarations()))
-		}
-		return declarations
+		return this.declarations
 	}
 
 	watchType(): this {

@@ -11,19 +11,14 @@ export class SourceFile {
 		return this.tsSourceFile.fileName
 	}
 
-	getDeclarations(
-		parent: ts.Node = this.tsSourceFile,
-		exportedNodes: Record<string, Declaration> = {}
-	): typeof exportedNodes {
+	getDeclarations(parent: ts.Node = this.tsSourceFile): Declaration[] {
+		const declarations: Declaration[] = []
 		parent.forEachChild(node => {
-			// if (!isTypeNode(node)) return
 			const name = getExportedNodeName(node)
-			if (name) {
-				exportedNodes[name] = createDeclaration(node)
-			}
+			name && declarations.push(createDeclaration(this.name, name, node))
 		})
 
-		return exportedNodes
+		return declarations
 	}
 	// getTypeDeclarations(): Type[] {
 	// 	const statements = this.sourceFile.statements.filter(

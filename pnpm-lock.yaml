@@ -6,6 +6,7 @@ specifiers:
   '@digitak/tsc-esm': ^2.0.3
   '@types/node': ^15.6.1
   chokidar: ^3.5.3
+  fartest: ^2.1.8
   fast-glob: ^3.2.11
   typescript: ^4.5
 
@@ -19,6 +20,7 @@ devDependencies:
   '@digitak/print': 1.1.4
   '@digitak/tsc-esm': 2.0.6
   '@types/node': 15.14.9
+  fartest: 2.1.8
 
 packages:
 
@@ -141,6 +143,12 @@ packages:
   /escape-string-regexp/1.0.5:
     resolution: {integrity: sha1-G2HAViGQqN/2rjuyzwIAyhMLhtQ=}
     engines: {node: '>=0.8.0'}
+    dev: true
+
+  /fartest/2.1.8:
+    resolution: {integrity: sha512-GCR2+fd48k71m4mPO+ie5/gmlD9jp5/D1Po7c+Llu4RxexUojhesPeS6lxzKLlW60H5yCr2pdZpwgVYOeY1/bw==}
+    dependencies:
+      chalk: 2.4.2
     dev: true
 
   /fast-glob/3.2.11:
