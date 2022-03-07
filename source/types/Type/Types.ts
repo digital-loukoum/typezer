@@ -67,11 +67,12 @@ export class BigIntegerLiteralType extends BaseType {
 	}
 
 	static fromTsType(tsType: ts.Type) {
-		if (tsType.isLiteral() && tsType.flags & ts.TypeFlags.BigIntLiteral) {
+		if (tsType.flags & ts.TypeFlags.BigIntLiteral) {
+			const literal = tsType as ts.LiteralType
 			let value =
-				typeof tsType.value == "object"
-					? (tsType.value.negative ? "-" : "") + tsType.value.base10Value
-					: String(tsType.value)
+				typeof literal.value == "object"
+					? (literal.value.negative ? "-" : "") + literal.value.base10Value
+					: String(literal.value)
 			return new BigIntegerLiteralType(value)
 		}
 	}

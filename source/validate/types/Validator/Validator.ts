@@ -1,6 +1,6 @@
 import type { Type } from "../../../types/Type/Type"
 import { createValidators } from "./createValidators"
-
+import { inspect } from "util"
 export class Validator {
 	errors: Array<string> = []
 	path: Array<string> = []
@@ -17,11 +17,17 @@ export class Validator {
 	}
 
 	mismatch(value: any, expected: any) {
-		this.errors.push(`Expected ${expected} but received ${value} at '${this.joinPath()}'`)
+		const path = this.joinPath()
+		const pathInfos = path ? `at '${this.joinPath()}'` : ""
+		this.errors.push(
+			`Expected ${inspect(expected)} but received ${inspect(value)} ${pathInfos}`
+		)
 	}
 
 	missing(key: string) {
-		this.errors.push(`Key '${key}' missing in '${this.joinPath()}'`)
+		const path = this.joinPath()
+		const pathInfos = path ? `in '${this.joinPath()}'` : ""
+		this.errors.push(`Key '${key}' missing ${pathInfos}`)
 	}
 
 	/**

@@ -14,7 +14,7 @@ export function createValidators(validator: Omit<Validator, "validators">): Vali
 		},
 
 		BigIntegerLiteral(type: Types.BigIntegerLiteralType, value) {
-			if (value !== type.value) validator.mismatch(value, type.value)
+			if (value !== BigInt(type.value)) validator.mismatch(value, type.value)
 		},
 
 		BooleanLiteral(type: Types.BooleanLiteralType, value) {
@@ -25,7 +25,7 @@ export function createValidators(validator: Omit<Validator, "validators">): Vali
 		Unknown(type: Types.UnknownType, value) {},
 
 		Void(type: Types.VoidType, value) {
-			if (value != null) validator.mismatch(value, "null | undefined")
+			if (value !== undefined) validator.mismatch(value, "undefined")
 		},
 
 		Null(type: Types.NullType, value) {
@@ -83,6 +83,7 @@ export function createValidators(validator: Omit<Validator, "validators">): Vali
 			else {
 				for (const key in value) {
 					validator.path.push(key)
+					validator.validate(type.key, key)
 					validator.validate(type.value, value[key])
 					validator.path.pop()
 				}
@@ -102,6 +103,8 @@ export function createValidators(validator: Omit<Validator, "validators">): Vali
 
 		Tuple(type: Types.TupleType, value) {
 			if (!Array.isArray(value)) validator.mismatch(value, "a tuple")
+			else if (value.length != type.of.length)
+				validator.mismatch(value, `a tuple with ${type.of.length} elements`)
 			else {
 				type.of.forEach((type, index) => {
 					validator.path.push(String(index))

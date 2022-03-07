@@ -12,8 +12,8 @@ export type Primitives = {
 	boolean: boolean
 	Boolean: Boolean
 
-	BigInteger: BigInteger
-	RegularExpression: RegExp
+	BigInteger: BigInt
+	// RegularExpression: RegExp
 	Date: Date
 	ArrayBuffer: ArrayBuffer
 }
@@ -21,44 +21,79 @@ export type Primitives = {
 export type PartialPrimitives = Partial<Primitives>
 
 export type Literals = {
-	number: 12
-	string: "12"
-	bigInt: 12n
-	boolean: true
+	numberLiteral: 12
+	stringLiteral: "12"
+	bigIntegerLiteral: 12n
+	booleanLiteral: true
 }
 
+export abstract class Modifiers {
+	readonly readonly = 12
+	public public = 12
+	protected protected = 12
+	private private = 12
+	abstract abstract: number
+}
+
+export type Arrays = {
+	Number: Array<number>
+	Reference: Array<Primitives>
+}
+
+export type Records = {
+	String_Number: Record<string, number>
+	String_String: Record<string, string>
+	Reference_String: Record<SomeLiterals, string>
+}
+
+export type Tuples = {
+	NumberLiteral_StringLiteral_Reference: [1, "2", Primitives]
+	String_StringLiteral_String_Number_Reference: [string, "1", String, Number, Primitives]
+}
+
+export type Maps = {
+	String_Number: Map<string, number>
+	Number_String: Map<number, string>
+	Union_Reference: Map<12 | "string", Primitives>
+}
+
+export type Sets = {
+	Number: Set<number>
+	Reference: Set<Primitives>
+	NumberLiteral: Set<12>
+	Union: Set<12 | "12">
+}
+
+export type Unions = {
+	NumberLiteral_StringLiteral_Reference: 12 | "string" | Primitives
+	Number_String: Number | string
+}
+
+export type Enumerations = {
+	enumerationNumber: NumberEnumeration
+	enumerationString: StringEnumeration
+}
+
+export type Functions = {
+	Function_Number: () => number
+	Class_String: new () => String
+}
+
+export type CircularReference = {
+	primitives: Primitives
+	self: CircularReference
+}
+
+// utility types
+export type SomeLiterals = "12" | "15"
+
 enum NumberEnumeration {
-	a,
-	b,
+	$0,
+	$1,
+	$99 = 99,
 }
 
 enum StringEnumeration {
 	a = "a",
 	b = "b",
-}
-
-type CircularReference = {
-	primitives: Primitives
-	self: CircularReference
-}
-
-export type Containers = {
-	object: Primitives
-	arrayOfNumbers: Array<number>
-	arrayOfPrimitives: Array<Primitives>
-	recordOfNumbers: Record<string, number>
-	recordOfNumbersWithLiteralKeys: Record<"12" | "15", number>
-	tuple: [1, "2", Primitives]
-	mapStringNumber: Map<string, number>
-	mapNumberString: Map<number, string>
-	mapLiteralsPrimitives: Map<12 | "string" | Literals, Primitives>
-	setOfNumber: Set<number>
-	setOfPrimitives: Set<Primitives>
-	setOfLiterals: Set<12 | "string">
-	union: 12 | "string" | Primitives
-	enumerationNumber: NumberEnumeration
-	enumerationString: StringEnumeration
-	function: (number: number, string: string, primitives: Primitives) => number
-	class: new (number: number, string: string, primitives: Primitives) => number
-	reference: CircularReference
 }

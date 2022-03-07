@@ -1,6 +1,6 @@
 INTEGRATION
-- Make watcher work
 - Simple tests ()
+- Make watcher work
 
 API
 - Types of values (list of exports, list of exported values, list of exported types)

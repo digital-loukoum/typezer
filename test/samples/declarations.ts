@@ -31,10 +31,10 @@ export const ConstantVariable = 12,
 	AnotherConstantVariable = false
 export let Variable = 12
 
-export function fun(x: number, y: string, nested: { z: number }): number {
+export function Function(x: number, y: string, nested: { z: number }): number {
 	return x
 }
 
 export { ConstantVariable as AliasConstantVariable, Variable as AliasVariable }
 
-export default fun
+export default false

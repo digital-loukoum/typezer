@@ -70,7 +70,6 @@ export class ExportDeclaration extends BaseDeclaration {
 	readonly declare = "export"
 
 	static fromTsNode(tsNode: ts.Node) {
-		console.log("VARIABLE?")
 		if (ts.isExportSpecifier(tsNode)) {
 			const name = findLastChildNode(tsNode, ts.SyntaxKind.Identifier)?.getText()
 			const tsType = getTypeChecker().getTypeAtLocation(tsNode)

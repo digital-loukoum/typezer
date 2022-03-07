@@ -7,6 +7,12 @@ import { findDefinition } from "../Definition/definitions"
 import { Type } from "./Type"
 import * as Types from "./Types"
 
+const typeConstructors = Object.values(Types)
+const lowPriorityTypes: Array<typeof typeConstructors[number]> = [
+	Types.RecordType,
+	Types.ObjectType,
+]
+
 export function createType(tsType: ts.Type, tsNode: ts.Node, name?: string): Type {
 	let definition: Definition | undefined = undefined
 	const nameAndId = getTypeNameAndId(tsType)
@@ -26,9 +32,9 @@ export function createType(tsType: ts.Type, tsNode: ts.Node, name?: string): Typ
 	let type: Type | undefined = undefined
 
 	for (const originalTsType of originalBaseTsTypes) {
-		for (const TypeConstructor of Object.values(Types)) {
+		for (const TypeConstructor of typeConstructors) {
 			// objects are used in last resort
-			if (TypeConstructor == Types.ObjectType) continue
+			if (lowPriorityTypes.includes(TypeConstructor)) continue
 
 			const challenger = TypeConstructor.fromTsType(originalTsType, tsNode)
 			if (challenger && TypeConstructor.priority > priority) {
@@ -40,13 +46,15 @@ export function createType(tsType: ts.Type, tsNode: ts.Node, name?: string): Typ
 
 	// if the type could not be guessed, it's a regular object
 	if (!type) {
-		// console.log("tsType", tsType)
-		type = Types.ObjectType.fromTsType(tsType, tsNode)
+		for (const TypeConstructor of lowPriorityTypes) {
+			type = TypeConstructor.fromTsType(tsType, tsNode)
+			if (type) break
+		}
 	}
 
 	if (definition) {
-		definition.type = type
+		definition.type = type!
 		return new Types.ReferenceType(definition)
 	}
-	return type
+	return type!
 }
