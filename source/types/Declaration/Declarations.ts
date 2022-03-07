@@ -2,6 +2,8 @@ import ts from "typescript"
 import { findChildNode, findLastChildNode } from "../../utilities/findChildNode"
 import { getTypeChecker } from "../../utilities/typeChecker"
 import { createType } from "../Type/createType"
+import { Type } from "../Type/Type"
+import { NumberLiteralType, StringLiteralType } from "../Type/Types"
 import { BaseDeclaration } from "./BaseDeclaration"
 
 export class EnumerationDeclaration extends BaseDeclaration {
@@ -94,8 +96,19 @@ export class DefaultExportDeclaration extends BaseDeclaration {
 
 	static fromTsNode(tsNode: ts.Node) {
 		if (ts.isExportAssignment(tsNode)) {
-			const tsType = getTypeChecker().getTypeAtLocation(tsNode.getChildAt(0))
-			return new DefaultExportDeclaration(createType(tsType, tsNode), "default")
+			const children = tsNode.getChildren()
+			const lastChildNode = children[children.length - 1]
+			let type: Type
+
+			if (lastChildNode.kind == ts.SyntaxKind.NumericLiteral)
+				type = new NumberLiteralType(+lastChildNode.getText())
+			else if (lastChildNode.kind == ts.SyntaxKind.StringLiteral)
+				type = new StringLiteralType(lastChildNode.getText())
+			else {
+				const tsType = getTypeChecker().getTypeAtLocation(lastChildNode)
+				type = createType(tsType, tsNode)
+			}
+			return new DefaultExportDeclaration(type, "default")
 		}
 	}
 }

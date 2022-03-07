@@ -27,7 +27,8 @@ export interface Interface {
 	}
 }
 
-export const ConstantVariable = 12
+export const ConstantVariable = 12,
+	AnotherConstantVariable = false
 export let Variable = 12
 
 export function fun(x: number, y: string, nested: { z: number }): number {
@@ -35,3 +36,5 @@ export function fun(x: number, y: string, nested: { z: number }): number {
 }
 
 export { ConstantVariable as AliasConstantVariable, Variable as AliasVariable }
+
+export default fun

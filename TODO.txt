@@ -1,5 +1,4 @@
 INTEGRATION
-- Fix: "export default" don't work fine in many situations
 - Make watcher work
 - Simple tests ()
 

@@ -4,6 +4,7 @@ import { getPlainObject } from "../../utilities/getPlainObject"
 import { createModifier } from "../Modifier/createModifier"
 import { Modifier } from "../Modifier/Modifier"
 import { Type } from "./Type"
+import * as Types from "./Types"
 
 export abstract class BaseType {
 	public id?: number
