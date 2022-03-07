@@ -8,7 +8,7 @@ import { getTypeChecker } from "../../utilities/typeChecker"
 import { typeMatchFeatures } from "../../utilities/typeMatchFeatures"
 import { typeToString } from "../../utilities/typeToString"
 import { Definition } from "../Definition/Definition"
-import { getDefinitionNameId } from "../Definition/getDefinitionNameId"
+import { findDefinitionReference } from "../Definition/definitions"
 import { createProperties } from "../Properties/createProperties"
 import { Properties } from "../Properties/Properties"
 import { Signature } from "../Signature/Signature"
@@ -667,7 +667,7 @@ export class ReferenceType extends BaseType {
 
 	constructor(definition: Definition) {
 		super()
-		this.reference = getDefinitionNameId(definition.name, definition.id)
+		this.reference = findDefinitionReference(definition.id)
 	}
 
 	static fromTsType() {

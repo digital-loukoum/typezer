@@ -1,17 +1,19 @@
-import ts from "typescript"
-import { getTypeNameAndId } from "../../utilities/getNameId"
-import { createType } from "../Type/createType"
 import { ResolvingType } from "../Type/Types"
 import type { Definition } from "./Definition"
-import { definitions } from "./definitions"
-import { getDefinitionNameId } from "./getDefinitionNameId"
+import { definitions, findDefinition } from "./definitions"
 
-export function createDefinition(name: string, id: number): Definition | null {
-	const nameId = getDefinitionNameId(name, id)
+export function createDefinition(name: string, id: number): Definition {
+	let definition = findDefinition(id)
 
-	if (!(nameId in definitions)) {
-		definitions[nameId] = { id, name, type: new ResolvingType(id) }
+	if (!definition) {
+		definition = { id, name, type: new ResolvingType(id) }
+		if (name in definitions) {
+			let alias = 2
+			while (`name#${alias}` in definitions) alias++
+			name = `name#${alias}`
+		}
+		definitions[name] = definition
 	}
 
-	return definitions[nameId]
+	return definition
 }

@@ -1,5 +1,5 @@
 import ts from "typescript"
-import { getExportedNodeName } from "../../utilities/getExportedNodeName"
+import { getDeclarationNodes } from "../../utilities/getDeclarationNodes"
 import { isTypeNode } from "../../utilities/isTypeNode"
 import { createDeclaration } from "../Declaration/createDeclaration"
 import { Declaration } from "../Declaration/Declaration"
@@ -14,8 +14,10 @@ export class SourceFile {
 	getDeclarations(parent: ts.Node = this.tsSourceFile): Declaration[] {
 		const declarations: Declaration[] = []
 		parent.forEachChild(node => {
-			const name = getExportedNodeName(node)
-			name && declarations.push(createDeclaration(this.name, name, node))
+			const declarationNodes = getDeclarationNodes(node)
+			declarationNodes.forEach(node => {
+				declarations.push(createDeclaration(this.name, node))
+			})
 		})
 
 		return declarations

@@ -27,10 +27,11 @@ export interface Interface {
 	}
 }
 
-export const Variable = 12
+export const ConstantVariable = 12
+export let Variable = 12
 
 export function fun(x: number, y: string, nested: { z: number }): number {
 	return x
 }
 
-export { Variable as AliasVariable }
+export { ConstantVariable as AliasConstantVariable, Variable as AliasVariable }

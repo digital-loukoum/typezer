@@ -1,22 +1,20 @@
 import ts from "typescript"
-import { getTypeNameAndId } from "../../utilities/getNameId"
+import { getTypeNameAndId } from "../../utilities/getTypeNameAndId"
 import { getOriginalBaseTypes } from "../../utilities/getOriginalBaseType"
 import { createDefinition } from "../Definition/createDefinition"
 import { Definition } from "../Definition/Definition"
-import { definitions } from "../Definition/definitions"
-import { getDefinitionNameId } from "../Definition/getDefinitionNameId"
+import { findDefinition } from "../Definition/definitions"
 import { Type } from "./Type"
 import * as Types from "./Types"
 
 export function createType(tsType: ts.Type, tsNode: ts.Node, name?: string): Type {
-	let definition: Definition | null = null
+	let definition: Definition | undefined = undefined
 	const nameAndId = getTypeNameAndId(tsType)
 	const { id } = nameAndId
 	name ??= nameAndId.name
 
 	if (name) {
-		const nameId = getDefinitionNameId(name, id)
-		definition = definitions[nameId]
+		definition = findDefinition(id)
 		if (definition) {
 			// definition already resolved
 			return new Types.ReferenceType(definition)

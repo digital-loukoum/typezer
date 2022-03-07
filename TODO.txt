@@ -1,6 +1,4 @@
 INTEGRATION
-- Enhance: prettier definition names
-- Fix: definitions don't work with class and interface definitions
 - Fix: "export default" don't work fine in many situations
 - Make watcher work
 - Simple tests ()
