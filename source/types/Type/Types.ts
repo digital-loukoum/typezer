@@ -20,10 +20,36 @@ import { Type } from "./Type"
 // ---------------------- //
 // --     LITERALS     -- //
 // ---------------------- //
+export class VoidType extends BaseType {
+	static readonly type = "Void"
+	static isPrimitive = true
+
+	static fromTsType(tsType: ts.Type) {
+		if (tsType.flags & ts.TypeFlags.Void) return new VoidType()
+	}
+}
+
+export class NullType extends BaseType {
+	static readonly type = "Null"
+	static isPrimitive = true
+
+	static fromTsType(tsType: ts.Type) {
+		if (tsType.flags & ts.TypeFlags.Null) return new NullType()
+	}
+}
+
+export class UndefinedType extends BaseType {
+	static readonly type = "Undefined"
+	static isPrimitive = true
+
+	static fromTsType(tsType: ts.Type) {
+		if (tsType.flags & ts.TypeFlags.Undefined) return new UndefinedType()
+	}
+}
 
 export class StringLiteralType extends BaseType {
 	static readonly type = "StringLiteral"
-	static priority = 1
+	static priority = 10
 	static isPrimitive = true
 
 	constructor(public value: string) {
@@ -41,7 +67,7 @@ export class StringLiteralType extends BaseType {
 
 export class NumberLiteralType extends BaseType {
 	static readonly type = "NumberLiteral"
-	static priority = 1
+	static priority = 10
 	static isPrimitive = true
 
 	constructor(public value: number) {
@@ -59,7 +85,7 @@ export class NumberLiteralType extends BaseType {
 
 export class BigIntegerLiteralType extends BaseType {
 	static readonly type = "BigIntegerLiteral"
-	static priority = 1
+	static priority = 10
 	static isPrimitive = true
 
 	constructor(public value: string) {
@@ -84,7 +110,7 @@ export class BigIntegerLiteralType extends BaseType {
 
 export class BooleanLiteralType extends BaseType {
 	static readonly type = "BooleanLiteral"
-	static priority = 1
+	static priority = 10
 	static isPrimitive = true
 
 	constructor(public value: boolean) {
@@ -114,33 +140,6 @@ export class UnknownType extends BaseType {
 
 	static fromTsType(tsType: ts.Type) {
 		if (tsType.flags & ts.TypeFlags.Unknown) return new UnknownType()
-	}
-}
-
-export class VoidType extends BaseType {
-	static readonly type = "Void"
-	static isPrimitive = true
-
-	static fromTsType(tsType: ts.Type) {
-		if (tsType.flags & ts.TypeFlags.Void) return new VoidType()
-	}
-}
-
-export class NullType extends BaseType {
-	static readonly type = "Null"
-	static isPrimitive = true
-
-	static fromTsType(tsType: ts.Type) {
-		if (tsType.flags & ts.TypeFlags.Null) return new NullType()
-	}
-}
-
-export class UndefinedType extends BaseType {
-	static readonly type = "Undefined"
-	static isPrimitive = true
-
-	static fromTsType(tsType: ts.Type) {
-		if (tsType.flags & ts.TypeFlags.Undefined) return new UndefinedType()
 	}
 }
 
@@ -264,7 +263,6 @@ export class StringType extends BaseType {
 			return new StringType()
 	}
 }
-
 export class RegularExpressionType extends BaseType {
 	static readonly type = "RegularExpression"
 	static isPrimitive = true
@@ -283,7 +281,7 @@ export class RegularExpressionType extends BaseType {
 		"dotAll",
 	]
 
-	constructor(public expression: string, public flags: string) {
+	constructor() {
 		super()
 	}
 
@@ -292,11 +290,8 @@ export class RegularExpressionType extends BaseType {
 			typeToString(tsType) == "RegExp" &&
 			typeMatchFeatures(tsType, RegularExpressionType.features)
 		) {
-			console.log("tsType (regular expresion)", tsType)
-			throw "TODO: Regular expression" // TODO
-			// return new RegularExpressionType()
+			return new RegularExpressionType()
 		}
-		return undefined
 	}
 }
 

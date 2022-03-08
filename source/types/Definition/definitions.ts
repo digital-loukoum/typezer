@@ -1,6 +1,8 @@
 import { Definition } from "./Definition"
 
-export let definitions: Record<string, Definition> = {}
+export type Definitions = Record<string, Definition>
+
+export let definitions: Definitions = {}
 
 export const resetDefinitions = () => (definitions = {})
 

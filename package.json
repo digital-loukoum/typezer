@@ -7,8 +7,8 @@
 	"scripts": {
 		"dev": "esrun --watch:source/**/*.ts,test/**/*.ts test",
 		"test": "esrun test",
-		"inspect": "esrun --inspect test",
-		"typecheck": "tsc --noEmit",
+		"inspect": "esrun --inspect test/inspect",
+		"check": "tsc --noEmit",
 		"build": "tsc-esm"
 	},
 	"repository": {

@@ -1,7 +1,7 @@
 import type { Validator } from "./Validator"
 import type { Validators } from "./Validators"
 import type * as Types from "../../../types/Type/Types"
-import { definitions } from "../../../types/Definition/definitions"
+import { typeIs } from "../../utilities/typeIs"
 
 export function createValidators(validator: Omit<Validator, "validators">): Validators {
 	return {
@@ -81,11 +81,34 @@ export function createValidators(validator: Omit<Validator, "validators">): Vali
 		Record(type: Types.RecordType, value) {
 			if (!value || typeof value !== "object") validator.mismatch(value, "an record")
 			else {
+				let keyType = type.key
+				if (keyType.type == "reference") {
+					keyType = validator.definitions[(keyType as Types.ReferenceType).reference].type
+				}
+
+				const literals = []
+				if (typeIs.stringOrNumberLiteral(keyType)) {
+					literals.push(keyType)
+				} else if (typeIs.union(keyType)) {
+					literals.push(...keyType.types.filter(typeIs.stringOrNumberLiteral))
+				} else if (typeIs.enumeration(keyType)) {
+					literals.push(
+						...Object.values(keyType.properties).filter(typeIs.stringOrNumberLiteral)
+					)
+				}
+
 				for (const key in value) {
 					validator.path.push(key)
 					validator.validate(type.key, key)
 					validator.validate(type.value, value[key])
 					validator.path.pop()
+				}
+
+				// every literal value found in the key type must be present in the record
+				for (const literal of literals) {
+					if (!(literal.value in value)) {
+						validator.missing(String(literal.value))
+					}
 				}
 			}
 		},
@@ -165,7 +188,7 @@ export function createValidators(validator: Omit<Validator, "validators">): Vali
 		"Resolving..."(type: Types.ResolvingType, value) {},
 
 		Reference(type: Types.ReferenceType, value) {
-			const definition = definitions[type.reference]
+			const definition = validator.definitions[type.reference]
 			if (definition) {
 				validator.validate(definition.type, value)
 			}

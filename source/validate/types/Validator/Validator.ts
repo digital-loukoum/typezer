@@ -1,4 +1,5 @@
 import type { Type } from "../../../types/Type/Type"
+import type { Definitions } from "../../../types/Definition/definitions"
 import { createValidators } from "./createValidators"
 import { inspect } from "util"
 export class Validator {
@@ -6,6 +7,8 @@ export class Validator {
 	path: Array<string> = []
 	validated = new WeakMap<Type, Set<unknown>>()
 	validators = createValidators(this)
+
+	constructor(public definitions: Definitions) {}
 
 	validate(type: Type, value: unknown) {
 		let validatedValues = this.validated.get(type)
@@ -34,7 +37,7 @@ export class Validator {
 	 * Create a new validator that shares the validated values
 	 */
 	fork() {
-		const forked = new Validator()
+		const forked = new Validator(this.definitions)
 		forked.validated = this.validated
 		return forked
 	}

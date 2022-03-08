@@ -1,6 +1,6 @@
 INTEGRATION
-- Simple tests ()
 - Make watcher work
+- Fix validation for record
 
 API
 - Types of values (list of exports, list of exported values, list of exported types)

@@ -8,7 +8,7 @@ import util from "util"
 start("Validations", async ({ stage, test, same }) => {
 	const pass = (schema: Type, ...values: Array<unknown>) => {
 		for (const value of values) {
-			const errors = validate(schema, value)
+			const errors = validate({}, schema, value)
 			test(
 				errors.length == 0,
 				`Validation should pass but errors raised:\n${errors
@@ -19,7 +19,7 @@ start("Validations", async ({ stage, test, same }) => {
 	}
 	const fail = (schema: Type, ...values: Array<unknown>) => {
 		for (const value of values) {
-			const errors = validate(schema, value)
+			const errors = validate({}, schema, value)
 			test(
 				errors.length > 0,
 				`Validation should fail but succeeded for value ${util.inspect(value)}`
@@ -105,8 +105,8 @@ start("Validations", async ({ stage, test, same }) => {
 			)
 		},
 		RegularExpression() {
-			pass(new Types.RegularExpressionType("", ""), /aze/g, new RegExp("any", "gi"))
-			fail(new Types.RegularExpressionType("", ""), {}, [])
+			pass(new Types.RegularExpressionType(), /aze/g, new RegExp("any", "gi"))
+			fail(new Types.RegularExpressionType(), {}, [])
 		},
 		Date() {
 			pass(new Types.DateType(), new Date())
@@ -193,7 +193,13 @@ start("Validations", async ({ stage, test, same }) => {
 					new Types.UnionType([new Types.StringLiteralType("foo")]),
 					new Types.NumberType()
 				),
-				{},
+				{ foo: 0 }
+			)
+			pass(
+				new Types.RecordType(
+					new Types.EnumerationType({ foo: new Types.StringLiteralType("foo") }),
+					new Types.NumberType()
+				),
 				{ foo: 0 }
 			)
 			fail(new Types.RecordType(new Types.StringType(), new Types.NumberType()), {
@@ -206,6 +212,16 @@ start("Validations", async ({ stage, test, same }) => {
 					new Types.NumberType()
 				),
 				{},
+				{ foo: 0, bar: 0 },
+				{ bar: 0 }
+			)
+			fail(
+				new Types.RecordType(
+					new Types.EnumerationType({ foo: new Types.StringLiteralType("foo") }),
+					new Types.NumberType()
+				),
+				{},
+				{ foo: 0, bar: 0 },
 				{ bar: 0 }
 			)
 		},

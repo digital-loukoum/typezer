@@ -2,18 +2,14 @@ export type Primitives = {
 	void: void
 	null: null
 	undefined: undefined
-
 	number: number
 	Number: Number
-
 	string: string
 	String: String
-
 	boolean: boolean
 	Boolean: Boolean
-
 	BigInteger: BigInt
-	// RegularExpression: RegExp
+	RegularExpression: RegExp
 	Date: Date
 	ArrayBuffer: ArrayBuffer
 }
@@ -43,7 +39,7 @@ export type Arrays = {
 export type Records = {
 	String_Number: Record<string, number>
 	String_String: Record<string, string>
-	Reference_String: Record<SomeLiterals, string>
+	Union_String: Record<"12" | "15", string>
 }
 
 export type Tuples = {
@@ -85,8 +81,6 @@ export type CircularReference = {
 }
 
 // utility types
-export type SomeLiterals = "12" | "15"
-
 enum NumberEnumeration {
 	$0,
 	$1,
