@@ -8,6 +8,7 @@
 		"dev": "esrun --watch:source/**/*.ts,test/**/*.ts test",
 		"test": "esrun test",
 		"inspect": "esrun --inspect test/inspect",
+		"watch": "esrun --inspect test/watch",
 		"check": "tsc --noEmit",
 		"build": "tsc-esm"
 	},
@@ -31,11 +32,11 @@
 		"chokidar": "^3.5.3",
 		"fast-glob": "^3.2.11",
 		"tosource": "^2.0.0-alpha.3",
+		"@digitak/print": "^1.1.4",
 		"typescript": "^4.5"
 	},
 	"devDependencies": {
 		"@digitak/esrun": "^3.0.2",
-		"@digitak/print": "^1.1.4",
 		"@digitak/tsc-esm": "^2.0.3",
 		"@types/node": "^15.6.1",
 		"fartest": "^2.1.8"
