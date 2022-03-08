@@ -4,6 +4,7 @@ import { getMappedType } from "../../utilities/getMappedType"
 import { getRecordType } from "../../utilities/getRecordType"
 import { getTupleType } from "../../utilities/getTupleType"
 import { getTypeOfSymbol } from "../../utilities/getTypeOfSymbol"
+import { serializeTemplateLiteral } from "../../utilities/serializeTemplateLiteral"
 import { getTypeChecker } from "../../utilities/typeChecker"
 import { typeMatchFeatures } from "../../utilities/typeMatchFeatures"
 import { typeToString } from "../../utilities/typeToString"
@@ -62,6 +63,38 @@ export class StringLiteralType extends BaseType {
 
 	toString(): string {
 		return '"' + this.value + '"'
+	}
+}
+
+export class TemplateLiteralType extends BaseType {
+	static readonly type = "TemplateLiteral"
+	static priority = 10
+	static isPrimitive = true
+
+	constructor(
+		public texts: Array<string>,
+		public types: Array<"string" | "number" | "bigint">
+	) {
+		super()
+	}
+
+	static fromTsType(tsType: ts.Type) {
+		if (tsType.flags & ts.TypeFlags.TemplateLiteral) {
+			const tsTemplateLiteral = tsType as ts.TemplateLiteralType
+			const texts = tsTemplateLiteral.texts as Array<string>
+			const types = tsTemplateLiteral.types.map(type =>
+				type.flags & ts.TypeFlags.Number
+					? "number"
+					: type.flags & ts.TypeFlags.String
+					? "string"
+					: "bigint"
+			)
+			return new TemplateLiteralType(texts, types)
+		}
+	}
+
+	toString(): string {
+		return serializeTemplateLiteral(this.texts, this.types)
 	}
 }
 
@@ -254,7 +287,9 @@ export class StringType extends BaseType {
 
 	static fromTsType(tsType: ts.Type) {
 		// "string"
-		if (tsType.flags & ts.TypeFlags.StringLike) return new StringType()
+		if (tsType.flags & ts.TypeFlags.StringLike) {
+			return new StringType()
+		}
 		// "String" - detection by name and features
 		if (
 			typeToString(tsType) == "String" &&

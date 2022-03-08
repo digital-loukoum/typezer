@@ -2,11 +2,25 @@ import type { Validator } from "./Validator"
 import type { Validators } from "./Validators"
 import type * as Types from "../../../types/Type/Types"
 import { typeIs } from "../../utilities/typeIs"
+import { templateExpressions } from "../../utilities/templateExpressions"
+import { serializeTemplateLiteral } from "../../../utilities/serializeTemplateLiteral"
 
 export function createValidators(validator: Omit<Validator, "validators">): Validators {
 	return {
 		StringLiteral(type: Types.StringLiteralType, value) {
 			if (value !== type.value) validator.mismatch(value, type.value)
+		},
+
+		TemplateLiteral(type: Types.TemplateLiteralType, value) {
+			if (typeof value !== "string") return validator.mismatch(value, "a string")
+			const { texts, types } = type
+			let expression = texts[0]
+			for (let i = 0; i < types.length; i++) {
+				expression += templateExpressions[types[i]] + texts[i + 1]
+			}
+			if (!new RegExp(`^${expression}$`).test(value)) {
+				validator.mismatch(value, serializeTemplateLiteral(texts, types))
+			}
 		},
 
 		NumberLiteral(type: Types.NumberLiteralType, value) {

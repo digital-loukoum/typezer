@@ -19,6 +19,7 @@ export type PartialPrimitives = Partial<Primitives>
 export type Literals = {
 	numberLiteral: 12
 	stringLiteral: "12"
+	templateLiteral: `${number}px`
 	bigIntegerLiteral: 12n
 	booleanLiteral: true
 }

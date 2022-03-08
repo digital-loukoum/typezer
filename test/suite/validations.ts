@@ -61,6 +61,40 @@ start("Validations", async ({ stage, test, same }) => {
 			fail(new Types.StringLiteralType("12"), "13")
 			fail(new Types.StringLiteralType("12"), 12)
 		},
+		TemplateLiteral() {
+			pass(
+				new Types.TemplateLiteralType(["", ""], ["number"]),
+				"0",
+				"12321",
+				"-5312",
+				"-123e12",
+				"-123e-12"
+			)
+			pass(
+				new Types.TemplateLiteralType(["before ", "", " after"], ["string", "bigint"]),
+				"before any 5321312 after",
+				"before 5321312 after"
+			)
+			fail(
+				new Types.TemplateLiteralType(["before ", "", " after"], ["string", "bigint"]),
+				"before any 5321312 afte",
+				"efore any 5321312 after",
+				"before any  after"
+			)
+			fail(
+				new Types.TemplateLiteralType(["", ""], ["number"]),
+				"a",
+				"12321a",
+				"-123e12e2"
+			)
+			fail(
+				new Types.TemplateLiteralType(["", ""], ["bigint"]),
+				"a",
+				"12321a",
+				"-5312.2",
+				"0."
+			)
+		},
 		BooleanLiteral() {
 			pass(new Types.BooleanLiteralType(true), true)
 			pass(new Types.BooleanLiteralType(false), false)
