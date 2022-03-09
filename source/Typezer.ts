@@ -55,12 +55,10 @@ export class Typezer {
 		})
 
 		this.watcher = this.updateWatchedFiles()
-		let timeout: null | NodeJS.Timeout = null
-		const timeoutDuration = 150
 
 		this.watcher.on("change", path => {
+			this.watcher?.close()
 			// print`[yellow:Change: [underline:${path}]]`
-			if (timeout) clearTimeout(timeout)
 
 			const sourceFile = this.tsProgram.getSourceFile(path)
 			if (!sourceFile) {
@@ -68,23 +66,16 @@ export class Typezer {
 				return
 			}
 
-			// we invalidate the changed module
-			this.sourceFileCache.delete(path)
-
 			// we also find and invalidate all modules that depend on the changed module
-			const dependents = getDependentSourceFiles(this.tsProgram, sourceFile)
+			const dependents = getDependentSourceFiles(
+				this.tsProgram,
+				sourceFile,
+				new Set([sourceFile])
+			)
 			dependents.forEach(({ fileName }) => this.sourceFileCache.delete(fileName))
 
-			timeout = setTimeout(() => {
-				this.startProgram()
-				this.updateWatchedFiles()
-
-				callback?.({
-					definitions: this.definitions,
-					declarations: this.declarations,
-				})
-				timeout = null
-			}, timeoutDuration)
+			this.startProgram()
+			this.watch(callback)
 		})
 	}
 
