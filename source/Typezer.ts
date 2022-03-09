@@ -3,8 +3,7 @@ import { Declaration } from "./types/Declaration/Declaration"
 import { Definitions, resetDefinitions } from "./types/Definition/definitions"
 import { createSourceFile } from "./types/SourceFile/createSourceFile"
 import { SourceFile } from "./types/SourceFile/SourceFile"
-import { Type } from "./types/Type/Type"
-import { getTypeChecker, setTypeChecker } from "./utilities/typeChecker"
+import { setTypeChecker } from "./utilities/typeChecker"
 import glob from "fast-glob"
 import chokidar from "chokidar"
 import { WatcherCallback } from "./types/WatcherCallback"
@@ -47,24 +46,6 @@ export class Typezer {
 		this.startProgram()
 	}
 
-	reload() {
-		this.startProgram()
-	}
-
-	getType(name: string): Type | undefined {
-		return this.getDeclaration(name)?.value
-	}
-	getAllTypes(): Type[] {
-		return this.getAllDeclarations().map(({ value }) => value)
-	}
-
-	getDeclaration(name: string): Declaration | undefined {
-		return this.declarations.find(declaration => declaration.name == name)
-	}
-	getAllDeclarations(): Declaration[] {
-		return this.declarations
-	}
-
 	watch(callback?: WatcherCallback) {
 		callback?.({
 			definitions: this.definitions,
@@ -96,7 +77,7 @@ export class Typezer {
 		})
 	}
 
-	private startProgram() {
+	protected startProgram() {
 		this.tsProgram = ts.createProgram(this.files, this.options, this.host)
 		this.definitions = resetDefinitions()
 
@@ -120,7 +101,7 @@ export class Typezer {
 		}
 	}
 
-	private createHost() {
+	protected createHost() {
 		const host = ts.createCompilerHost(this.options)
 		const { getSourceFile } = host
 		host.getSourceFile = (fileName: string, languageVersion: ts.ScriptTarget) => {

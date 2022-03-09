@@ -1,18 +1,7 @@
-INTEGRATION
-- Make watcher work
-- Fix validation for record
-
-API
-- Types of values (list of exports, list of exported values, list of exported types)
-- Find a specific export
+- Generics for declarations (validation based on constraints + several types sharing a generic must be compatible)
+- Generics for functions / constructors
+- Documentation
 
 FUTURE
-- Generics
-- Generics validation
-- Heavy tests
-- JSDoc
-- Decorators?
-- Namespace declarations
-- Template literals advanced (with validation)
-- Extending primitive types with additional properties
-- Add parameters name to function signatures
+- Namespace declarations?
+- Refingin extended primitive types: if the extension define new fields, the type cannot be represented solely as a primitive type
