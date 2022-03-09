@@ -1,13 +1,14 @@
-import { Typezer } from "../../source"
+import { getAllDeclarations } from "../../source"
 import start from "fartest"
 import * as Types from "../../source/types/Type/Types"
 
 start("Types", async ({ stage, test, same }) => {
-	const typezer = new Typezer(["test/samples/types.ts"])
+	let result = getAllDeclarations(["test/samples/types.ts"])
 	const declarations = Object.fromEntries(
-		typezer.getAllDeclarations().map(declaration => [declaration.name, declaration])
+		result.declarations.map(declaration => [declaration.name, declaration])
 	)
-	const { definitions } = typezer
+	const { definitions } = result
+
 	const getType = (name: string): Types.ObjectType => {
 		const reference = declarations[name].value as Types.ReferenceType
 		same(reference.reference, name)

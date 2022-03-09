@@ -1,1 +1,3 @@
-export type Email = `${boolean}${null | number}`
+export type Coco<T extends ArrayBuffer> = {
+	value: T
+}

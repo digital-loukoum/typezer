@@ -1,9 +1,10 @@
-import { Typezer } from "../source"
+import print from "@digitak/print"
+import { getAllDeclarations } from "../source"
 
-const typezer = new Typezer(["test/samples/inspected.ts"])
-const { definitions } = typezer
-const declarations = typezer.getAllDeclarations()
-console.log("Definitions")
+const { definitions, declarations } = getAllDeclarations(["test/samples/inspected.ts"])
+
+print`\n[underline:Definitions]`
 console.dir(definitions, { depth: null })
-console.log("Declarations")
+
+print`\n[underline:Declarations]`
 console.dir(declarations, { depth: null })

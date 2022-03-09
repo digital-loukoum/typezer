@@ -7,7 +7,7 @@ import { getTypeOfSymbol } from "../../utilities/getTypeOfSymbol"
 import { serializeTemplateLiteral } from "../../utilities/serializeTemplateLiteral"
 import { getTypeChecker } from "../../utilities/typeChecker"
 import { typeMatchFeatures } from "../../utilities/typeMatchFeatures"
-import { typeToString } from "../../utilities/typeToString"
+import { methodReturnTypeMatchesFlags } from "../../utilities/methodReturnTypeMatchesFlags"
 import { Definition } from "../Definition/Definition"
 import { findDefinitionReference } from "../Definition/definitions"
 import { createProperties } from "../Properties/createProperties"
@@ -17,6 +17,7 @@ import { BaseType } from "./BaseType"
 import { createManyTypes } from "./createManyTypes"
 import { createType } from "./createType"
 import { Type } from "./Type"
+import { getReturnTypeOfMethod } from "../../utilities/getReturnTypeOfMethod"
 
 // ---------------------- //
 // --     LITERALS     -- //
@@ -187,13 +188,15 @@ export class AnyType extends BaseType {
 
 export class BooleanType extends BaseType {
 	static readonly type = "Boolean"
+	static priority = 6 // before union (because a boolean is considered a true | false union)
 	static isPrimitive = true
 
-	static fromTsType(tsType: ts.Type) {
-		// "boolean"
-		if (tsType.flags & ts.TypeFlags.BooleanLike) return new BooleanType()
-		// "Boolean" - detection by name
-		if (typeToString(tsType) == "Boolean") return new BooleanType()
+	static fromTsType(tsType: ts.Type, tsNode: ts.Node) {
+		if (
+			tsType.flags & ts.TypeFlags.BooleanLike ||
+			methodReturnTypeMatchesFlags(tsType, tsNode, "valueOf", ts.TypeFlags.BooleanLike)
+		)
+			return new BooleanType()
 	}
 }
 
@@ -210,14 +213,8 @@ export class NumberType extends BaseType {
 	]
 
 	static fromTsType(tsType: ts.Type) {
-		// "number"
 		if (tsType.flags & ts.TypeFlags.NumberLike) return new NumberType()
-		// "Number" - detection by name and features
-		if (
-			typeToString(tsType) == "Number" &&
-			typeMatchFeatures(tsType, NumberType.features)
-		)
-			return new NumberType()
+		if (typeMatchFeatures(tsType, NumberType.features)) return new NumberType()
 	}
 }
 
@@ -225,11 +222,12 @@ export class BigIntegerType extends BaseType {
 	static readonly type = "BigInteger"
 	static isPrimitive = true
 
-	static fromTsType(tsType: ts.Type) {
-		// "bigint"
-		if (tsType.flags & ts.TypeFlags.BigIntLike) return new BigIntegerType()
-		// "BigInt" - detection by name
-		if (typeToString(tsType) == "BigInt") return new BigIntegerType()
+	static fromTsType(tsType: ts.Type, tsNode: ts.Node) {
+		if (
+			tsType.flags & ts.TypeFlags.BigIntLike ||
+			methodReturnTypeMatchesFlags(tsType, tsNode, "valueOf", ts.TypeFlags.BigIntLike)
+		)
+			return new BigIntegerType()
 	}
 }
 
@@ -286,16 +284,12 @@ export class StringType extends BaseType {
 	]
 
 	static fromTsType(tsType: ts.Type) {
-		// "string"
-		if (tsType.flags & ts.TypeFlags.StringLike) {
+		if (
+			tsType.flags & ts.TypeFlags.StringLike ||
+			typeMatchFeatures(tsType, StringType.features)
+		) {
 			return new StringType()
 		}
-		// "String" - detection by name and features
-		if (
-			typeToString(tsType) == "String" &&
-			typeMatchFeatures(tsType, StringType.features)
-		)
-			return new StringType()
 	}
 }
 export class RegularExpressionType extends BaseType {
@@ -321,10 +315,7 @@ export class RegularExpressionType extends BaseType {
 	}
 
 	static fromTsType(tsType: ts.Type) {
-		if (
-			typeToString(tsType) == "RegExp" &&
-			typeMatchFeatures(tsType, RegularExpressionType.features)
-		) {
+		if (typeMatchFeatures(tsType, RegularExpressionType.features)) {
 			return new RegularExpressionType()
 		}
 	}
@@ -381,8 +372,7 @@ export class DateType extends BaseType {
 	]
 
 	static fromTsType(tsType: ts.Type) {
-		// detection by name and features
-		if (typeToString(tsType) == "Date" && typeMatchFeatures(tsType, DateType.features)) {
+		if (typeMatchFeatures(tsType, DateType.features)) {
 			return new DateType()
 		}
 	}
@@ -391,11 +381,13 @@ export class DateType extends BaseType {
 export class ArrayBufferType extends BaseType {
 	static readonly type = "ArrayBuffer"
 	static isPrimitive = true
+	static readonly features = ["slice", "byteLength"]
 
-	static fromTsType(tsType: ts.Type) {
-		// detection by name
-		if (typeToString(tsType) == "ArrayBuffer") {
-			// TODO Maybe there is a better way to detect array buffers
+	static fromTsType(tsType: ts.Type, tsNode: ts.Node) {
+		if (
+			typeMatchFeatures(tsType, ArrayBufferType.features) &&
+			getReturnTypeOfMethod(tsType, tsNode, "slice")?.symbol.escapedName == "ArrayBuffer"
+		) {
 			return new ArrayBufferType()
 		}
 	}
@@ -565,6 +557,7 @@ export class SetType extends BaseType {
 
 export class UnionType extends BaseType {
 	static readonly type = "Union"
+	static priority = 5
 	constructor(public types: Type[]) {
 		super()
 	}

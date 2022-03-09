@@ -1,10 +1,12 @@
-import { Typezer } from "../../source"
+import { getAllDeclarations } from "../../source"
 import start from "fartest"
 
 start("Declarations", async ({ stage, same }) => {
-	const typezer = new Typezer(["test/samples/declarations.ts"])
 	const declarations = Object.fromEntries(
-		typezer.getAllDeclarations().map(declaration => [declaration.name, declaration])
+		getAllDeclarations(["test/samples/declarations.ts"]).declarations.map(declaration => [
+			declaration.name,
+			declaration,
+		])
 	)
 	const checkDeclaration = (name: string, declare: string) => {
 		stage(name)

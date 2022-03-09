@@ -9,8 +9,8 @@ export function createDefinition(name: string, id: number): Definition {
 		definition = { id, name, type: new ResolvingType(id) }
 		if (name in definitions) {
 			let alias = 2
-			while (`name#${alias}` in definitions) alias++
-			name = `name#${alias}`
+			while (`name$${alias}` in definitions) alias++
+			name = `name$${alias}`
 		}
 		definitions[name] = definition
 	}

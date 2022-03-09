@@ -1,8 +1,6 @@
-- Generics for declarations (validation based on constraints + several types sharing a generic must be compatible)
-- Generics for functions / constructors
+- Generics for functions / constructors (validation based on constraints + several types sharing a generic must be compatible)
 - Documentation
 - CI/CD
-- Externalize TS server?
 
 FUTURE
 - Namespace declarations?
