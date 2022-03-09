@@ -1,7 +1,10 @@
 - Generics for declarations (validation based on constraints + several types sharing a generic must be compatible)
 - Generics for functions / constructors
 - Documentation
+- CI/CD
+- Externalize TS server?
 
 FUTURE
 - Namespace declarations?
-- Refingin extended primitive types: if the extension define new fields, the type cannot be represented solely as a primitive type
+- Symbols
+- Refining extended primitive types: if the extension define new fields, the type cannot be represented solely as a primitive type

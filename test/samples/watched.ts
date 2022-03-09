@@ -1,3 +1,3 @@
-import { secret } from "./watchedDependency"
+import { secret } from "./anotherWatchedDependency"
 
 export default secret

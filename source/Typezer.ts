@@ -5,11 +5,12 @@ import { createSourceFile } from "./types/SourceFile/createSourceFile"
 import { SourceFile } from "./types/SourceFile/SourceFile"
 import { setTypeChecker } from "./utilities/typeChecker"
 import glob from "fast-glob"
-import chokidar from "chokidar"
+import chokidar, { FSWatcher } from "chokidar"
 import { WatcherCallback } from "./types/WatcherCallback"
 import { print } from "@digitak/print"
 import { resolve } from "path"
 import { getDependentSourceFiles } from "./utilities/getDependentSourceFiles"
+import { getWatchedFiles } from "./utilities/getWatchedFiles"
 
 export class Typezer {
 	public readonly options: ts.CompilerOptions
@@ -23,6 +24,7 @@ export class Typezer {
 	public definitions: Definitions = {}
 
 	protected tsProgram!: ts.Program
+	protected watcher?: FSWatcher
 	protected host: ts.CompilerHost
 	protected sourceFileCache = new Map<string, ts.SourceFile | undefined>()
 
@@ -52,9 +54,14 @@ export class Typezer {
 			declarations: this.declarations,
 		})
 
-		const filesToWatch = this.tsSourceFiles.map(({ fileName }) => fileName)
+		this.watcher = this.updateWatchedFiles()
+		let timeout: null | NodeJS.Timeout = null
+		const timeoutDuration = 150
 
-		chokidar.watch(filesToWatch).on("change", path => {
+		this.watcher.on("change", path => {
+			// print`[yellow:Change: [underline:${path}]]`
+			if (timeout) clearTimeout(timeout)
+
 			const sourceFile = this.tsProgram.getSourceFile(path)
 			if (!sourceFile) {
 				print`[yellow:Could not find source file for module ${path}]`
@@ -68,13 +75,42 @@ export class Typezer {
 			const dependents = getDependentSourceFiles(this.tsProgram, sourceFile)
 			dependents.forEach(({ fileName }) => this.sourceFileCache.delete(fileName))
 
-			this.startProgram()
+			timeout = setTimeout(() => {
+				this.startProgram()
+				this.updateWatchedFiles()
 
-			callback?.({
-				definitions: this.definitions,
-				declarations: this.declarations,
-			})
+				callback?.({
+					definitions: this.definitions,
+					declarations: this.declarations,
+				})
+				timeout = null
+			}, timeoutDuration)
 		})
+	}
+
+	protected updateWatchedFiles(): FSWatcher {
+		const filesToWatch = this.tsSourceFiles.map(({ fileName }) => fileName)
+		if (!this.watcher) this.watcher = chokidar.watch(filesToWatch)
+		const watchedFiles = getWatchedFiles(this.watcher)
+
+		// console.log(
+		// 	"filesToWatch",
+		// 	filesToWatch.filter(file => !file.includes("/node_modules/"))
+		// )
+		// console.log(
+		// 	"watchedFiles",
+		// 	watchedFiles.filter(file => !file.includes("/node_modules/"))
+		// )
+
+		for (const file of filesToWatch) {
+			if (!watchedFiles.includes(file)) this.watcher.add(file)
+		}
+
+		for (const file of watchedFiles) {
+			if (!filesToWatch.includes(file)) this.watcher.unwatch(file)
+		}
+
+		return this.watcher
 	}
 
 	protected startProgram() {
