@@ -1,7 +1,7 @@
 {
 	"name": "typezer",
-	"version": "1.0.0",
-	"description": "Parse Typescript files and retrieve a synthetic description of defined types and variables",
+	"version": "3.0.0",
+	"description": "Parse Typescript files to get a synthetic description of defined types and variables",
 	"type": "module",
 	"main": "library/index.js",
 	"scripts": {
@@ -10,6 +10,7 @@
 		"inspect": "esrun --inspect test/inspect",
 		"watch": "esrun --inspect test/watch",
 		"check": "tsc --noEmit",
+		"check:watch": "tsc --noEmit --watch",
 		"build": "tsc-esm"
 	},
 	"repository": {

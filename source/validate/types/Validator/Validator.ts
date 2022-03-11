@@ -15,7 +15,7 @@ export class Validator {
 		if (!validatedValues) this.validated.set(type, (validatedValues = new Set()))
 		if (validatedValues.has(value)) return this
 		validatedValues.add(value)
-		this.validators[type.type as keyof typeof this.validators](type, value)
+		this.validators[type.typeName as keyof typeof this.validators](type, value)
 		return this
 	}
 

@@ -1,27 +1,18 @@
 import ts from "typescript"
 import { enumerable } from "../../utilities/enumerable"
 import { getPlainObject } from "../../utilities/getPlainObject"
+import { Definitions } from "../Definition/definitions"
 import { createModifier } from "../Modifier/createModifier"
 import { Modifier } from "../Modifier/Modifier"
 import { Type } from "./Type"
-import * as Types from "./Types"
 
 export abstract class BaseType {
 	public id?: number
+	public definitions?: Definitions // definitions added by generics
 
-	/**
-	 * When multiple types match, priority is used to determine which one should prevail
-	 */
+	// When multiple types match, priority is used to determine which one should prevail
 	static readonly priority: number = 0
-
-	/**
-	 * The name of the type
-	 */
-	static readonly type: string
-
-	/**
-	 * The name of the type
-	 */
+	static readonly typeName: string
 	static readonly isPrimitive?: boolean
 
 	/**
@@ -39,8 +30,8 @@ export abstract class BaseType {
 	public decorators?: string[]
 
 	@enumerable(true)
-	get type(): string {
-		return (this.constructor as unknown as BaseType).type
+	get typeName(): string {
+		return (this.constructor as unknown as BaseType).typeName
 	}
 
 	addModifier(tsModifier?: ts.Modifier): void {
@@ -50,7 +41,7 @@ export abstract class BaseType {
 	}
 
 	toString(): string {
-		return this.type
+		return this.typeName
 	}
 
 	toJson(): string {

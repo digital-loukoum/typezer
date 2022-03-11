@@ -9,7 +9,6 @@ import { getTypeChecker } from "../../utilities/typeChecker"
 import { typeMatchFeatures } from "../../utilities/typeMatchFeatures"
 import { methodReturnTypeMatchesFlags } from "../../utilities/methodReturnTypeMatchesFlags"
 import { Definition } from "../Definition/Definition"
-import { findDefinitionReference } from "../Definition/definitions"
 import { createProperties } from "../Properties/createProperties"
 import { Properties } from "../Properties/Properties"
 import { Signature } from "../Signature/Signature"
@@ -18,12 +17,13 @@ import { createManyTypes } from "./createManyTypes"
 import { createType } from "./createType"
 import { Type } from "./Type"
 import { getReturnTypeOfMethod } from "../../utilities/getReturnTypeOfMethod"
+import { definitions } from "../Definition/definitions"
 
 // ---------------------- //
 // --     LITERALS     -- //
 // ---------------------- //
 export class VoidType extends BaseType {
-	static readonly type = "Void"
+	static readonly typeName = "Void"
 	static isPrimitive = true
 
 	static fromTsType(tsType: ts.Type) {
@@ -32,7 +32,7 @@ export class VoidType extends BaseType {
 }
 
 export class NullType extends BaseType {
-	static readonly type = "Null"
+	static readonly typeName = "Null"
 	static isPrimitive = true
 
 	static fromTsType(tsType: ts.Type) {
@@ -41,7 +41,7 @@ export class NullType extends BaseType {
 }
 
 export class UndefinedType extends BaseType {
-	static readonly type = "Undefined"
+	static readonly typeName = "Undefined"
 	static isPrimitive = true
 
 	static fromTsType(tsType: ts.Type) {
@@ -50,7 +50,7 @@ export class UndefinedType extends BaseType {
 }
 
 export class StringLiteralType extends BaseType {
-	static readonly type = "StringLiteral"
+	static readonly typeName = "StringLiteral"
 	static priority = 10
 	static isPrimitive = true
 
@@ -68,7 +68,7 @@ export class StringLiteralType extends BaseType {
 }
 
 export class TemplateLiteralType extends BaseType {
-	static readonly type = "TemplateLiteral"
+	static readonly typeName = "TemplateLiteral"
 	static priority = 10
 	static isPrimitive = true
 
@@ -100,7 +100,7 @@ export class TemplateLiteralType extends BaseType {
 }
 
 export class NumberLiteralType extends BaseType {
-	static readonly type = "NumberLiteral"
+	static readonly typeName = "NumberLiteral"
 	static priority = 10
 	static isPrimitive = true
 
@@ -118,7 +118,7 @@ export class NumberLiteralType extends BaseType {
 }
 
 export class BigIntegerLiteralType extends BaseType {
-	static readonly type = "BigIntegerLiteral"
+	static readonly typeName = "BigIntegerLiteral"
 	static priority = 10
 	static isPrimitive = true
 
@@ -143,7 +143,7 @@ export class BigIntegerLiteralType extends BaseType {
 }
 
 export class BooleanLiteralType extends BaseType {
-	static readonly type = "BooleanLiteral"
+	static readonly typeName = "BooleanLiteral"
 	static priority = 10
 	static isPrimitive = true
 
@@ -169,7 +169,7 @@ export class BooleanLiteralType extends BaseType {
 // ---------------------- //
 
 export class UnknownType extends BaseType {
-	static readonly type = "Unknown"
+	static readonly typeName = "Unknown"
 	static isPrimitive = true
 
 	static fromTsType(tsType: ts.Type) {
@@ -178,7 +178,7 @@ export class UnknownType extends BaseType {
 }
 
 export class AnyType extends BaseType {
-	static readonly type = "Any"
+	static readonly typeName = "Any"
 	static isPrimitive = true
 
 	static fromTsType(tsType: ts.Type) {
@@ -187,7 +187,7 @@ export class AnyType extends BaseType {
 }
 
 export class BooleanType extends BaseType {
-	static readonly type = "Boolean"
+	static readonly typeName = "Boolean"
 	static priority = 6 // before union (because a boolean is considered a true | false union)
 	static isPrimitive = true
 
@@ -201,7 +201,7 @@ export class BooleanType extends BaseType {
 }
 
 export class NumberType extends BaseType {
-	static readonly type = "Number"
+	static readonly typeName = "Number"
 	static isPrimitive = true
 	static readonly features = [
 		"toString",
@@ -219,7 +219,7 @@ export class NumberType extends BaseType {
 }
 
 export class BigIntegerType extends BaseType {
-	static readonly type = "BigInteger"
+	static readonly typeName = "BigInteger"
 	static isPrimitive = true
 
 	static fromTsType(tsType: ts.Type, tsNode: ts.Node) {
@@ -232,7 +232,7 @@ export class BigIntegerType extends BaseType {
 }
 
 export class StringType extends BaseType {
-	static readonly type = "String"
+	static readonly typeName = "String"
 	static isPrimitive = true
 	static readonly features = [
 		"toString",
@@ -293,7 +293,7 @@ export class StringType extends BaseType {
 	}
 }
 export class RegularExpressionType extends BaseType {
-	static readonly type = "RegularExpression"
+	static readonly typeName = "RegularExpression"
 	static isPrimitive = true
 	static readonly features = [
 		"exec",
@@ -322,7 +322,7 @@ export class RegularExpressionType extends BaseType {
 }
 
 export class DateType extends BaseType {
-	static readonly type = "Date"
+	static readonly typeName = "Date"
 	static isPrimitive = true
 	static readonly features = [
 		"toString",
@@ -379,7 +379,7 @@ export class DateType extends BaseType {
 }
 
 export class ArrayBufferType extends BaseType {
-	static readonly type = "ArrayBuffer"
+	static readonly typeName = "ArrayBuffer"
 	static isPrimitive = true
 	static readonly features = ["slice", "byteLength"]
 
@@ -398,7 +398,7 @@ export class ArrayBufferType extends BaseType {
 // ----------------------- //
 
 export class ObjectType extends BaseType {
-	static readonly type = "Object"
+	static readonly typeName = "Object"
 
 	constructor(public properties: Properties) {
 		super()
@@ -410,7 +410,7 @@ export class ObjectType extends BaseType {
 }
 
 export class RecordType extends BaseType {
-	static readonly type = "Record"
+	static readonly typeName = "Record"
 	constructor(public key: Type, public value: Type) {
 		super()
 	}
@@ -445,7 +445,7 @@ export class RecordType extends BaseType {
 
 export class ArrayType extends BaseType {
 	static readonly priority = -10 // after tuple
-	static readonly type = "Array"
+	static readonly typeName = "Array"
 
 	constructor(public of: Type) {
 		super()
@@ -464,7 +464,7 @@ export class ArrayType extends BaseType {
 }
 
 export class TupleType extends BaseType {
-	static readonly type = "Tuple"
+	static readonly typeName = "Tuple"
 
 	constructor(public of: Type[]) {
 		super()
@@ -483,7 +483,7 @@ export class TupleType extends BaseType {
 }
 
 export class MapType extends BaseType {
-	static readonly type = "Map"
+	static readonly typeName = "Map"
 	static readonly features = [
 		"clear",
 		"delete",
@@ -520,7 +520,7 @@ export class MapType extends BaseType {
 }
 
 export class SetType extends BaseType {
-	static readonly type = "Set"
+	static readonly typeName = "Set"
 	static readonly features = [
 		"add",
 		"clear",
@@ -556,7 +556,7 @@ export class SetType extends BaseType {
 }
 
 export class UnionType extends BaseType {
-	static readonly type = "Union"
+	static readonly typeName = "Union"
 	static priority = 5
 	constructor(public types: Type[]) {
 		super()
@@ -574,7 +574,7 @@ export class UnionType extends BaseType {
 }
 
 export class EnumerationType extends BaseType {
-	static readonly type = "Enumeration"
+	static readonly typeName = "Enumeration"
 
 	constructor(public properties: Properties) {
 		super()
@@ -618,7 +618,7 @@ export class EnumerationType extends BaseType {
 }
 
 export class FunctionType extends BaseType {
-	static readonly type = "Function"
+	static readonly typeName = "Function"
 
 	constructor(public signatures: Signature[]) {
 		super()
@@ -627,7 +627,13 @@ export class FunctionType extends BaseType {
 	static fromTsType(tsType: ts.Type, tsNode: ts.Node) {
 		const rawSignatures = tsType.getCallSignatures()
 		if (rawSignatures?.length) {
+			// console.log("Function type:", tsType)
 			const signatures: Signature[] = rawSignatures.map(signature => {
+				// signature
+				// 	.getParameters()
+				// 	.forEach(tsSymbol =>
+				// 		console.log("Parameter type:", getTypeOfSymbol(tsSymbol, tsNode))
+				// 	)
 				const parameters = signature
 					.getParameters()
 					.map(tsSymbol => createType(getTypeOfSymbol(tsSymbol, tsNode), tsNode))
@@ -643,7 +649,7 @@ export class FunctionType extends BaseType {
  * Class as value (not a type declaration, do not mix up with a class declaration)
  */
 export class ClassType extends BaseType {
-	static readonly type = "Class"
+	static readonly typeName = "Class"
 
 	constructor(public signatures: Signature[], public properties: Properties) {
 		super()
@@ -673,7 +679,7 @@ export class ClassType extends BaseType {
 // ----------------------- //
 
 export class ResolvingType extends BaseType {
-	static readonly type = "Resolving..."
+	static readonly typeName = "Resolving..."
 
 	constructor(id: number) {
 		super()
@@ -686,12 +692,12 @@ export class ResolvingType extends BaseType {
 }
 
 export class ReferenceType extends BaseType {
-	static readonly type = "Reference"
+	static readonly typeName = "Reference"
 	public reference: string
 
 	constructor(definition: Definition) {
 		super()
-		this.reference = findDefinitionReference(definition.id)
+		this.reference = definitions.findDefinitionName(definition.id)!
 	}
 
 	static fromTsType() {

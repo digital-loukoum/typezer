@@ -96,7 +96,7 @@ export function createValidators(validator: Omit<Validator, "validators">): Vali
 			if (!value || typeof value !== "object") validator.mismatch(value, "an record")
 			else {
 				let keyType = type.key
-				if (keyType.type == "reference") {
+				if (keyType.typeName == "reference") {
 					keyType = validator.definitions[(keyType as Types.ReferenceType).reference].type
 				}
 

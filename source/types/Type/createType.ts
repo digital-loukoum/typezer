@@ -1,11 +1,11 @@
 import ts from "typescript"
 import { getTypeNameAndId } from "../../utilities/getTypeNameAndId"
 import { getOriginalBaseTypes } from "../../utilities/getOriginalBaseType"
-import { createDefinition } from "../Definition/createDefinition"
 import { Definition } from "../Definition/Definition"
-import { findDefinition } from "../Definition/definitions"
 import { Type } from "./Type"
 import * as Types from "./Types"
+import { definitions } from "../Definition/definitions"
+import { createGlobalDefinition } from "../Definition/createDefinition"
 
 const typeConstructors = Object.values(Types)
 const lowPriorityTypes: Array<typeof typeConstructors[number]> = [
@@ -15,16 +15,17 @@ const lowPriorityTypes: Array<typeof typeConstructors[number]> = [
 
 export function createType(tsType: ts.Type, tsNode: ts.Node, name?: string): Type {
 	let definition: Definition | undefined = undefined
-	const nameAndId = getTypeNameAndId(tsType)
-	const { id } = nameAndId
-	name ??= nameAndId.name
+	// const nameAndId = getTypeNameAndId(tsType)
+	// const { id } = nameAndId
+	// name ??= nameAndId.name
+	const { id } = getTypeNameAndId(tsType)
 
 	if (name) {
-		definition = findDefinition(id)
+		definition = definitions.findDefinition(id)
 		if (definition) {
 			// definition already resolved
 			return new Types.ReferenceType(definition)
-		} else definition = createDefinition(name, id)
+		} else definition = createGlobalDefinition(name, id)
 	}
 
 	const originalBaseTsTypes = getOriginalBaseTypes(tsType)

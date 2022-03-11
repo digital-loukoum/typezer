@@ -2,15 +2,16 @@ import type { Type } from "../../types/Type/Type"
 import type * as Types from "../../types/Type/Types"
 
 export const typeIs = {
-	union: (type: Type): type is Types.UnionType => type.type == "Union",
+	union: (type: Type): type is Types.UnionType => type.typeName == "Union",
 
-	enumeration: (type: Type): type is Types.EnumerationType => type.type == "Enumeration",
+	enumeration: (type: Type): type is Types.EnumerationType =>
+		type.typeName == "Enumeration",
 
 	stringLiteral: (type: Type): type is Types.StringLiteralType =>
-		type.type == "StringLiteral",
+		type.typeName == "StringLiteral",
 
 	numberLiteral: (type: Type): type is Types.NumberLiteralType =>
-		type.type == "NumberLiteral",
+		type.typeName == "NumberLiteral",
 
 	stringOrNumberLiteral: (
 		type: Type

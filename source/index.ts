@@ -1,27 +1,20 @@
 import ts from "typescript"
 import { WatcherCallback } from "./types/WatcherCallback"
-import { Typezer } from "./Typezer"
+import { Typezer } from "./types/Typezer/Typezer"
 
-export { Typezer } from "./Typezer"
+export { Typezer } from "./types/Typezer/Typezer"
 
 export const getAllDeclarations = (files: string[], options: ts.CompilerOptions = {}) => {
-	const typezer = new Typezer(files, options)
-	return {
-		definitions: typezer.definitions,
-		declarations: typezer.declarations,
-	}
+	return new Typezer(files, options).declarations
 }
 
-export const findDeclaration = (
+export const findDeclarationByName = (
 	files: string[],
 	declarationName: string,
 	options: ts.CompilerOptions = {}
 ) => {
-	const { definitions, declarations } = getAllDeclarations(files, options)
-	return {
-		definitions,
-		declaration: declarations.find(declaration => declaration.name == declarationName),
-	}
+	const declarations = getAllDeclarations(files, options)
+	return declarations.find(declaration => declaration.name == declarationName)
 }
 
 export const watch = (

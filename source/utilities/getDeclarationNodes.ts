@@ -5,10 +5,17 @@ import { findChildNode } from "./findChildNode"
  * Return all declaration nodes from a given node.
  * A declaration node is a node that exports one or more types or values.
  */
-export function getDeclarationNodes(node: ts.Node): Array<ts.Node> {
+export function getDeclarationNodes(node: ts.Node): {
+	isExported: boolean
+	nodes: ts.Node[]
+} {
+	let isExported = false
+	let nodes: ts.Node[]
+
 	switch (node.kind) {
 		case ts.SyntaxKind.ExportAssignment: {
-			return [node]
+			nodes = [node]
+			break
 		}
 
 		case ts.SyntaxKind.ExportDeclaration: {
@@ -17,31 +24,42 @@ export function getDeclarationNodes(node: ts.Node): Array<ts.Node> {
 				ts.SyntaxKind.NamedExports,
 				ts.SyntaxKind.SyntaxList
 			)!
-			return syntaxList
+			nodes = syntaxList
 				.getChildren()
 				.filter(child => child.kind == ts.SyntaxKind.ExportSpecifier)
+			break
 		}
 
 		case ts.SyntaxKind.VariableStatement: {
 			const mainSyntaxList = findChildNode(node, ts.SyntaxKind.SyntaxList)!
-			if (findChildNode(mainSyntaxList, ts.SyntaxKind.ExportKeyword)) {
-				const syntaxList = findChildNode(
-					node,
-					ts.SyntaxKind.VariableDeclarationList,
-					ts.SyntaxKind.SyntaxList
-				)!
-				return syntaxList
-					.getChildren()
-					.filter(child => child.kind == ts.SyntaxKind.VariableDeclaration)
-			}
+			const isExported = findChildNode(mainSyntaxList, ts.SyntaxKind.ExportKeyword)
+			const syntaxList = findChildNode(
+				node,
+				ts.SyntaxKind.VariableDeclarationList,
+				ts.SyntaxKind.SyntaxList
+			)!
+			nodes = syntaxList
+				.getChildren()
+				.filter(child => child.kind == ts.SyntaxKind.VariableDeclaration)
+			break
 		}
 
-		default: {
-			if (findChildNode(node, ts.SyntaxKind.SyntaxList, ts.SyntaxKind.ExportKeyword)) {
-				return [node]
-			}
+		case ts.SyntaxKind.FunctionDeclaration:
+		case ts.SyntaxKind.ClassDeclaration:
+		case ts.SyntaxKind.TypeAliasDeclaration:
+		case ts.SyntaxKind.EnumDeclaration:
+		case ts.SyntaxKind.InterfaceDeclaration: {
+			const isExported = findChildNode(
+				node,
+				ts.SyntaxKind.SyntaxList,
+				ts.SyntaxKind.ExportKeyword
+			)
+			nodes = [node]
 		}
+
+		default:
+			nodes = []
 	}
 
-	return []
+	return { isExported, nodes }
 }

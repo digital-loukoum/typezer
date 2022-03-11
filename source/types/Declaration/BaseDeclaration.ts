@@ -1,16 +1,15 @@
-import ts from "typescript"
 import { Type } from "../Type/Type"
+import { LocalDeclaration } from "./LocalDeclaration"
 
-export abstract class BaseDeclaration {
+// export type BaseDeclaration = LocalDeclaration & {
+// 	declare: string
+// }
+
+export abstract class BaseDeclaration extends LocalDeclaration {
 	abstract readonly declare: string
-	public file = ""
+	name = ""
 
-	constructor(public value: Type, public name = "") {}
-
-	/**
-	 * Create a new declaration from a Typescript type
-	 */
-	static fromTsNode(tsNode: ts.Node): BaseDeclaration | undefined {
-		throw new Error(`This function should be implemented by a child class`)
+	constructor(name = "", type: Type, public file = "", public used = false) {
+		super(name, type)
 	}
 }

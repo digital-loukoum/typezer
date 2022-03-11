@@ -10,7 +10,7 @@ start("Types", async ({ stage, test, same }) => {
 	const { definitions } = result
 
 	const getType = (name: string): Types.ObjectType => {
-		const reference = declarations[name].value as Types.ReferenceType
+		const reference = declarations[name].type as Types.ReferenceType
 		same(reference.reference, name)
 		return definitions[reference.reference].type as Types.ObjectType
 	}
@@ -20,8 +20,12 @@ start("Types", async ({ stage, test, same }) => {
 		const { properties } = getType("Primitives")
 
 		for (const primitive in properties) {
-			const { type, optional, modifiers } = properties[primitive]
-			same(primitive.toLowerCase(), type.toLowerCase(), `Check primitive '${primitive}'`)
+			const { typeName, optional, modifiers } = properties[primitive]
+			same(
+				primitive.toLowerCase(),
+				typeName.toLowerCase(),
+				`Check primitive '${primitive}'`
+			)
 			test(!optional, `Check primitive '${primitive}' is required`)
 			test(!modifiers?.length, `Check primitive '${primitive}' has no modifiers`)
 		}
@@ -32,10 +36,10 @@ start("Types", async ({ stage, test, same }) => {
 		const { properties } = getType("PartialPrimitives")
 
 		for (const primitive in properties) {
-			const { type, optional, modifiers } = properties[primitive]
+			const { typeName, optional, modifiers } = properties[primitive]
 			same(
 				primitive.toLowerCase(),
-				type.toLowerCase(),
+				typeName.toLowerCase(),
 				`Check partial primitive '${primitive}'`
 			)
 			same(optional, true, `Check partial primitive '${primitive}' is optional`)
@@ -48,8 +52,8 @@ start("Types", async ({ stage, test, same }) => {
 		const { properties } = getType("Literals")
 
 		for (const literal in properties) {
-			const { type, optional, modifiers } = properties[literal]
-			same(literal.toLowerCase(), type.toLowerCase(), `Check literal '${literal}'`)
+			const { typeName, optional, modifiers } = properties[literal]
+			same(literal.toLowerCase(), typeName.toLowerCase(), `Check literal '${literal}'`)
 			test(!optional, `Check literal '${literal}' is required`)
 			test(!modifiers?.length, `Check literal '${literal}' has no modifiers`)
 		}
@@ -70,10 +74,10 @@ start("Types", async ({ stage, test, same }) => {
 		const { properties } = getType("Arrays")
 
 		for (const value in properties) {
-			same(properties[value].type, "Array", `Check array '${value}' is an array`)
+			same(properties[value].typeName, "Array", `Check array '${value}' is an array`)
 			same(
 				value,
-				(properties[value] as Types.ArrayType).of.type,
+				(properties[value] as Types.ArrayType).of.typeName,
 				`Check items type of array '${value}'`
 			)
 		}
@@ -82,15 +86,21 @@ start("Types", async ({ stage, test, same }) => {
 	stage("Records")
 	{
 		const { properties } = getType("Records")
+		console.log("properties", properties)
 
 		for (const value in properties) {
 			const { reference } = properties[value] as Types.ReferenceType
 			const record = definitions[reference].type as Types.RecordType
-			same(record.type, "Record", `Check record '${value}' is a record`)
+			console.log("record", record)
+			same(record.typeName, "Record", `Check record '${value}' is a record`)
 			const [keyType, valueType] = value.split("_")
-			same(record.key.type, keyType, `Check key of record '${value}' has the right type`)
 			same(
-				record.value.type,
+				record.key.typeName,
+				keyType,
+				`Check key of record '${value}' has the right type`
+			)
+			same(
+				record.value.typeName,
 				valueType,
 				`Check value of record '${value}' has the right type`
 			)
@@ -103,10 +113,10 @@ start("Types", async ({ stage, test, same }) => {
 
 		for (const value in properties) {
 			const tuple = properties[value] as Types.TupleType
-			same(tuple.type, "Tuple", `Check tuple '${value}' is a tuple`)
+			same(tuple.typeName, "Tuple", `Check tuple '${value}' is a tuple`)
 			const types = value.split("_")
 			same(
-				tuple.of.map(({ type }) => type),
+				tuple.of.map(({ typeName }) => typeName),
 				types,
 				`Check items of tuple '${value}' have the right type`
 			)
@@ -119,10 +129,14 @@ start("Types", async ({ stage, test, same }) => {
 
 		for (const value in properties) {
 			const map = properties[value] as Types.MapType
-			same(map.type, "Map", `Check map '${value}' is a map`)
+			same(map.typeName, "Map", `Check map '${value}' is a map`)
 			const [keyType, valueType] = value.split("_")
-			same(map.key.type, keyType, `Check key of map '${value}' has the right type`)
-			same(map.value.type, valueType, `Check value of map '${value}' has the right type`)
+			same(map.key.typeName, keyType, `Check key of map '${value}' has the right type`)
+			same(
+				map.value.typeName,
+				valueType,
+				`Check value of map '${value}' has the right type`
+			)
 		}
 	}
 
@@ -131,10 +145,10 @@ start("Types", async ({ stage, test, same }) => {
 		const { properties } = getType("Sets")
 
 		for (const value in properties) {
-			same(properties[value].type, "Set", `Check set '${value}' is a set`)
+			same(properties[value].typeName, "Set", `Check set '${value}' is a set`)
 			same(
 				value,
-				(properties[value] as Types.SetType).of.type,
+				(properties[value] as Types.SetType).of.typeName,
 				`Check items type of set '${value}'`
 			)
 		}
@@ -146,10 +160,10 @@ start("Types", async ({ stage, test, same }) => {
 
 		for (const value in properties) {
 			const union = properties[value] as Types.UnionType
-			same(union.type, "Union", `Check union '${value}' is a union`)
+			same(union.typeName, "Union", `Check union '${value}' is a union`)
 			const types = value.split("_")
 			same(
-				union.types.map(({ type }) => type).sort(),
+				union.types.map(({ typeName }) => typeName).sort(),
 				types.sort(),
 				`Check items of union '${value}' have the right type`
 			)
@@ -182,12 +196,16 @@ start("Types", async ({ stage, test, same }) => {
 
 		for (const value in properties) {
 			const [type, returnType] = value.split("_")
-			same(type, properties[value].type, `Check callable '${value}' has the right type`)
+			same(
+				type,
+				properties[value].typeName,
+				`Check callable '${value}' has the right type`
+			)
 			const callable = properties[value] as Types.FunctionType | Types.ClassType
 			const [signature] = callable.signatures
 			same(
 				returnType,
-				signature.returnType.type,
+				signature.returnType.typeName,
 				`Check return type of callable '${value}'`
 			)
 		}
