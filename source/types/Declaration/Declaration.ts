@@ -1,6 +1,3 @@
-import { Type } from "../Type/Type"
 import { RawDeclaration } from "./RawDeclaration"
 
-export type Declaration = Omit<RawDeclaration, "type"> & {
-	type: Type
-}
+export type Declaration = Omit<Required<RawDeclaration>, "rawType" | "node">

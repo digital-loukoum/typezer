@@ -1,8 +1,8 @@
 import ts from "typescript"
 import { Declaration } from "../../Declaration/Declaration"
 import { RawDeclaration } from "../../Declaration/RawDeclaration"
-import { Type } from "../../Type/Type"
-import { NumberLiteralType, StringLiteralType } from "../../Type/Types"
+import { Type } from "../../Type_old/Type"
+import { NumberLiteralType, StringLiteralType } from "../../Type_old/Types"
 import { Typezer } from "../Typezer"
 
 export function createDeclaration(

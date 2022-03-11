@@ -1,41 +1,43 @@
 import ts from "typescript"
-import { getTypeId } from "../../../utilities/getTypeId"
 import { RawDeclaration } from "../../Declaration/RawDeclaration"
-import { Type } from "../../Type/Type"
 import { Typezer } from "../Typezer"
-import * as Types from "../../Type/Types"
 import { getOriginalBaseTypes } from "../../../utilities/getOriginalBaseType"
+import { Type, TypeName } from "../../Type/Type"
+import { getTypeId } from "../../../utilities/getTypeId"
 
-const typeConstructors = Object.values(Types)
-
-export function createType(
-	this: Typezer,
-	rawType: ts.Type,
-	node: ts.Node,
-	rawDeclaration?: RawDeclaration
-): Type {
+export function createType(this: Typezer, rawType: ts.Type, node: ts.Node): Type {
+	// we check if the type has not been already defined
 	const reference = this.scope.findReferenceDeclaration(getTypeId(rawType))
-	if (reference) return new Types.ReferenceType(reference.id)
+	if (reference) {
+		return {
+			typeName: "Reference",
+			id: reference.id,
+		}
+	}
 
-	const originalBaseTsTypes = getOriginalBaseTypes(rawType)
+	// we traverse all base types of the given type to look for its true type
+	const baseRawTypes = getOriginalBaseTypes(rawType)
 	let priority = -Infinity
 	let type: Type | undefined = undefined
 
-	for (const originalTsType of originalBaseTsTypes) {
-		for (const TypeConstructor of typeConstructors) {
-			// objects are used in last resort
-			if (TypeConstructor == Types.ObjectType) continue
+	for (const baseRawType of baseRawTypes) {
+		let typeName: TypeName
 
-			const challenger = TypeConstructor.fromTsType(originalTsType, node)
-			if (challenger && TypeConstructor.priority > priority) {
-				type = challenger
-				priority = TypeConstructor.priority
+		for (typeName in this.types) {
+			// objects are used in last resort
+			if (typeName == "Object") continue
+
+			const constructor = this.types[typeName]
+
+			const challenger = constructor.create?.(baseRawType, node)
+			if (challenger && (constructor.priority ?? 0) > priority) {
+				;(type = challenger), (priority = constructor.priority ?? 0)
 			}
 		}
 	}
 
 	// if the type could not be guessed, it's a regular object
-	if (!type) type = Types.ObjectType.fromTsType(rawType, node)
+	if (!type) type = this.types.Object.create!(rawType, node)!
 
 	return type
 }

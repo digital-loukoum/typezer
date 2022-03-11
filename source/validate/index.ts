@@ -1,5 +1,5 @@
 import type { Definitions } from "../types/Definition/definitions"
-import type { Type } from "../types/Type/Type"
+import type { Type } from "../types/Type_old/Type"
 import type { ValidationError } from "./types/ValidationError/ValidationError"
 import { createValidator } from "./types/Validator/createValidator"
 

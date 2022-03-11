@@ -7,6 +7,8 @@ export function startProgram(this: Typezer): ts.Program {
 
 	this.getSourceFiles()
 	this.parseSourceFiles()
+	this.getRawDeclarationTypes()
+	this.declarations = this.rawDeclarations.map(this.refineRawDeclaration)
 
 	return this.program
 }

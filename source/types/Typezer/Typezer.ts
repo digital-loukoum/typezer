@@ -15,6 +15,15 @@ import { RawDeclaration } from "../Declaration/RawDeclaration"
 import { createRawDeclaration } from "./methods/createRawDeclaration"
 import { createDeclaration } from "./methods/createDeclaration"
 import { createType } from "./methods/createType"
+import { createManyTypes } from "./methods/createManyTypes"
+import { typeDescriptors } from "../Type/descriptors"
+import { createProperties } from "./methods/createProperties"
+import { utilities } from "./methods/utilities"
+import { getRawDeclarationType } from "./methods/getRawDeclarationType"
+import { getRawDeclarationTypes } from "./methods/getRawDeclarationTypes"
+import { refineRawDeclaration } from "./methods/refineRawDeclaration"
+import { Declaration } from "../Declaration/Declaration"
+import { typeToString } from "./methods/typeToString"
 
 export class Typezer {
 	public readonly options: ts.CompilerOptions
@@ -23,11 +32,12 @@ export class Typezer {
 	public sourceFiles: readonly ts.SourceFile[] = []
 	public localSourceFiles: readonly ts.SourceFile[] = []
 	public entrySourceFiles: readonly ts.SourceFile[] = []
+	public declarations: Declaration[] = []
 
-	public get declarations() {
+	protected get rawDeclarations() {
 		return this.scope.global
 	}
-	protected set declarations(value: RawDeclaration[]) {
+	protected set rawDeclarations(value: RawDeclaration[]) {
 		this.scope.global = value
 	}
 
@@ -65,6 +75,7 @@ export class Typezer {
 	protected createRawDeclaration = createRawDeclaration.bind(this)
 	protected createDeclaration = createDeclaration.bind(this)
 	protected createType = createType.bind(this)
+	protected createManyTypes = createManyTypes.bind(this)
 
 	protected parseSourceFile = parseSourceFile.bind(this)
 	protected parseSourceFiles = parseSourceFiles.bind(this)
@@ -73,4 +84,13 @@ export class Typezer {
 	protected startProgram = startProgram.bind(this)
 	protected getSourceFiles = getSourceFiles.bind(this)
 	protected updateWatchedFiles = updateWatchedFiles.bind(this)
+
+	protected utilities = utilities.call(this)
+	protected types = typeDescriptors.call(this)
+
+	protected getRawDeclarationType = getRawDeclarationType.bind(this)
+	protected getRawDeclarationTypes = getRawDeclarationTypes.bind(this)
+	protected refineRawDeclaration = refineRawDeclaration.bind(this)
+	protected createProperties = createProperties.bind(this)
+	protected typeToString = typeToString.bind(this)
 }

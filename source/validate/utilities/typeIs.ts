@@ -1,5 +1,5 @@
-import type { Type } from "../../types/Type/Type"
-import type * as Types from "../../types/Type/Types"
+import type { Type } from "../../types/Type_old/Type"
+import type * as Types from "../../types/Type_old/Types"
 
 export const typeIs = {
 	union: (type: Type): type is Types.UnionType => type.typeName == "Union",

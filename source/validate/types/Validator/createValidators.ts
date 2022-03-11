@@ -1,6 +1,6 @@
 import type { Validator } from "./Validator"
 import type { Validators } from "./Validators"
-import type * as Types from "../../../types/Type/Types"
+import type * as Types from "../../../types/Type_old/Types"
 import { typeIs } from "../../utilities/typeIs"
 import { templateExpressions } from "../../utilities/templateExpressions"
 import { serializeTemplateLiteral } from "../../../utilities/serializeTemplateLiteral"

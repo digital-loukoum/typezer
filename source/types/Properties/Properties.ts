@@ -1,3 +1,3 @@
-import { Type } from "../Type/Type"
+import { Property } from "./Property"
 
-export type Properties = Record<string, Type>
+export type Properties = { [Key: string]: Property }
