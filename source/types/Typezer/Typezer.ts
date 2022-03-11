@@ -12,7 +12,9 @@ import { createHost } from "./methods/createHost"
 import { watch } from "./methods/watch"
 import { parseSourceFile } from "./methods/parseSourceFile"
 import { RawDeclaration } from "../Declaration/RawDeclaration"
+import { createRawDeclaration } from "./methods/createRawDeclaration"
 import { createDeclaration } from "./methods/createDeclaration"
+import { createType } from "./methods/createType"
 
 export class Typezer {
 	public readonly options: ts.CompilerOptions
@@ -60,11 +62,15 @@ export class Typezer {
 
 	public watch = watch.bind(this)
 
+	protected createRawDeclaration = createRawDeclaration.bind(this)
 	protected createDeclaration = createDeclaration.bind(this)
+	protected createType = createType.bind(this)
+
 	protected parseSourceFile = parseSourceFile.bind(this)
 	protected parseSourceFiles = parseSourceFiles.bind(this)
-	protected updateWatchedFiles = updateWatchedFiles.bind(this)
+
+	protected createHost = createHost.bind(this)
 	protected startProgram = startProgram.bind(this)
 	protected getSourceFiles = getSourceFiles.bind(this)
-	protected createHost = createHost.bind(this)
+	protected updateWatchedFiles = updateWatchedFiles.bind(this)
 }

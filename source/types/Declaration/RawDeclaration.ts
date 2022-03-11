@@ -1,4 +1,5 @@
 import ts from "typescript"
+import { Type } from "../Type/Type"
 
 export type RawDeclaration = {
 	id: string
@@ -14,5 +15,6 @@ export type RawDeclaration = {
 	name: string
 	exportedAs: string[]
 	node: ts.Node
-	type: ts.Type
+	rawType: ts.Type
+	type?: Type // undefined when not cmputed yet
 }

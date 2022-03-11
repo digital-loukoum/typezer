@@ -1,3 +1,6 @@
-import * as Declarations from "./Declarations"
+import { Type } from "../Type/Type"
+import { RawDeclaration } from "./RawDeclaration"
 
-export type Declaration = typeof Declarations[keyof typeof Declarations]["prototype"]
+export type Declaration = Omit<RawDeclaration, "type"> & {
+	type: Type
+}

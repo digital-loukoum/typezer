@@ -34,8 +34,10 @@ export class Scope {
 		return this.find(declaration => declaration.id == id)
 	}
 
-	findByTypeId(typeId: number): RawDeclaration | undefined {
-		return this.find(declaration => getTypeId(declaration.type) == typeId)
+	findReferenceDeclaration(typeId: number): RawDeclaration | undefined {
+		return this.find(
+			declaration => declaration.type && getTypeId(declaration.rawType) == typeId
+		)
 	}
 
 	find(finder: (declaration: RawDeclaration) => unknown): RawDeclaration | undefined {

@@ -22,7 +22,7 @@ export function parseSourceFile(
 		const declare = (declare: RawDeclaration["declare"], node: ts.Node = sourceFile) => {
 			const name = findChildNode(node, ts.SyntaxKind.Identifier)!.getText()
 			result.push(
-				this.createDeclaration({
+				this.createRawDeclaration({
 					fileName,
 					name,
 					declare,
@@ -66,7 +66,7 @@ export function parseSourceFile(
 			case ts.SyntaxKind.ExportAssignment: {
 				// export default ...
 				result.push(
-					this.createDeclaration({
+					this.createRawDeclaration({
 						fileName,
 						name: "default",
 						declare: "default",

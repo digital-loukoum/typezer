@@ -8,7 +8,6 @@ import { serializeTemplateLiteral } from "../../utilities/serializeTemplateLiter
 import { getTypeChecker } from "../../utilities/typeChecker"
 import { typeMatchFeatures } from "../../utilities/typeMatchFeatures"
 import { methodReturnTypeMatchesFlags } from "../../utilities/methodReturnTypeMatchesFlags"
-import { Definition } from "../Definition/Definition"
 import { createProperties } from "../Properties/createProperties"
 import { Properties } from "../Properties/Properties"
 import { Signature } from "../Signature/Signature"
@@ -17,7 +16,6 @@ import { createManyTypes } from "./createManyTypes"
 import { createType } from "./createType"
 import { Type } from "./Type"
 import { getReturnTypeOfMethod } from "../../utilities/getReturnTypeOfMethod"
-import { definitions } from "../Definition/definitions"
 
 // ---------------------- //
 // --     LITERALS     -- //
@@ -411,6 +409,8 @@ export class ObjectType extends BaseType {
 
 export class RecordType extends BaseType {
 	static readonly typeName = "Record"
+	static priority = -1 // low priority
+
 	constructor(public key: Type, public value: Type) {
 		super()
 	}
@@ -693,11 +693,9 @@ export class ResolvingType extends BaseType {
 
 export class ReferenceType extends BaseType {
 	static readonly typeName = "Reference"
-	public reference: string
 
-	constructor(definition: Definition) {
+	constructor(public reference: string) {
 		super()
-		this.reference = definitions.findDefinitionName(definition.id)!
 	}
 
 	static fromTsType() {

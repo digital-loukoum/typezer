@@ -1,24 +1,31 @@
+import ts from "typescript"
+import { Declaration } from "../../Declaration/Declaration"
 import { RawDeclaration } from "../../Declaration/RawDeclaration"
+import { Type } from "../../Type/Type"
+import { NumberLiteralType, StringLiteralType } from "../../Type/Types"
 import { Typezer } from "../Typezer"
-
-const duplicate = (value: string, index: number) => `${value}$${index}`
 
 export function createDeclaration(
 	this: Typezer,
-	declaration: Omit<RawDeclaration, "id" | "type">
-): RawDeclaration {
-	let id = declaration.name
+	rawDeclaration: RawDeclaration
+): Declaration {
+	const { name, rawType, node } = rawDeclaration
+	let type: Type | undefined = undefined
 
-	// we find a unique id
-	if (this.scope.findById(id)) {
-		let index = 2
-		do {
-			id = duplicate(declaration.name, index++)
-		} while (this.scope.findById(id))
+	if (name == "default") {
+		const children = node.getChildren()
+		const lastChildNode = children[children.length - 1]
+
+		if (lastChildNode.kind == ts.SyntaxKind.NumericLiteral)
+			type = new NumberLiteralType(+lastChildNode.getText())
+		else if (lastChildNode.kind == ts.SyntaxKind.StringLiteral)
+			type = new StringLiteralType(lastChildNode.getText())
 	}
+
+	type ??= this.createType(rawType, node)
+
 	return {
-		id,
-		...declaration,
-		type: this.checker.getTypeAtLocation(declaration.node),
+		...rawDeclaration,
+		type,
 	}
 }
