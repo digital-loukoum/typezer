@@ -1,5 +1,6 @@
 import print from "@digitak/print"
 import ts from "typescript"
+import { basename } from "../../../utilities/basename"
 import { findChildNode, findLastChildNode } from "../../../utilities/findChildNode"
 import { RawDeclaration } from "../../Declaration/RawDeclaration"
 import { Typezer } from "../Typezer"
@@ -14,22 +15,28 @@ export function parseSourceFile(
 	const exportAliases: [string, string][] = []
 
 	sourceFile.forEachChild(node => {
-		const isExported = !!findChildNode(
-			node,
-			ts.SyntaxKind.SyntaxList,
-			ts.SyntaxKind.ExportKeyword
+		const syntaxList = findChildNode(node, ts.SyntaxKind.SyntaxList)
+		const isExported = !!(
+			syntaxList && findChildNode(syntaxList, ts.SyntaxKind.ExportKeyword)
+		)
+		const isDefaultExport = !!(
+			isExported &&
+			syntaxList &&
+			findChildNode(syntaxList, ts.SyntaxKind.DefaultKeyword)
 		)
 
 		// utility functions for standard declarations (functions, classes, enums, ...)
-		const declare = (declare: RawDeclaration["declare"], node: ts.Node) => {
-			const name = findChildNode(node, ts.SyntaxKind.Identifier)!.getText()
+		const declare = (declare: RawDeclaration["declare"], declarationNode = node) => {
+			const name =
+				findChildNode(declarationNode, ts.SyntaxKind.Identifier)?.getText() ??
+				(isDefaultExport ? basename(fileName) : "")
 			result.push(
 				this.createRawDeclaration({
 					fileName,
 					name,
 					declare,
 					exportedAs: isExported ? [name] : [],
-					node,
+					node: declarationNode,
 				})
 			)
 		}
@@ -37,19 +44,19 @@ export function parseSourceFile(
 		// find declaration nodes
 		switch (node.kind) {
 			case ts.SyntaxKind.FunctionDeclaration:
-				declare("function", node)
+				declare("function")
 				break
 			case ts.SyntaxKind.ClassDeclaration:
-				declare("class", node)
+				declare("class")
 				break
 			case ts.SyntaxKind.TypeAliasDeclaration:
-				declare("type", node)
+				declare("type")
 				break
 			case ts.SyntaxKind.EnumDeclaration:
-				declare("enumeration", node)
+				declare("enumeration")
 				break
 			case ts.SyntaxKind.InterfaceDeclaration:
-				declare("interface", node)
+				declare("interface")
 				break
 
 			case ts.SyntaxKind.VariableStatement: {
@@ -61,19 +68,22 @@ export function parseSourceFile(
 				syntaxList
 					.getChildren()
 					.filter(({ kind }) => kind == ts.SyntaxKind.VariableDeclaration)
-					.forEach(node => declare("variable", node))
+					.forEach(child => declare("variable", child))
 				break
 			}
 
 			case ts.SyntaxKind.ExportAssignment: {
 				// export default ...
+				const children = node.getChildren()
+				const typeNode = children[children.length - 1]
+
 				result.push(
 					this.createRawDeclaration({
 						fileName,
-						name: "default",
+						name: basename(fileName),
 						declare: "default",
 						exportedAs: ["default"],
-						node,
+						node: typeNode,
 					})
 				)
 				break

@@ -1,3 +1,4 @@
+import ts from "typescript"
 import { RawDeclaration } from "../../Declaration/RawDeclaration"
 import { Typezer } from "../Typezer"
 
@@ -8,6 +9,7 @@ export function createRawDeclaration(
 	declaration: Omit<RawDeclaration, "id" | "rawType">
 ): RawDeclaration {
 	let id = declaration.name
+	let typeNode = declaration.node
 
 	// we find a unique id
 	if (this.rawDeclarations.find(rawDeclaration => rawDeclaration.id == id)) {
@@ -20,6 +22,6 @@ export function createRawDeclaration(
 	return {
 		id,
 		...declaration,
-		rawType: this.checker.getTypeAtLocation(declaration.node),
+		rawType: this.checker.getTypeAtLocation(typeNode),
 	}
 }

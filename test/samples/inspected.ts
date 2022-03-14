@@ -11,5 +11,5 @@
 // 	Union_String: Record<"12" | "15", string>
 // }
 
-type S = String
-type S2 = String
+const x = 12
+export default () => x + 51

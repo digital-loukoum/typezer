@@ -23,8 +23,8 @@ import { refineRawDeclaration } from "./methods/refineRawDeclaration"
 import { Declaration } from "../Declaration/Declaration"
 import { Type } from "../Type/Type"
 import { Path } from "../Path/Path"
-import { Schema } from "../Schema"
 import { createSchema } from "./methods/createSchema"
+import { Schema } from "../Schema"
 
 export class Typezer {
 	public readonly options: ts.CompilerOptions

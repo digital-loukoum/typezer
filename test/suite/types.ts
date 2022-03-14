@@ -7,7 +7,7 @@ import { Type } from "../../source/types/Type/Type"
 
 start("Types", async ({ stage, test, same }) => {
 	const schema = getSchema(["test/samples/types.ts"])
-	console.dir(schema, { depth: null })
+	// console.dir(schema, { depth: null })
 
 	const getType = (name: string): Types["Object"] => {
 		let result: Type = schema[name]
@@ -89,11 +89,9 @@ start("Types", async ({ stage, test, same }) => {
 	stage("Records")
 	{
 		const { properties } = getType("Records")
-		console.log("properties", properties)
 
 		for (const value in properties) {
 			const record = properties[value] as Types["Record"]
-			console.log("record", record)
 			same(record.typeName, "Record", `Check record '${value}' is a record`)
 			const [keyType, valueType] = value.split("_")
 			same(
