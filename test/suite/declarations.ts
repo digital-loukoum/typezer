@@ -1,16 +1,12 @@
-import { getAllDeclarations } from "../../source"
+import { getAllDeclarations, getSchema } from "../../source"
 import start from "fartest"
 
-start("Declarations", async ({ stage, same }) => {
-	const declarations = Object.fromEntries(
-		getAllDeclarations(["test/samples/declarations.ts"]).declarations.map(declaration => [
-			declaration.name,
-			declaration,
-		])
-	)
+start("Declarations", async ({ stage, test, same }) => {
+	const schema = getSchema(["test/samples/declarations.ts"])
+
 	const checkDeclaration = (name: string, declare: string) => {
 		stage(name)
-		same(declarations[name].declare, declare, "Check declaration file and declared type")
+		same(schema[name].declare, declare, "Check declaration declared type")
 	}
 
 	checkDeclaration("Class", "class")
@@ -21,7 +17,9 @@ start("Declarations", async ({ stage, same }) => {
 	checkDeclaration("AnotherConstantVariable", "variable")
 	checkDeclaration("Variable", "variable")
 	checkDeclaration("Function", "function")
-	checkDeclaration("AliasConstantVariable", "export")
-	checkDeclaration("AliasVariable", "export")
 	checkDeclaration("default", "default")
+
+	stage("ExportAliases")
+	test(schema.ConstantVariable.exportedAs.includes("AliasConstantVariable"))
+	test(schema.Variable.exportedAs.includes("AliasVariable"))
 })

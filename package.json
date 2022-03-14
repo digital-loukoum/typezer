@@ -30,10 +30,12 @@
 	},
 	"homepage": "https://github.com/digital-loukoum/typezer#readme",
 	"dependencies": {
+		"@digitak/print": "^1.1.4",
+		"@types/object-inspect": "^1.8.1",
 		"chokidar": "^3.5.3",
 		"fast-glob": "^3.2.11",
+		"object-inspect": "^1.12.0",
 		"tosource": "^2.0.0-alpha.3",
-		"@digitak/print": "^1.1.4",
 		"typescript": "^4.5"
 	},
 	"devDependencies": {

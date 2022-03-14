@@ -5,21 +5,25 @@ specifiers:
   '@digitak/print': ^1.1.4
   '@digitak/tsc-esm': ^2.0.3
   '@types/node': ^15.6.1
+  '@types/object-inspect': ^1.8.1
   chokidar: ^3.5.3
   fartest: ^2.1.8
   fast-glob: ^3.2.11
+  object-inspect: ^1.12.0
   tosource: ^2.0.0-alpha.3
   typescript: ^4.5
 
 dependencies:
+  '@digitak/print': 1.1.4
+  '@types/object-inspect': 1.8.1
   chokidar: 3.5.3
   fast-glob: 3.2.11
+  object-inspect: 1.12.0
   tosource: 2.0.0-alpha.3
   typescript: 4.5.4
 
 devDependencies:
   '@digitak/esrun': 3.1.2
-  '@digitak/print': 1.1.4
   '@digitak/tsc-esm': 2.0.6
   '@types/node': 15.14.9
   fartest: 2.1.8
@@ -42,7 +46,7 @@ packages:
 
   /@digitak/print/1.1.4:
     resolution: {integrity: sha512-0RHK/VmKO/JXxvDjpUJo1IwYVf+ZSBx543sk8FVBegp9pUPkGnSnd9waQv5yBLuaRg+WneNiFBmnhOKdPV4pOQ==}
-    dev: true
+    dev: false
 
   /@digitak/tsc-esm/2.0.6:
     resolution: {integrity: sha512-a8aIFbCwOI7EazUtgFg3lfk95oPK5/yikfsjCmC87+1McBIsXGX0a0k2DsrSs39UPn5QVSUaTp7uMNy/xxaFZw==}
@@ -74,6 +78,10 @@ packages:
   /@types/node/15.14.9:
     resolution: {integrity: sha512-qjd88DrCxupx/kJD5yQgZdcYKZKSIGBVDIBE1/LTGcNm3d2Np/jxojkdePDdfnBHJc5W7vSMpbJ1aB7p/Py69A==}
     dev: true
+
+  /@types/object-inspect/1.8.1:
+    resolution: {integrity: sha512-0JTdf3CGV0oWzE6Wa40Ayv2e2GhpP3pEJMcrlM74vBSJPuuNkVwfDnl0SZxyFCXETcB4oKA/MpTVfuYSMOelBg==}
+    dev: false
 
   /ansi-styles/3.2.1:
     resolution: {integrity: sha512-VT0ZI6kZRdTh8YyJw3SMbYm/u+NqfsAxEpWO0Pf9sq8/e94WxxOpPKx9FR1FlyCtOVDNOQ+8ntlqFxiRc+r5qA==}
@@ -226,6 +234,10 @@ packages:
   /normalize-path/3.0.0:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
     engines: {node: '>=0.10.0'}
+
+  /object-inspect/1.12.0:
+    resolution: {integrity: sha512-Ho2z80bVIvJloH+YzRmpZVQe87+qASmBUKZDWgx9cu+KDrX2ZDH/3tMy+gXbZETVGs2M8YdxObOh7XAtim9Y0g==}
+    dev: false
 
   /picomatch/2.3.1:
     resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}

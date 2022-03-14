@@ -1,18 +1,21 @@
-import { getAllDeclarations } from "../../source"
+import { getAllDeclarations, getSchema } from "../../source"
 import start from "fartest"
-import * as Types from "../../source/types/Type/Types"
+import { Types } from "../../source/types/Type/Types"
+import { getPathTarget } from "../../source/types/Type/getPathTarget"
+import { getSchemaReference } from "../../source/types/Schema/getSchemaReference"
+import { Type } from "../../source/types/Type/Type"
 
 start("Types", async ({ stage, test, same }) => {
-	let result = getAllDeclarations(["test/samples/types.ts"])
-	const declarations = Object.fromEntries(
-		result.declarations.map(declaration => [declaration.name, declaration])
-	)
-	const { definitions } = result
+	const schema = getSchema(["test/samples/types.ts"])
+	console.dir(schema, { depth: null })
 
-	const getType = (name: string): Types.ObjectType => {
-		const reference = declarations[name].type as Types.ReferenceType
-		same(reference.reference, name)
-		return definitions[reference.reference].type as Types.ObjectType
+	const getType = (name: string): Types["Object"] => {
+		let result: Type = schema[name]
+		if (!result) throw new Error(`Declaration '${name}' does not exist in schema`)
+		if (result.typeName == "Reference") {
+			result = getSchemaReference(schema, result.path)
+		}
+		return result as Types["Object"]
 	}
 
 	stage("Primitives")
@@ -77,7 +80,7 @@ start("Types", async ({ stage, test, same }) => {
 			same(properties[value].typeName, "Array", `Check array '${value}' is an array`)
 			same(
 				value,
-				(properties[value] as Types.ArrayType).of.typeName,
+				(properties[value] as Types["Array"]).items.typeName,
 				`Check items type of array '${value}'`
 			)
 		}
@@ -89,18 +92,17 @@ start("Types", async ({ stage, test, same }) => {
 		console.log("properties", properties)
 
 		for (const value in properties) {
-			const { reference } = properties[value] as Types.ReferenceType
-			const record = definitions[reference].type as Types.RecordType
+			const record = properties[value] as Types["Record"]
 			console.log("record", record)
 			same(record.typeName, "Record", `Check record '${value}' is a record`)
 			const [keyType, valueType] = value.split("_")
 			same(
-				record.key.typeName,
+				record.keys.typeName,
 				keyType,
 				`Check key of record '${value}' has the right type`
 			)
 			same(
-				record.value.typeName,
+				record.items.typeName,
 				valueType,
 				`Check value of record '${value}' has the right type`
 			)
@@ -112,11 +114,11 @@ start("Types", async ({ stage, test, same }) => {
 		const { properties } = getType("Tuples")
 
 		for (const value in properties) {
-			const tuple = properties[value] as Types.TupleType
+			const tuple = properties[value] as Types["Tuple"]
 			same(tuple.typeName, "Tuple", `Check tuple '${value}' is a tuple`)
 			const types = value.split("_")
 			same(
-				tuple.of.map(({ typeName }) => typeName),
+				tuple.items.map(({ typeName }) => typeName),
 				types,
 				`Check items of tuple '${value}' have the right type`
 			)
@@ -128,12 +130,12 @@ start("Types", async ({ stage, test, same }) => {
 		const { properties } = getType("Maps")
 
 		for (const value in properties) {
-			const map = properties[value] as Types.MapType
+			const map = properties[value] as Types["Map"]
 			same(map.typeName, "Map", `Check map '${value}' is a map`)
 			const [keyType, valueType] = value.split("_")
-			same(map.key.typeName, keyType, `Check key of map '${value}' has the right type`)
+			same(map.keys.typeName, keyType, `Check key of map '${value}' has the right type`)
 			same(
-				map.value.typeName,
+				map.items.typeName,
 				valueType,
 				`Check value of map '${value}' has the right type`
 			)
@@ -148,7 +150,7 @@ start("Types", async ({ stage, test, same }) => {
 			same(properties[value].typeName, "Set", `Check set '${value}' is a set`)
 			same(
 				value,
-				(properties[value] as Types.SetType).of.typeName,
+				(properties[value] as Types["Set"]).items.typeName,
 				`Check items type of set '${value}'`
 			)
 		}
@@ -159,11 +161,11 @@ start("Types", async ({ stage, test, same }) => {
 		const { properties } = getType("Unions")
 
 		for (const value in properties) {
-			const union = properties[value] as Types.UnionType
+			const union = properties[value] as Types["Union"]
 			same(union.typeName, "Union", `Check union '${value}' is a union`)
 			const types = value.split("_")
 			same(
-				union.types.map(({ typeName }) => typeName).sort(),
+				union.items.map(({ typeName }) => typeName).sort(),
 				types.sort(),
 				`Check items of union '${value}' have the right type`
 			)
@@ -175,11 +177,10 @@ start("Types", async ({ stage, test, same }) => {
 		const { properties } = getType("Enumerations")
 
 		for (const value in properties) {
-			const { reference } = properties[value] as Types.ReferenceType
-			const enumeration = definitions[reference].type as Types.EnumerationType
-			for (const key in enumeration.properties) {
+			const enumeration = properties[value] as Types["Enumeration"]
+			for (const key in enumeration.items) {
 				const value = (
-					enumeration.properties[key] as Types.NumberLiteralType | Types.StringLiteralType
+					enumeration.items[key] as Types["NumberLiteral"] | Types["StringLiteral"]
 				).value
 				same(
 					key[0] == "$" ? +key.slice(1) : key,
@@ -201,7 +202,7 @@ start("Types", async ({ stage, test, same }) => {
 				properties[value].typeName,
 				`Check callable '${value}' has the right type`
 			)
-			const callable = properties[value] as Types.FunctionType | Types.ClassType
+			const callable = properties[value] as Types["Function"] | Types["Class"]
 			const [signature] = callable.signatures
 			same(
 				returnType,
@@ -214,6 +215,8 @@ start("Types", async ({ stage, test, same }) => {
 	stage("Circular references")
 	{
 		const root = getType("CircularReference")
-		same(root.id, root.properties.self.id)
+		const self = root.properties.self as Types["Reference"]
+		same(self.typeName, "Reference")
+		same(self.path, [{ kind: "declaration", id: "CircularReference" }])
 	}
 })

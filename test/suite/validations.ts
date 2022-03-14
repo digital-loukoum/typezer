@@ -3,7 +3,7 @@ import { Type } from "../../source/types/Type/Type"
 import * as Types from "../../source/types/Type/Types"
 import { TypeName } from "../../source/types/Type/TypeName"
 import { validate } from "../../source/validate"
-import util from "util"
+import inspect from "object-inspect"
 
 start("Validations", async ({ stage, test, same }) => {
 	const pass = (schema: Type, ...values: Array<unknown>) => {
@@ -22,13 +22,12 @@ start("Validations", async ({ stage, test, same }) => {
 			const errors = validate({}, schema, value)
 			test(
 				errors.length > 0,
-				`Validation should fail but succeeded for value ${util.inspect(value)}`
+				`Validation should fail but succeeded for value ${inspect(value)}`
 			)
 		}
 	}
 
 	const checkers: Record<TypeName, any> = {
-		"Resolving...": null,
 		Reference: null,
 
 		Any() {

@@ -1,12 +1,10 @@
+import print from "@digitak/print"
 import { getDependentSourceFiles } from "../../../utilities/getDependentSourceFiles"
 import { WatcherCallback } from "../../WatcherCallback"
 import { Typezer } from "../Typezer"
 
 export function watch(this: Typezer, callback?: WatcherCallback) {
-	callback?.({
-		definitions: this.definitions,
-		declarations: this.declarations,
-	})
+	callback?.(this.schema)
 
 	this.watcher = this.updateWatchedFiles()
 
@@ -14,7 +12,7 @@ export function watch(this: Typezer, callback?: WatcherCallback) {
 		this.watcher?.close()
 		// print`[yellow:Change: [underline:${path}]]`
 
-		const sourceFile = this.tsProgram.getSourceFile(path)
+		const sourceFile = this.program.getSourceFile(path)
 		if (!sourceFile) {
 			print`[yellow:Could not find source file for module ${path}]`
 			return
@@ -22,7 +20,7 @@ export function watch(this: Typezer, callback?: WatcherCallback) {
 
 		// we also find and invalidate all modules that depend on the changed module
 		const dependents = getDependentSourceFiles(
-			this.tsProgram,
+			this.program,
 			sourceFile,
 			new Set([sourceFile])
 		)

@@ -5,10 +5,10 @@ import { Typezer } from "../Typezer"
 
 export function getRawDeclarationType(
 	this: Typezer,
-	rawDeclaration: RawDeclaration
+	{ id, declare, node, rawType }: RawDeclaration
 ): Type {
-	if (rawDeclaration.declare == "default") {
-		const children = rawDeclaration.node.getChildren()
+	if (declare == "default") {
+		const children = node.getChildren()
 		const lastChildNode = children[children.length - 1]
 
 		if (lastChildNode.kind == ts.SyntaxKind.NumericLiteral) {
@@ -24,5 +24,5 @@ export function getRawDeclarationType(
 		}
 	}
 
-	return this.createType(rawDeclaration.rawType, rawDeclaration.node)
+	return this.createType(rawType, node, { kind: "declaration", id })
 }

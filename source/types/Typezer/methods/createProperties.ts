@@ -12,7 +12,10 @@ export function createProperties(
 
 	rawType.getProperties().forEach(property => {
 		const rawType = this.checker.getTypeOfSymbolAtLocation(property, node)
-		properties[property.name] = this.createType(rawType, node)
+		properties[property.name] = this.createType(rawType, node, {
+			kind: "property",
+			name: property.name,
+		})
 
 		// optional
 		if (property.flags & ts.SymbolFlags.Optional) {

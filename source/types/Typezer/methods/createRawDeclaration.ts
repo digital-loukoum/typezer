@@ -10,11 +10,11 @@ export function createRawDeclaration(
 	let id = declaration.name
 
 	// we find a unique id
-	if (this.scope.findById(id)) {
+	if (this.rawDeclarations.find(rawDeclaration => rawDeclaration.id == id)) {
 		let index = 2
 		do {
 			id = duplicate(declaration.name, index++)
-		} while (this.scope.findById(id))
+		} while (this.rawDeclarations.find(rawDeclaration => rawDeclaration.id == id))
 	}
 
 	return {

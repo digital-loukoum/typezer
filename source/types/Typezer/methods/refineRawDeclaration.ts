@@ -13,6 +13,6 @@ export function refineRawDeclaration(
 		fileName,
 		declare,
 		exportedAs,
-		type: type as Type,
+		...(type as Type),
 	}
 }

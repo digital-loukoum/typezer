@@ -5,7 +5,9 @@ import { typeMatchFeatures } from "../../utilities/typeMatchFeatures"
 import { Properties } from "../Properties/Properties"
 import { Signature } from "../Signature/Signature"
 import { Typezer } from "../Typezer/Typezer"
-import { Type, TypeName, Types } from "./Type"
+import { Type } from "./Type"
+import { TypeName } from "./TypeName"
+import { Types } from "./Types"
 
 export type TypeDescriptor<Type> = {
 	priority?: number
@@ -16,6 +18,8 @@ export function typeDescriptors(this: Typezer): {
 	[Key in TypeName]: TypeDescriptor<Types[Key]>
 } {
 	return {
+		Reference: {}, // not concerned
+
 		// ---------------------- //
 		// --     LITERALS     -- //
 		// ---------------------- //
@@ -326,25 +330,26 @@ export function typeDescriptors(this: Typezer): {
 		},
 
 		Record: {
-			priority: -1, // low priority,
+			priority: -10, // low priority (must be last before "Object")
 
 			create: (rawType: ts.Type, node: ts.Node) => {
 				const recordType = getRecordType(rawType)
 				if (recordType) {
-					const [keys, items] = this.createManyTypes(recordType, node)
+					const keys = this.createType(recordType[0], node, { kind: "keys" })
+					const items = this.createType(recordType[1], node, { kind: "items" })
 					return { typeName: "Record", keys, items }
 				}
 
 				const mappedType = getMappedType(rawType)
 				if (mappedType) {
 					const [rawKeys, rawItems] = mappedType
-					const items = this.createType(rawItems, node)
+					const items = this.createType(rawItems, node, { kind: "items" })
 					let keys: Type
 
 					if (rawKeys.length == 1) {
-						keys = this.createType(rawKeys[0], node)
+						keys = this.createType(rawKeys[0], node, { kind: "keys" })
 					} else {
-						keys = <Types["Union"]>{
+						keys = {
 							typeName: "Union",
 							items: this.createManyTypes(rawKeys, node),
 						}
@@ -360,13 +365,13 @@ export function typeDescriptors(this: Typezer): {
 		},
 
 		Array: {
-			priority: -10, // after tuple
+			priority: -5, // after tuple
 			create: (rawType: ts.Type, node: ts.Node) => {
 				const rawItems = this.utilities.getArrayType(rawType)
 				if (rawItems)
 					return {
 						typeName: "Array",
-						items: this.createType(rawItems, node),
+						items: this.createType(rawItems, node, { kind: "items" }),
 					}
 			},
 		},
@@ -377,7 +382,9 @@ export function typeDescriptors(this: Typezer): {
 				if (rawItems)
 					return {
 						typeName: "Tuple",
-						items: this.createManyTypes(rawItems, node),
+						items: rawItems.map((rawType, index) =>
+							this.createType(rawType, node, { kind: "tupleItem", index })
+						),
 					}
 			},
 		},
@@ -401,10 +408,11 @@ export function typeDescriptors(this: Typezer): {
 					rawType.symbol?.getEscapedName() == "Map" &&
 					typeMatchFeatures(rawType, features)
 				) {
-					const [keys, items] = this.createManyTypes(
-						this.checker.getTypeArguments(rawType as ts.TypeReference),
-						node
+					const [rawKeys, rawItems] = this.checker.getTypeArguments(
+						rawType as ts.TypeReference
 					)
+					const keys = this.createType(rawKeys, node, { kind: "keys" })
+					const items = this.createType(rawItems, node, { kind: "items" })
 					return { typeName: "Map", keys, items }
 				}
 			},
@@ -430,7 +438,8 @@ export function typeDescriptors(this: Typezer): {
 				) {
 					const items = this.createType(
 						this.checker.getTypeArguments(rawType as ts.TypeReference)[0],
-						node
+						node,
+						{ kind: "items" }
 					)
 					return { typeName: "Set", items }
 				}
@@ -450,6 +459,7 @@ export function typeDescriptors(this: Typezer): {
 		},
 
 		Enumeration: {
+			priority: 6, // before Union
 			create: (rawType: ts.Type, node: ts.Node) => {
 				if (rawType.flags & ts.TypeFlags.EnumLike) {
 					const items: Record<string, Type> = {}
@@ -457,7 +467,7 @@ export function typeDescriptors(this: Typezer): {
 					if (rawType.isUnion()) {
 						rawType.types.forEach(tsProperty => {
 							const name = String(tsProperty.symbol.escapedName)
-							items[name] = this.createType(tsProperty, node)
+							items[name] = this.createType(tsProperty, node, { kind: "property", name })
 						})
 					} else {
 						// enumeration of numbers that may not be constant
@@ -536,10 +546,5 @@ export function typeDescriptors(this: Typezer): {
 				}
 			},
 		},
-
-		// ----------------------- //
-		// --      SPECIALS     -- //
-		// ----------------------- //
-		Reference: {},
 	}
 }

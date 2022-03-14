@@ -1,21 +1,32 @@
-import type { Type } from "../../../types/Type_old/Type"
-import type { Definitions } from "../../../types/Definition/definitions"
-import { createValidators } from "./createValidators"
-import { inspect } from "util"
+import type { Type } from "../Type/Type"
+import type { Path } from "../Path/Path"
+import inspect from "object-inspect"
+import { validators } from "./validators"
+import { getSchemaReference } from "../Schema/getSchemaReference"
+import { Schema } from "../Schema/Schema"
+
 export class Validator {
 	errors: Array<string> = []
 	path: Array<string> = []
 	validated = new WeakMap<Type, Set<unknown>>()
-	validators = createValidators(this)
+	validators = validators.call(this)
 
-	constructor(public definitions: Definitions) {}
+	constructor(public schema: Schema) {}
 
-	validate(type: Type, value: unknown) {
+	validate(value: unknown, declarationId: string, path: Path = []) {
+		const type = getSchemaReference(this.schema, [
+			{ kind: "declaration", id: declarationId },
+			...path,
+		])
+
 		let validatedValues = this.validated.get(type)
 		if (!validatedValues) this.validated.set(type, (validatedValues = new Set()))
-		if (validatedValues.has(value)) return this
-		validatedValues.add(value)
-		this.validators[type.typeName as keyof typeof this.validators](type, value)
+
+		if (validatedValues.has(value)) {
+			validatedValues.add(value)
+			this.validators[type.typeName]?.(type as any, value)
+		}
+
 		return this
 	}
 
@@ -37,7 +48,7 @@ export class Validator {
 	 * Create a new validator that shares the validated values
 	 */
 	fork() {
-		const forked = new Validator(this.definitions)
+		const forked = new Validator(this.schema)
 		forked.validated = this.validated
 		return forked
 	}

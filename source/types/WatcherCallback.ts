@@ -1,7 +1,3 @@
-import { Declaration } from "./Declaration/Declaration"
-import { Definitions } from "./Definition/definitions"
+import { Schema } from "./Schema"
 
-export type WatcherCallback = (payload: {
-	declarations: Declaration[]
-	definitions: Definitions
-}) => any
+export type WatcherCallback = (schema: Schema) => any

@@ -1,3 +1,4 @@
+import print from "@digitak/print"
 import ts from "typescript"
 import { findChildNode, findLastChildNode } from "../../../utilities/findChildNode"
 import { RawDeclaration } from "../../Declaration/RawDeclaration"
@@ -7,6 +8,7 @@ export function parseSourceFile(
 	this: Typezer,
 	sourceFile: ts.SourceFile
 ): RawDeclaration[] {
+	print`[bold.magenta: [ ${sourceFile.fileName} ]]`
 	const result: RawDeclaration[] = []
 	const { fileName } = sourceFile
 	const exportAliases: [string, string][] = []
@@ -19,7 +21,7 @@ export function parseSourceFile(
 		)
 
 		// utility functions for standard declarations (functions, classes, enums, ...)
-		const declare = (declare: RawDeclaration["declare"], node: ts.Node = sourceFile) => {
+		const declare = (declare: RawDeclaration["declare"], node: ts.Node) => {
 			const name = findChildNode(node, ts.SyntaxKind.Identifier)!.getText()
 			result.push(
 				this.createRawDeclaration({
@@ -35,19 +37,19 @@ export function parseSourceFile(
 		// find declaration nodes
 		switch (node.kind) {
 			case ts.SyntaxKind.FunctionDeclaration:
-				declare("function")
+				declare("function", node)
 				break
 			case ts.SyntaxKind.ClassDeclaration:
-				declare("class")
+				declare("class", node)
 				break
 			case ts.SyntaxKind.TypeAliasDeclaration:
-				declare("type")
+				declare("type", node)
 				break
 			case ts.SyntaxKind.EnumDeclaration:
-				declare("enumeration")
+				declare("enumeration", node)
 				break
 			case ts.SyntaxKind.InterfaceDeclaration:
-				declare("interface")
+				declare("interface", node)
 				break
 
 			case ts.SyntaxKind.VariableStatement: {
