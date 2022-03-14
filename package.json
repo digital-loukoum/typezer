@@ -9,8 +9,7 @@
 		"test": "esrun test",
 		"inspect": "esrun --inspect test/inspect",
 		"watch": "esrun --inspect test/watch",
-		"check": "tsc --noEmit",
-		"check:watch": "tsc --noEmit --watch",
+		"check": "tsc --noEmit --watch",
 		"build": "tsc-esm"
 	},
 	"repository": {

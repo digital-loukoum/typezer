@@ -1,4 +1,4 @@
-import { Schema } from "../../Schema"
+import { Schema } from "../../Schema/Schema"
 import { Typezer } from "../Typezer"
 
 export function createSchema(this: Typezer): Schema {

@@ -11,5 +11,4 @@
 // 	Union_String: Record<"12" | "15", string>
 // }
 
-const x = 12
-export default () => x + 51
+export default false

@@ -4,6 +4,8 @@ import start from "fartest"
 start("Declarations", async ({ stage, test, same }) => {
 	const schema = getSchema(["test/samples/declarations.ts"])
 
+	// console.dir(schema)
+
 	const checkDeclaration = (name: string, declare: string) => {
 		stage(name)
 		same(schema[name].declare, declare, "Check declaration declared type")
@@ -17,7 +19,7 @@ start("Declarations", async ({ stage, test, same }) => {
 	checkDeclaration("AnotherConstantVariable", "variable")
 	checkDeclaration("Variable", "variable")
 	checkDeclaration("Function", "function")
-	checkDeclaration("default", "default")
+	checkDeclaration("declarations", "default")
 
 	stage("ExportAliases")
 	test(schema.ConstantVariable.exportedAs.includes("AliasConstantVariable"))

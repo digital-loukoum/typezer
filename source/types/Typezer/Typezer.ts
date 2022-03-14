@@ -24,7 +24,7 @@ import { Declaration } from "../Declaration/Declaration"
 import { Type } from "../Type/Type"
 import { Path } from "../Path/Path"
 import { createSchema } from "./methods/createSchema"
-import { Schema } from "../Schema"
+import { Schema } from "../Schema/Schema"
 
 export class Typezer {
 	public readonly options: ts.CompilerOptions

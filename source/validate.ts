@@ -1,6 +1,5 @@
-import { Declaration } from "./types/Declaration/Declaration"
 import { Path } from "./types/Path/Path"
-import { Schema } from "./types/Schema"
+import { Schema } from "./types/Schema/Schema"
 import { Validator } from "./types/Validator/Validator"
 
 export function validate(

@@ -1,3 +1,3 @@
-import { Schema } from "./Schema"
+import { Schema } from "./Schema/Schema"
 
 export type WatcherCallback = (schema: Schema) => any
