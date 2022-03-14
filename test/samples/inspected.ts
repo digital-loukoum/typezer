@@ -11,4 +11,18 @@
 // 	Union_String: Record<"12" | "15", string>
 // }
 
-export default false
+// export type PromiseConstructorLike = new <T>(executor: (resolve: (value: T | PromiseLike<T>) => void, reject: (reason?: any) => void) => void) => PromiseLike<T>;
+
+// interface PromiseLike<T> {
+// 	then<TResult1 = T, TResult2 = never>(
+// 		onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null,
+// 		onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null
+// 	): PromiseLike<TResult1 | TResult2>
+// }
+
+interface PromiseLikeSimple {
+	then(
+		onfulfilled?: ((value: any) => PromiseLikeSimple) | undefined | null,
+		onrejected?: ((reason: any) => PromiseLikeSimple) | undefined | null
+	): PromiseLikeSimple
+}
