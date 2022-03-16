@@ -1,7 +1,6 @@
-- Fix bugs brought by generics
-- Built-in promises
 - Redo classes (instance properties + static properties + constructor)
 - Validate generics (based on constraints + several types sharing a generic must be compatible)
+- Validate promises
 - Documentation
 - CI/CD
 

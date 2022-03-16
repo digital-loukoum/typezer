@@ -26,6 +26,7 @@ export function createType(
 		}
 	}
 
+	console.log("node", node)
 	console.log("rawType", rawType.symbol?.escapedName, rawType)
 	// return
 	if (pathItem) this.path.push(pathItem)

@@ -1,4 +1,4 @@
-type X<T> = Map<string, T>
+type Pee = Promise<number>
 
 // export type GenericType<T extends String> = {
 // 	x: T

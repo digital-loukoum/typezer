@@ -44,6 +44,9 @@ export type BaseTypes = {
 	Object: {
 		properties: Properties
 	}
+	Promise: {
+		item: Type
+	}
 	Record: {
 		keys: Type
 		items: Type

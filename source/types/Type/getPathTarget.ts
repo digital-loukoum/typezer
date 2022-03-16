@@ -35,6 +35,10 @@ export const pathTargetByType: {
 		}
 		throw new Error(`Property ${pathItem.name} missing in object ${type.properties}`)
 	},
+	Promise: (type, pathItem) => {
+		if (pathItem.kind != "item") throw badPathItemKind(pathItem, "item")
+		return type.item
+	},
 	Tuple: (type, pathItem) => {
 		if (pathItem.kind != "tupleItem") throw badPathItemKind(pathItem, "tupleItem")
 		if (pathItem.index >= 0 && pathItem.index < type.items.length) {

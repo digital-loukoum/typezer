@@ -338,6 +338,18 @@ export function typeDescriptors(this: Typezer): {
 				properties: this.createProperties(rawType, node),
 			}),
 		},
+		Promise: {
+			create: ({ rawType, node }) => {
+				const rawItem = this.utilities.getPromiseType(rawType, node)
+				if (rawItem) {
+					const item = this.createType(rawItem, node, { kind: "item" })
+					return {
+						typeName: "Promise",
+						item,
+					}
+				}
+			},
+		},
 
 		Record: {
 			priority: -10, // low priority (must be last before "Object")

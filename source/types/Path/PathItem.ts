@@ -21,3 +21,6 @@ export type PathItem =
 	| {
 			kind: "items"
 	  }
+	| {
+			kind: "item"
+	  }
