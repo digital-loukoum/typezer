@@ -1,6 +1,7 @@
 import { Type } from "./Type"
 
 export const isPrimitive = ({ typeName }: Type) =>
+	typeName == "Never" ||
 	typeName == "Boolean" ||
 	typeName == "Null" ||
 	typeName == "Void" ||
@@ -16,4 +17,5 @@ export const isPrimitive = ({ typeName }: Type) =>
 	typeName == "NumberLiteral" ||
 	typeName == "TemplateLiteral" ||
 	typeName == "ArrayBuffer" ||
+	typeName == "Record" ||
 	typeName == "String"

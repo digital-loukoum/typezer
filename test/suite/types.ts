@@ -7,20 +7,28 @@ import { Type } from "../../source/types/Type/Type"
 
 start("Types", async ({ stage, test, same }) => {
 	const schema = getSchema(["test/samples/types.ts"])
-	// console.dir(schema, { depth: null })
+	console.dir(schema.Records, { depth: null })
 
-	const getType = (name: string): Types["Object"] => {
+	const getTarget = <T extends Type = Type>(type: Type): T => {
+		if (type.typeName != "Reference") return type as T
+		const declaration = type.path[0]
+		if (declaration.kind != "declaration") throw "First path item must be a declaration"
+		const rootType = schema[declaration.id]
+		return getPathTarget(rootType, type.path.slice(1)) as T
+	}
+
+	const getRootType = <T extends Type = Types["Object"]>(name: string): T => {
 		let result: Type = schema[name]
 		if (!result) throw new Error(`Declaration '${name}' does not exist in schema`)
 		if (result.typeName == "Reference") {
 			result = getSchemaReference(schema, result.path)
 		}
-		return result as Types["Object"]
+		return result as T
 	}
 
 	stage("Primitives")
 	{
-		const { properties } = getType("Primitives")
+		const { properties } = getRootType("Primitives")
 
 		for (const primitive in properties) {
 			const { typeName, optional, modifiers } = properties[primitive]
@@ -36,7 +44,7 @@ start("Types", async ({ stage, test, same }) => {
 
 	stage("Partial primitives")
 	{
-		const { properties } = getType("PartialPrimitives")
+		const { properties } = getRootType("PartialPrimitives")
 
 		for (const primitive in properties) {
 			const { typeName, optional, modifiers } = properties[primitive]
@@ -52,7 +60,7 @@ start("Types", async ({ stage, test, same }) => {
 
 	stage("Literals")
 	{
-		const { properties } = getType("Literals")
+		const { properties } = getRootType("Literals")
 
 		for (const literal in properties) {
 			const { typeName, optional, modifiers } = properties[literal]
@@ -64,7 +72,7 @@ start("Types", async ({ stage, test, same }) => {
 
 	stage("Modifiers")
 	{
-		const { properties } = getType("Modifiers")
+		const { properties } = getRootType("Modifiers")
 
 		for (const modifier in properties) {
 			const { modifiers } = properties[modifier]
@@ -74,24 +82,21 @@ start("Types", async ({ stage, test, same }) => {
 
 	stage("Arrays")
 	{
-		const { properties } = getType("Arrays")
+		const { properties } = getRootType("Arrays")
 
 		for (const value in properties) {
-			same(properties[value].typeName, "Array", `Check array '${value}' is an array`)
-			same(
-				value,
-				(properties[value] as Types["Array"]).items.typeName,
-				`Check items type of array '${value}'`
-			)
+			const array = getTarget<Types["Array"]>(properties[value])
+			same(array.typeName, "Array", `Check array '${value}' is an array`)
+			same(value, array.items.typeName, `Check items type of array '${value}'`)
 		}
 	}
 
 	stage("Records")
 	{
-		const { properties } = getType("Records")
+		const { properties } = getRootType("Records")
 
 		for (const value in properties) {
-			const record = properties[value] as Types["Record"]
+			const record = getTarget<Types["Record"]>(properties[value])
 			same(record.typeName, "Record", `Check record '${value}' is a record`)
 			const [keyType, valueType] = value.split("_")
 			same(
@@ -109,10 +114,10 @@ start("Types", async ({ stage, test, same }) => {
 
 	stage("Tuples")
 	{
-		const { properties } = getType("Tuples")
+		const { properties } = getRootType("Tuples")
 
 		for (const value in properties) {
-			const tuple = properties[value] as Types["Tuple"]
+			const tuple = getTarget<Types["Tuple"]>(properties[value])
 			same(tuple.typeName, "Tuple", `Check tuple '${value}' is a tuple`)
 			const types = value.split("_")
 			same(
@@ -125,10 +130,10 @@ start("Types", async ({ stage, test, same }) => {
 
 	stage("Maps")
 	{
-		const { properties } = getType("Maps")
+		const { properties } = getRootType("Maps")
 
 		for (const value in properties) {
-			const map = properties[value] as Types["Map"]
+			const map = getTarget<Types["Map"]>(properties[value])
 			same(map.typeName, "Map", `Check map '${value}' is a map`)
 			const [keyType, valueType] = value.split("_")
 			same(map.keys.typeName, keyType, `Check key of map '${value}' has the right type`)
@@ -142,24 +147,21 @@ start("Types", async ({ stage, test, same }) => {
 
 	stage("Sets")
 	{
-		const { properties } = getType("Sets")
+		const { properties } = getRootType("Sets")
 
 		for (const value in properties) {
-			same(properties[value].typeName, "Set", `Check set '${value}' is a set`)
-			same(
-				value,
-				(properties[value] as Types["Set"]).items.typeName,
-				`Check items type of set '${value}'`
-			)
+			const set = getTarget<Types["Set"]>(properties[value])
+			same(set.typeName, "Set", `Check set '${value}' is a set`)
+			same(value, set.items.typeName, `Check items type of set '${value}'`)
 		}
 	}
 
 	stage("Unions")
 	{
-		const { properties } = getType("Unions")
+		const { properties } = getRootType("Unions")
 
 		for (const value in properties) {
-			const union = properties[value] as Types["Union"]
+			const union = getTarget<Types["Union"]>(properties[value])
 			same(union.typeName, "Union", `Check union '${value}' is a union`)
 			const types = value.split("_")
 			same(
@@ -172,10 +174,10 @@ start("Types", async ({ stage, test, same }) => {
 
 	stage("Enumerations")
 	{
-		const { properties } = getType("Enumerations")
+		const { properties } = getRootType("Enumerations")
 
 		for (const value in properties) {
-			const enumeration = properties[value] as Types["Enumeration"]
+			const enumeration = getTarget<Types["Enumeration"]>(properties[value])
 			for (const key in enumeration.items) {
 				const value = (
 					enumeration.items[key] as Types["NumberLiteral"] | Types["StringLiteral"]
@@ -191,7 +193,7 @@ start("Types", async ({ stage, test, same }) => {
 
 	stage("Functions and constructors")
 	{
-		const { properties } = getType("Functions")
+		const { properties } = getRootType("Functions")
 
 		for (const value in properties) {
 			const [type, returnType] = value.split("_")
@@ -212,7 +214,7 @@ start("Types", async ({ stage, test, same }) => {
 
 	stage("Circular references")
 	{
-		const root = getType("CircularReference")
+		const root = getRootType("CircularReference")
 		const self = root.properties.self as Types["Reference"]
 		same(self.typeName, "Reference")
 		same(self.path, [{ kind: "declaration", id: "CircularReference" }])

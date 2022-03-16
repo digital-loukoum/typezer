@@ -14,5 +14,5 @@ export function createModifier(tsModifier: ts.Modifier): Modifier {
 	if (kind == ts.SyntaxKind.OverrideKeyword) return "override"
 	if (kind == ts.SyntaxKind.ReadonlyKeyword) return "readonly"
 	if (kind == ts.SyntaxKind.StaticKeyword) return "static"
-	throw new Error(`Unknown property tsModifier: ${tsModifier}`)
+	throw new Error(`Unknown property tsModifier: ${JSON.stringify(tsModifier)}`)
 }

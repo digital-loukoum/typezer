@@ -4,60 +4,67 @@ import { Type } from "./Type"
 import { TypeName } from "./TypeName"
 import { Types } from "./Types"
 
-export function getPathTarget(type: Type, path: Path) {
+export function getPathTarget(type: Type, path: Path): Type {
 	if (!path.length) return type
-	const getter = pathTargetByType[type.typeName]
-	if (getter) {
-		const [pathItem] = path
-		return getter(type as any, pathItem, path.slice(1))
+	const [pathItem] = path
+	let targetType: Type
+
+	if (pathItem.kind == "generic") {
+		if (!type.generics || !(pathItem.name in type.generics)) {
+			throw new Error(
+				`Generic '${pathItem.name}' not found in ${JSON.stringify(type.generics)}`
+			)
+		}
+		targetType = type.generics[pathItem.name]
+	} else {
+		const getter = pathTargetByType[type.typeName]
+		if (!getter) throw new Error(`Cannot find path getter for type ${type.typeName}`)
+		targetType = getter(type as any, pathItem)
 	}
-	throw new Error(`Cannot reach path ${path}`)
+
+	return getPathTarget(targetType, path.slice(1))
 }
 
 export const pathTargetByType: {
-	[Key in TypeName]?: (type: Types[Key], pathItem: PathItem, path: Path) => Type
+	[Key in TypeName]?: (type: Types[Key], pathItem: PathItem) => Type
 } = {
-	Object: (type, pathItem, path) => {
+	Object: (type, pathItem) => {
 		if (pathItem.kind != "property") throw badPathItemKind(pathItem, "property")
 		if (pathItem.name in type.properties) {
-			return getPathTarget(type.properties[pathItem.name], path)
+			return type.properties[pathItem.name]
 		}
 		throw new Error(`Property ${pathItem.name} missing in object ${type.properties}`)
 	},
-	Tuple: (type, pathItem, path) => {
+	Tuple: (type, pathItem) => {
 		if (pathItem.kind != "tupleItem") throw badPathItemKind(pathItem, "tupleItem")
 		if (pathItem.index >= 0 && pathItem.index < type.items.length) {
-			return getPathTarget(type.items[pathItem.index], path.slice(1))
+			return type.items[pathItem.index]
 		}
 		throw new Error(
 			`Index ${pathItem.index} is not in tuple range of length ${type.items.length}`
 		)
 	},
-	Array: (type, pathItem, path) => {
+	Array: (type, pathItem) => {
 		if (pathItem.kind != "items") throw badPathItemKind(pathItem, "items")
-		return getPathTarget(type.items, path)
+		return type.items
 	},
-	Set: (type, pathItem, path) => {
+	Set: (type, pathItem) => {
 		if (pathItem.kind != "items") throw badPathItemKind(pathItem, "items")
-		return getPathTarget(type.items, path)
+		return type.items
 	},
-	Record: (type, pathItem, path) => {
+	Record: (type, pathItem) => {
 		if (pathItem.kind != "items") throw badPathItemKind(pathItem, "items")
-		return getPathTarget(type.items, path)
+		return type.items
 	},
-	Map: (type, pathItem, path) => {
-		if (pathItem.kind == "keys") return getPathTarget(type.keys, path)
-		if (pathItem.kind == "items") return getPathTarget(type.items, path)
+	Map: (type, pathItem) => {
+		if (pathItem.kind == "keys") return type.keys
+		if (pathItem.kind == "items") return type.items
 		throw new Error(
-			`Expecting a path item of kind 'keys' | 'items' but received '${JSON.stringify(
-				pathItem.kind
-			)}'`
+			`Expecting a path item of kind 'keys' | 'items' but received '${pathItem.kind}'`
 		)
 	},
 }
 
 export function badPathItemKind(pathItem: PathItem, expected: PathItem["kind"]): string {
-	return `Expecting a path item of kind '${expected}' but received '${JSON.stringify(
-		pathItem.kind
-	)}'`
+	return `Expecting a path item of kind '${expected}' but received '${pathItem.kind}'`
 }

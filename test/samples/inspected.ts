@@ -1,9 +1,17 @@
+var x: { [Key: number]: string }
+
+// export type GenericType<T extends String> = {
+// 	x: T
+// }
+
 // export function myGenericFunction<GenericType>(
 // 	a1: GenericType,
 // 	a2: GenericType
 // ): GenericType {
 // 	return a1
 // }
+
+// export const genericFunctionClone = myGenericFunction
 
 // export type Records = {
 // 	String_Number: Record<string, number>
@@ -20,9 +28,9 @@
 // 	): PromiseLike<TResult1 | TResult2>
 // }
 
-interface PromiseLikeSimple {
-	then(
-		onfulfilled?: ((value: any) => PromiseLikeSimple) | undefined | null,
-		onrejected?: ((reason: any) => PromiseLikeSimple) | undefined | null
-	): PromiseLikeSimple
-}
+// interface PromiseLikeSimple {
+// 	then(
+// 		onfulfilled?: ((value: any) => PromiseLikeSimple) | undefined | null,
+// 		onrejected?: ((reason: any) => PromiseLikeSimple) | undefined | null
+// 	): PromiseLikeSimple
+// }

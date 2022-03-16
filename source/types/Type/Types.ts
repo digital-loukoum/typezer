@@ -3,9 +3,15 @@ import { Properties } from "../Properties/Properties"
 import { Signature } from "../Signature/Signature"
 import { Type } from "./Type"
 
-export type Types = { [Key in keyof BaseTypes]: { typeName: Key } & BaseTypes[Key] }
+export type Types = {
+	[Key in keyof BaseTypes]: {
+		typeName: Key
+		generics?: Record<string, Type>
+	} & BaseTypes[Key]
+}
 
 export type BaseTypes = {
+	Never: {}
 	Void: {}
 	Null: {}
 	Undefined: {}
@@ -70,5 +76,6 @@ export type BaseTypes = {
 	}
 	Reference: {
 		path: Path
+		typeParameters?: Type[]
 	}
 }

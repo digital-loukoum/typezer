@@ -48,5 +48,13 @@ export function utilities(this: Typezer) {
 			const returnType = this.utilities.getReturnTypeOfMethod(type, node, methodName)
 			return !!(returnType && returnType.flags & flags)
 		},
+
+		getFunctionGenerics: (rawType: ts.Type): ts.Type[] | undefined => {
+			const typeParameters = (
+				rawType.symbol?.valueDeclaration as ts.SignatureDeclarationBase | undefined
+			)?.typeParameters
+			if (!typeParameters) return
+			return typeParameters.map(node => this.checker.getTypeAtLocation(node))
+		},
 	}
 }

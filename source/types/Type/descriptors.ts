@@ -2,16 +2,20 @@ import ts from "typescript"
 import { getMappedType } from "../../utilities/getMappedType"
 import { getRecordType } from "../../utilities/getRecordType"
 import { typeMatchFeatures } from "../../utilities/typeMatchFeatures"
-import { Properties } from "../Properties/Properties"
 import { Signature } from "../Signature/Signature"
 import { Typezer } from "../Typezer/Typezer"
 import { Type } from "./Type"
 import { TypeName } from "./TypeName"
 import { Types } from "./Types"
 
-export type TypeDescriptor<Type> = {
+export type TypeDescriptor<T> = {
 	priority?: number
-	create?: (rawType: ts.Type, node: ts.Node) => Type | undefined
+	create?: (_: {
+		node: ts.Node
+		rawType: ts.Type
+		initialType?: ts.Type
+		typeParameters?: Type[]
+	}) => T | undefined
 }
 
 export function typeDescriptors(this: Typezer): {
@@ -23,27 +27,33 @@ export function typeDescriptors(this: Typezer): {
 		// ---------------------- //
 		// --     LITERALS     -- //
 		// ---------------------- //
+		Never: {
+			create: ({ rawType }) => {
+				if (rawType.flags & ts.TypeFlags.Never) return { typeName: "Never" }
+			},
+		},
+
 		Void: {
-			create: (rawType: ts.Type, node: ts.Node) => {
+			create: ({ rawType }) => {
 				if (rawType.flags & ts.TypeFlags.Void) return { typeName: "Void" }
 			},
 		},
 
 		Null: {
-			create: (rawType: ts.Type, node: ts.Node) => {
+			create: ({ rawType }) => {
 				if (rawType.flags & ts.TypeFlags.Null) return { typeName: "Null" }
 			},
 		},
 
 		Undefined: {
-			create: (rawType: ts.Type) => {
+			create: ({ rawType }) => {
 				if (rawType.flags & ts.TypeFlags.Undefined) return { typeName: "Undefined" }
 			},
 		},
 
 		StringLiteral: {
 			priority: 10,
-			create: (rawType: ts.Type) => {
+			create: ({ rawType }) => {
 				if (rawType.isStringLiteral())
 					return {
 						typeName: "StringLiteral",
@@ -54,7 +64,7 @@ export function typeDescriptors(this: Typezer): {
 
 		TemplateLiteral: {
 			priority: 10,
-			create: (rawType: ts.Type) => {
+			create: ({ rawType }) => {
 				if (rawType.flags & ts.TypeFlags.TemplateLiteral) {
 					const tsTemplateLiteral = rawType as ts.TemplateLiteralType
 					const texts = tsTemplateLiteral.texts as Array<string>
@@ -72,7 +82,7 @@ export function typeDescriptors(this: Typezer): {
 
 		NumberLiteral: {
 			priority: 10,
-			create: (rawType: ts.Type) => {
+			create: ({ rawType }) => {
 				if (rawType.isNumberLiteral()) {
 					return {
 						typeName: "NumberLiteral",
@@ -84,7 +94,7 @@ export function typeDescriptors(this: Typezer): {
 
 		BigIntegerLiteral: {
 			priority: 10,
-			create: (rawType: ts.Type) => {
+			create: ({ rawType }) => {
 				if (rawType.flags & ts.TypeFlags.BigIntLiteral) {
 					const literal = rawType as ts.LiteralType
 					let value =
@@ -98,7 +108,7 @@ export function typeDescriptors(this: Typezer): {
 
 		BooleanLiteral: {
 			priority: 10,
-			create: (rawType: ts.Type) => {
+			create: ({ rawType }) => {
 				if (rawType.flags & ts.TypeFlags.BooleanLiteral) {
 					return {
 						typeName: "BooleanLiteral",
@@ -113,14 +123,14 @@ export function typeDescriptors(this: Typezer): {
 		// ---------------------- //
 
 		Any: {
-			create: (rawType: ts.Type) => {
+			create: ({ rawType }) => {
 				if (rawType.flags & ts.TypeFlags.Any) return { typeName: "Any" }
 			},
 		},
 
 		Boolean: {
 			priority: 6, // before union (because a boolean is considered a true | false union),
-			create: (rawType: ts.Type, node: ts.Node) => {
+			create: ({ rawType, node }) => {
 				if (
 					rawType.flags & ts.TypeFlags.BooleanLike ||
 					this.utilities.methodReturnTypeMatchesFlags(
@@ -136,7 +146,7 @@ export function typeDescriptors(this: Typezer): {
 		},
 
 		Number: {
-			create: (rawType: ts.Type) => {
+			create: ({ rawType }) => {
 				const features = [
 					"toString",
 					"toFixed",
@@ -156,7 +166,7 @@ export function typeDescriptors(this: Typezer): {
 		},
 
 		BigInteger: {
-			create: (rawType: ts.Type, node: ts.Node) => {
+			create: ({ rawType, node }) => {
 				if (
 					rawType.flags & ts.TypeFlags.BigIntLike ||
 					this.utilities.methodReturnTypeMatchesFlags(
@@ -172,7 +182,7 @@ export function typeDescriptors(this: Typezer): {
 		},
 
 		String: {
-			create: (rawType: ts.Type) => {
+			create: ({ rawType }) => {
 				const features = [
 					"toString",
 					"charAt",
@@ -232,7 +242,7 @@ export function typeDescriptors(this: Typezer): {
 		},
 
 		RegularExpression: {
-			create: (rawType: ts.Type) => {
+			create: ({ rawType }) => {
 				const features = [
 					"exec",
 					"test",
@@ -252,7 +262,7 @@ export function typeDescriptors(this: Typezer): {
 		},
 
 		Date: {
-			create: (rawType: ts.Type) => {
+			create: ({ rawType }) => {
 				const features = [
 					"toString",
 					"toDateString",
@@ -307,7 +317,7 @@ export function typeDescriptors(this: Typezer): {
 		},
 
 		ArrayBuffer: {
-			create: (rawType: ts.Type, node: ts.Node) => {
+			create: ({ rawType, node }) => {
 				const features = ["slice", "byteLength"]
 				if (
 					typeMatchFeatures(rawType, features) &&
@@ -323,7 +333,7 @@ export function typeDescriptors(this: Typezer): {
 		// --    COMPOSABLES    -- //
 		// ----------------------- //
 		Object: {
-			create: (rawType: ts.Type, node: ts.Node) => ({
+			create: ({ rawType, node }) => ({
 				typeName: "Object",
 				properties: this.createProperties(rawType, node),
 			}),
@@ -332,12 +342,18 @@ export function typeDescriptors(this: Typezer): {
 		Record: {
 			priority: -10, // low priority (must be last before "Object")
 
-			create: (rawType: ts.Type, node: ts.Node) => {
-				const recordType = getRecordType(rawType)
-				if (recordType) {
-					const keys = this.createType(recordType[0], node, { kind: "keys" })
-					const items = this.createType(recordType[1], node, { kind: "items" })
-					return { typeName: "Record", keys, items }
+			create: ({ initialType, rawType, node }) => {
+				if (
+					initialType &&
+					rawType.aliasSymbol?.escapedName == "Record" &&
+					rawType.aliasTypeArguments?.length == 2
+				) {
+					const recordType = getRecordType(initialType)
+					if (recordType) {
+						const keys = this.createType(recordType[0], node, { kind: "keys" })
+						const items = this.createType(recordType[1], node, { kind: "items" })
+						return { typeName: "Record", keys, items }
+					}
 				}
 
 				const mappedType = getMappedType(rawType)
@@ -366,7 +382,7 @@ export function typeDescriptors(this: Typezer): {
 
 		Array: {
 			priority: -5, // after tuple
-			create: (rawType: ts.Type, node: ts.Node) => {
+			create: ({ rawType, node }) => {
 				const rawItems = this.utilities.getArrayType(rawType)
 				if (rawItems)
 					return {
@@ -377,7 +393,7 @@ export function typeDescriptors(this: Typezer): {
 		},
 
 		Tuple: {
-			create: (rawType: ts.Type, node: ts.Node) => {
+			create: ({ rawType, node }) => {
 				const rawItems = this.utilities.getTupleType(rawType)
 				if (rawItems)
 					return {
@@ -390,7 +406,7 @@ export function typeDescriptors(this: Typezer): {
 		},
 
 		Map: {
-			create: (rawType: ts.Type, node: ts.Node) => {
+			create: ({ rawType, node }) => {
 				const features = [
 					"clear",
 					"delete",
@@ -419,7 +435,7 @@ export function typeDescriptors(this: Typezer): {
 		},
 
 		Set: {
-			create: (rawType: ts.Type, node: ts.Node) => {
+			create: ({ rawType, node }) => {
 				const features = [
 					"add",
 					"clear",
@@ -448,7 +464,7 @@ export function typeDescriptors(this: Typezer): {
 
 		Union: {
 			priority: 5,
-			create: (rawType: ts.Type, node: ts.Node) => {
+			create: ({ rawType, node }) => {
 				if (rawType.isUnion()) {
 					return {
 						typeName: "Union",
@@ -460,7 +476,7 @@ export function typeDescriptors(this: Typezer): {
 
 		Enumeration: {
 			priority: 6, // before Union
-			create: (rawType: ts.Type, node: ts.Node) => {
+			create: ({ rawType, node }) => {
 				if (rawType.flags & ts.TypeFlags.EnumLike) {
 					const items: Record<string, Type> = {}
 
@@ -492,7 +508,7 @@ export function typeDescriptors(this: Typezer): {
 		},
 
 		Function: {
-			create: (rawType: ts.Type, node: ts.Node) => {
+			create: ({ rawType, node }) => {
 				const rawSignatures = rawType.getCallSignatures()
 				if (rawSignatures?.length) {
 					// console.log("Function type:", rawType)
@@ -523,7 +539,7 @@ export function typeDescriptors(this: Typezer): {
 		//  * Class as value (not a type declaration, do not mix up with a class declaration)
 		//  */
 		Class: {
-			create: (rawType: ts.Type, node: ts.Node) => {
+			create: ({ rawType, node }) => {
 				const rawSignatures = rawType.getConstructSignatures()
 
 				if (rawSignatures?.length) {

@@ -1,8 +1,13 @@
-- Generics for functions / constructors (validation based on constraints + several types sharing a generic must be compatible)
+- Validate generics (based on constraints + several types sharing a generic must be compatible)
+- Redo classes (instance properties + static properties + constructor)
+- Built-in promises
 - Documentation
 - CI/CD
 
+✨ v2.0 done
+
 FUTURE
+- Fix Record<never, any>
 - Namespace declarations?
 - Symbols
 - Refining extended primitive types: if the extension define new fields, the type cannot be represented solely as a primitive type

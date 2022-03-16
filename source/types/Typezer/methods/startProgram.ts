@@ -7,9 +7,7 @@ export function startProgram(this: Typezer): ts.Program {
 
 	this.getSourceFiles()
 	this.parseSourceFiles()
-	console.log("ZJHLAIZJDBLAJZBLDOINE")
 	this.getRawDeclarationTypes()
-	console.log("LAIZUHDLAKJHZDBKJAHBZDKJHBK")
 	this.declarations = this.rawDeclarations.map(this.refineRawDeclaration)
 	this.schema = this.createSchema()
 

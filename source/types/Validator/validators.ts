@@ -9,7 +9,8 @@ export function validators(this: Validator): {
 	[Key in TypeName]: (type: Types[Key], value: any) => any
 } {
 	return {
-		Any: () => {},
+		Any: () => {}, // never fails
+		Never: (type, value) => this.mismatch(value, "never"), // always fails
 
 		Void: (type, value) => {
 			if (value !== undefined) this.mismatch(value, "undefined")

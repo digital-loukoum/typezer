@@ -13,11 +13,5 @@ export function getSourceFiles(this: Typezer) {
 	)
 
 	// we order source files by priority (user files first)
-	this.sourceFiles = [
-		...new Set([
-			...this.entrySourceFiles,
-			...this.localSourceFiles,
-			// ...this.sourceFiles,
-		]),
-	]
+	this.sourceFiles = [...new Set([...this.entrySourceFiles, ...this.localSourceFiles])]
 }
