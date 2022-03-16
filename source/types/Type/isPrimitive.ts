@@ -17,5 +17,4 @@ export const isPrimitive = ({ typeName }: Type) =>
 	typeName == "NumberLiteral" ||
 	typeName == "TemplateLiteral" ||
 	typeName == "ArrayBuffer" ||
-	typeName == "Record" ||
 	typeName == "String"

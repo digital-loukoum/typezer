@@ -13,18 +13,7 @@ export function createType(
 	node: ts.Node,
 	pathItem?: PathItem
 ): Type {
-	const target = getTypeTarget(rawType)
-	let initialType: ts.Type | undefined = undefined
 	let typeParameters: Type[] | undefined = undefined
-
-	if (target && target != rawType) {
-		initialType = rawType
-		console.log("Initial type:", initialType)
-		typeParameters = this.checker
-			.getTypeArguments(rawType as ts.TypeReference)
-			?.map(rawTypeParameter => this.createType(rawTypeParameter, node))
-		rawType = target
-	}
 
 	// we check if the type has not been already cached
 	let cached = this.typeCache.get(rawType)
@@ -49,6 +38,7 @@ export function createType(
 		...(this.utilities.getFunctionGenerics(rawType) ?? []), // function generics
 	]).forEach(rawGenericType => {
 		const name = String(rawGenericType.symbol?.escapedName ?? "")
+		if (!name) return
 		const genericType = this.createType(rawGenericType, node, {
 			kind: "generic",
 			name,
@@ -72,9 +62,7 @@ export function createType(
 
 			const challenger = constructor.create?.({
 				rawType: baseRawType,
-				initialType,
 				node,
-				typeParameters,
 			})
 			if (challenger && (constructor.priority ?? 0) > priority) {
 				;(type = challenger), (priority = constructor.priority ?? 0)
@@ -82,8 +70,27 @@ export function createType(
 		}
 	}
 
-	// if the type could not be guessed, it's a regular object
-	if (!type) type = this.types.Object.create!({ rawType, node, typeParameters })!
+	// if the type could not be guessed, it's a regular object or a generic
+	if (!type) {
+		const target = getTypeTarget(rawType)
+		let cachedTarget
+
+		if (target != rawType && (cachedTarget = this.typeCache.get(target))) {
+			// then the type is a reference to a generic
+			const typeParameters = this.checker
+				.getTypeArguments(rawType as ts.TypeReference)
+				?.map(rawTypeParameter => this.createType(rawTypeParameter, node))
+
+			return {
+				typeName: "Reference",
+				path: cachedTarget.path,
+				...(typeParameters ? { typeParameters } : {}),
+			}
+		} else {
+			// else the type is a plain object
+			type = this.types.Object.create!({ rawType, node })!
+		}
+	}
 
 	if (Object.keys(generics).length) {
 		type.generics = generics

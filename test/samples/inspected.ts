@@ -1,4 +1,4 @@
-var x: { [Key: number]: string }
+type X<T> = Map<string, T>
 
 // export type GenericType<T extends String> = {
 // 	x: T

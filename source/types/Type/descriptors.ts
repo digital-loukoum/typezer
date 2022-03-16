@@ -1,6 +1,7 @@
 import ts from "typescript"
 import { getMappedType } from "../../utilities/getMappedType"
 import { getRecordType } from "../../utilities/getRecordType"
+import { getTypeTarget } from "../../utilities/getTypeTarget"
 import { typeMatchFeatures } from "../../utilities/typeMatchFeatures"
 import { Signature } from "../Signature/Signature"
 import { Typezer } from "../Typezer/Typezer"
@@ -13,7 +14,6 @@ export type TypeDescriptor<T> = {
 	create?: (_: {
 		node: ts.Node
 		rawType: ts.Type
-		initialType?: ts.Type
 		typeParameters?: Type[]
 	}) => T | undefined
 }
@@ -342,13 +342,14 @@ export function typeDescriptors(this: Typezer): {
 		Record: {
 			priority: -10, // low priority (must be last before "Object")
 
-			create: ({ initialType, rawType, node }) => {
+			create: ({ rawType, node }) => {
+				const target = getTypeTarget(rawType)
 				if (
-					initialType &&
-					rawType.aliasSymbol?.escapedName == "Record" &&
-					rawType.aliasTypeArguments?.length == 2
+					target &&
+					target.aliasSymbol?.escapedName == "Record" &&
+					target.aliasTypeArguments?.length == 2
 				) {
-					const recordType = getRecordType(initialType)
+					const recordType = getRecordType(rawType)
 					if (recordType) {
 						const keys = this.createType(recordType[0], node, { kind: "keys" })
 						const items = this.createType(recordType[1], node, { kind: "items" })
