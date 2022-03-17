@@ -64,8 +64,14 @@ export function utilities(this: Typezer) {
 			const thenSymbol = rawType.getProperty("then")
 			if (!thenSymbol) return
 			const thenType = this.checker.getTypeOfSymbolAtLocation(thenSymbol, node)
-			const [signature] = thenType.getCallSignatures()
-			return (signature?.typeParameters?.[1] as any)?.mapper?.mapper2?.targets?.[0]
+			if (!thenType) return
+
+			if (rawType.symbol.escapedName == "PromiseLike") {
+				return (thenType as any).mapper?.target
+			} else {
+				const [signature] = thenType.getCallSignatures()
+				return (signature?.typeParameters?.[1] as any)?.mapper?.mapper2?.targets?.[0]
+			}
 		},
 	}
 }

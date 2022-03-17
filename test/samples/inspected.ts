@@ -1,4 +1,4 @@
-type Pee = Promise<number>
+type Pee = PromiseLike<number>
 
 // export type GenericType<T extends String> = {
 // 	x: T
