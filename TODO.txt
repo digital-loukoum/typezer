@@ -1,4 +1,3 @@
-- Redo classes (instance properties + static properties + constructor)
 - Validate promises
 - Validate generics (based on constraints + several types sharing a generic must be compatible)
 - Documentation

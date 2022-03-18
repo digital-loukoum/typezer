@@ -30,39 +30,39 @@ start("Validations", async ({ stage, test, same }) => {
 	const checkers: Record<TypeName, any> = {
 		Reference: null,
 
-		Any() {
-			pass(new Types.AnyType(), undefined, 0, false, "", {}, [], new Set(), new Map())
+		Never() {
+			fail({ typeName: "Any" }, undefined, 0, false, "", {}, [], new Set(), new Map())
 		},
-		Unknown() {
-			pass(new Types.UnknownType(), undefined, 0, false, "", {}, [], new Set(), new Map())
+		Any() {
+			pass({ typeName: "Any" }, undefined, 0, false, "", {}, [], new Set(), new Map())
 		},
 
 		// -- Literals --
 		Null() {
-			pass(new Types.NullType(), null)
-			fail(new Types.NullType(), undefined, 0, false, "", {}, [])
+			pass({ typeName: "Null" }, null)
+			fail({ typeName: "Null" }, undefined, 0, false, "", {}, [])
 		},
 		Undefined() {
-			pass(new Types.UndefinedType(), undefined)
-			fail(new Types.UndefinedType(), null, 0, false, "", {}, [])
+			pass({ typeName: "Undefined" }, undefined)
+			fail({ typeName: "Undefined" }, null, 0, false, "", {}, [])
 		},
 		Void() {
-			pass(new Types.VoidType(), undefined)
-			fail(new Types.VoidType(), null, 0, false, "", {}, [])
+			pass({ typeName: "Void" }, undefined)
+			fail({ typeName: "Void" }, null, 0, false, "", {}, [])
 		},
 		NumberLiteral() {
-			pass(new Types.NumberLiteralType(12), 12)
-			fail(new Types.NumberLiteralType(12), 13)
-			fail(new Types.NumberLiteralType(12), "12")
+			pass({ typeName: "NumberLiteral", value: 12 }, 12)
+			fail({ typeName: "NumberLiteral", value: 12 }, 13)
+			fail({ typeName: "NumberLiteral", value: 12 }, "12")
 		},
 		StringLiteral() {
-			pass(new Types.StringLiteralType("12"), "12")
-			fail(new Types.StringLiteralType("12"), "13")
-			fail(new Types.StringLiteralType("12"), 12)
+			pass({ typeName: "StringLiteral", value: "12" }, "12")
+			fail({ typeName: "StringLiteral", value: "12" }, "13")
+			fail({ typeName: "StringLiteral", value: "12" }, 12)
 		},
 		TemplateLiteral() {
 			pass(
-				new Types.TemplateLiteralType(["", ""], ["number"]),
+				{ typeName: "TemplateLiteral", texts: ["", ""], types: ["number"] },
 				"0",
 				"12321",
 				"-5312",
@@ -70,24 +70,32 @@ start("Validations", async ({ stage, test, same }) => {
 				"-123e-12"
 			)
 			pass(
-				new Types.TemplateLiteralType(["before ", "", " after"], ["string", "bigint"]),
+				{
+					typeName: "TemplateLiteral",
+					texts: ["before ", "", " after"],
+					types: ["string", "bigint"],
+				},
 				"before any 5321312 after",
 				"before 5321312 after"
 			)
 			fail(
-				new Types.TemplateLiteralType(["before ", "", " after"], ["string", "bigint"]),
+				{
+					typeName: "TemplateLiteral",
+					texts: ["before ", "", " after"],
+					types: ["string", "bigint"],
+				},
 				"before any 5321312 afte",
 				"efore any 5321312 after",
 				"before any  after"
 			)
 			fail(
-				new Types.TemplateLiteralType(["", ""], ["number"]),
+				{ typeName: "TemplateLiteral", texts: ["", ""], types: ["number"] },
 				"a",
 				"12321a",
 				"-123e12e2"
 			)
 			fail(
-				new Types.TemplateLiteralType(["", ""], ["bigint"]),
+				{ typeName: "TemplateLiteral", texts: ["", ""], types: ["bigint"] },
 				"a",
 				"12321a",
 				"-5312.2",
@@ -95,35 +103,44 @@ start("Validations", async ({ stage, test, same }) => {
 			)
 		},
 		BooleanLiteral() {
-			pass(new Types.BooleanLiteralType(true), true)
-			pass(new Types.BooleanLiteralType(false), false)
-			fail(new Types.BooleanLiteralType(true), false)
-			fail(new Types.BooleanLiteralType(false), true)
-			fail(new Types.BooleanLiteralType(false), 0, 1, "", null, undefined, {}, [])
-			fail(new Types.BooleanLiteralType(true), 0, 1, "", null, undefined, {}, [])
+			pass({ typeName: "BooleanLiteral", value: true }, true)
+			pass({ typeName: "BooleanLiteral", value: false }, false)
+			fail({ typeName: "BooleanLiteral", value: true }, false)
+			fail({ typeName: "BooleanLiteral", value: false }, true)
+			fail(
+				{ typeName: "BooleanLiteral", value: false },
+				0,
+				1,
+				"",
+				null,
+				undefined,
+				{},
+				[]
+			)
+			fail({ typeName: "BooleanLiteral", value: true }, 0, 1, "", null, undefined, {}, [])
 		},
 		BigIntegerLiteral() {
-			pass(new Types.BigIntegerLiteralType("12"), 12n)
-			fail(new Types.BigIntegerLiteralType("12"), 12, 13n)
+			pass({ typeName: "BigIntegerLiteral", value: "12" }, 12n)
+			fail({ typeName: "BigIntegerLiteral", value: "12" }, 12, 13n)
 		},
 
 		// -- Primitives --
 		Number() {
-			pass(new Types.NumberType(), 0, -0, 12, -15, 12.123, 1e4, Infinity, -Infinity, NaN)
-			fail(new Types.NumberType(), "0", true, false, null, undefined, {}, [])
+			pass({ typeName: "Number" }, 0, -0, 12, -15, 12.123, 1e4, Infinity, -Infinity, NaN)
+			fail({ typeName: "Number" }, "0", true, false, null, undefined, {}, [])
 		},
 		String() {
-			pass(new Types.StringType(), "0", "azeaze", "")
-			fail(new Types.StringType(), 0, true, false, null, undefined, {}, [])
+			pass({ typeName: "String" }, "0", "azeaze", "")
+			fail({ typeName: "String" }, 0, true, false, null, undefined, {}, [])
 		},
 		Boolean() {
-			pass(new Types.BooleanType(), true, false)
-			fail(new Types.BooleanType(), 0, "", null, undefined, {}, [])
+			pass({ typeName: "Boolean" }, true, false)
+			fail({ typeName: "Boolean" }, 0, "", null, undefined, {}, [])
 		},
 		BigInteger() {
-			pass(new Types.BigIntegerType(), 0n, BigInt(51321), -51312n, BigInt(-51321))
+			pass({ typeName: "BigInteger" }, 0n, BigInt(51321), -51312n, BigInt(-51321))
 			fail(
-				new Types.BigIntegerType(),
+				{ typeName: "BigInteger" },
 				0,
 				12,
 				-45,
@@ -138,31 +155,51 @@ start("Validations", async ({ stage, test, same }) => {
 			)
 		},
 		RegularExpression() {
-			pass(new Types.RegularExpressionType(), /aze/g, new RegExp("any", "gi"))
-			fail(new Types.RegularExpressionType(), {}, [])
+			pass({ typeName: "RegularExpression" }, /aze/g, new RegExp("any", "gi"))
+			fail({ typeName: "RegularExpression" }, {}, [])
 		},
 		Date() {
-			pass(new Types.DateType(), new Date())
-			fail(new Types.DateType(), Date.now(), 0, "53215312", {}, null)
+			pass({ typeName: "Date" }, new Date())
+			fail({ typeName: "Date" }, Date.now(), 0, "53215312", {}, null)
 		},
 		ArrayBuffer() {
-			pass(new Types.ArrayBufferType(), Uint8Array.of(5, 12, 15).buffer)
-			fail(new Types.ArrayBufferType(), {}, Uint8Array.of(5, 12, 15), [])
+			pass({ typeName: "ArrayBuffer" }, Uint8Array.of(5, 12, 15).buffer)
+			fail({ typeName: "ArrayBuffer" }, {}, Uint8Array.of(5, 12, 15), [])
 		},
 
 		// -- Composables --
+		Promise() {
+			pass(
+				{ typeName: "Promise", item: { typeName: "Number" } },
+				12,
+				new Promise(resolve => resolve(12))
+			)
+			fail(
+				{ typeName: "Promise", item: { typeName: "Number" } },
+				[],
+				"12",
+				{},
+				new Promise(resolve => resolve("12"))
+			)
+		},
 		Object() {
 			pass(
-				new Types.ObjectType({
-					x: new Types.NumberType(),
-				}),
+				{
+					typeName: "Object",
+					properties: {
+						x: { typeName: "Number" },
+					},
+				},
 				{ x: 12 },
 				{ x: 12, z: 653123 }
 			)
 			fail(
-				new Types.ObjectType({
-					x: new Types.NumberType(),
-				}),
+				{
+					typeName: "Object",
+					properties: {
+						x: { typeName: "Number" },
+					},
+				},
 				null,
 				{},
 				{ x: "12" },
@@ -170,25 +207,36 @@ start("Validations", async ({ stage, test, same }) => {
 			)
 		},
 		Array() {
-			pass(new Types.ArrayType(new Types.NumberType()), [], [12, 16, 12, 13])
-			fail(new Types.ArrayType(new Types.NumberType()), [15, 16, "12"], [{}])
+			pass({ typeName: "Array", items: { typeName: "Number" } }, [], [12, 16, 12, 13])
+			fail({ typeName: "Array", items: { typeName: "Number" } }, [15, 16, "12"], [{}])
 		},
 		Set() {
 			pass(
-				new Types.SetType(new Types.NumberType()),
+				{ typeName: "Set", items: { typeName: "Number" } },
 				new Set(),
 				new Set([]),
 				new Set([12, 16, 12, 13])
 			)
-			fail(new Types.SetType(new Types.NumberType()), [], new Set([15, 16, "12"]), {})
+			fail(
+				{ typeName: "Set", items: { typeName: "Number" } },
+				[],
+				new Set([15, 16, "12"]),
+				{}
+			)
 		},
 		Tuple() {
 			pass(
-				new Types.TupleType([new Types.NumberType(), new Types.StringLiteralType("foo")]),
+				{
+					typeName: "Tuple",
+					items: [{ typeName: "Number" }, { typeName: "StringLiteral", value: "foo" }],
+				},
 				[12, "foo"]
 			)
 			fail(
-				new Types.TupleType([new Types.NumberType(), new Types.StringLiteralType("foo")]),
+				{
+					typeName: "Tuple",
+					items: [{ typeName: "Number" }, { typeName: "StringLiteral", value: "foo" }],
+				},
 				[],
 				[12],
 				["foo"],
@@ -200,13 +248,19 @@ start("Validations", async ({ stage, test, same }) => {
 		},
 		Union() {
 			pass(
-				new Types.UnionType([new Types.NumberType(), new Types.StringLiteralType("foo")]),
+				{
+					typeName: "Union",
+					items: [{ typeName: "Number" }, { typeName: "StringLiteral", value: "foo" }],
+				},
 				12,
 				0,
 				"foo"
 			)
 			fail(
-				new Types.UnionType([new Types.NumberType(), new Types.StringLiteralType("foo")]),
+				{
+					typeName: "Union",
+					items: [{ typeName: "Number" }, { typeName: "StringLiteral", value: "foo" }],
+				},
 				"12",
 				"0",
 				"foobar",
@@ -217,42 +271,69 @@ start("Validations", async ({ stage, test, same }) => {
 		},
 		Record() {
 			pass(
-				new Types.RecordType(new Types.StringType(), new Types.NumberType()),
+				{
+					typeName: "Record",
+					keys: { typeName: "String" },
+					items: { typeName: "Number" },
+				},
 				{},
 				{ foo: 0, bar: 1 }
 			)
 			pass(
-				new Types.RecordType(
-					new Types.UnionType([new Types.StringLiteralType("foo")]),
-					new Types.NumberType()
-				),
+				{
+					typeName: "Record",
+					keys: {
+						typeName: "Union",
+						items: [{ typeName: "StringLiteral", value: "foo" }],
+					},
+					items: { typeName: "Number" },
+				},
 				{ foo: 0 }
 			)
 			pass(
-				new Types.RecordType(
-					new Types.EnumerationType({ foo: new Types.StringLiteralType("foo") }),
-					new Types.NumberType()
-				),
+				{
+					typeName: "Record",
+					keys: {
+						typeName: "Enumeration",
+						items: { foo: { typeName: "StringLiteral", value: "foo" } },
+					},
+					items: { typeName: "Number" },
+				},
 				{ foo: 0 }
 			)
-			fail(new Types.RecordType(new Types.StringType(), new Types.NumberType()), {
-				foo: 0,
-				bar: "1",
-			})
 			fail(
-				new Types.RecordType(
-					new Types.UnionType([new Types.StringLiteralType("foo")]),
-					new Types.NumberType()
-				),
+				{
+					typeName: "Record",
+					keys: { typeName: "String" },
+					items: { typeName: "Number" },
+				},
+				{
+					foo: 0,
+					bar: "1",
+				}
+			)
+			fail(
+				{
+					typeName: "Record",
+					keys: {
+						typeName: "Union",
+						items: [{ typeName: "StringLiteral", value: "foo" }],
+					},
+					items: { typeName: "Number" },
+				},
 				{},
 				{ foo: 0, bar: 0 },
 				{ bar: 0 }
 			)
 			fail(
-				new Types.RecordType(
-					new Types.EnumerationType({ foo: new Types.StringLiteralType("foo") }),
-					new Types.NumberType()
-				),
+				{
+					typeName: "Record",
+					keys: {
+						typeName: "Enumeration",
+						items: { foo: { typeName: "StringLiteral", value: "foo" } },
+					},
+					items: { typeName: "Number" },
+				},
 				{},
 				{ foo: 0, bar: 0 },
 				{ bar: 0 }
@@ -260,7 +341,7 @@ start("Validations", async ({ stage, test, same }) => {
 		},
 		Map() {
 			pass(
-				new Types.MapType(new Types.StringType(), new Types.NumberType()),
+				{ typeName: "Map", keys: { typeName: "String" }, items: { typeName: "Number" } },
 				new Map(),
 				new Map([
 					["foo", 0],
@@ -268,26 +349,32 @@ start("Validations", async ({ stage, test, same }) => {
 				])
 			)
 			pass(
-				new Types.MapType(
-					new Types.UnionType([new Types.StringLiteralType("foo")]),
-					new Types.NumberType()
-				),
+				{
+					typeName: "Map",
+					keys: {
+						typeName: "Union",
+						items: [{ typeName: "StringLiteral", value: "foo" }],
+					},
+					items: { typeName: "Number" },
+				},
 				new Map(),
 				new Map([["foo", 0]])
 			)
 			pass(
-				new Types.MapType(
-					new Types.ObjectType({ foo: new Types.NumberType() }),
-					new Types.NumberType()
-				),
+				{
+					typeName: "Map",
+					keys: { typeName: "Object", properties: { foo: { typeName: "Number" } } },
+					items: { typeName: "Number" },
+				},
 				new Map(),
 				new Map([[{ foo: 0 }, 0]])
 			)
 			fail(
-				new Types.MapType(
-					new Types.ObjectType({ foo: new Types.NumberType() }),
-					new Types.NumberType()
-				),
+				{
+					typeName: "Map",
+					keys: { typeName: "Object", properties: { foo: { typeName: "Number" } } },
+					items: { typeName: "Number" },
+				},
 				new Map([[{}, 0]]),
 				new Map([[{ bar: 0 }, 0]]),
 				new Map([[{ foo: 0 }, "0"]])
@@ -295,33 +382,39 @@ start("Validations", async ({ stage, test, same }) => {
 		},
 		Enumeration() {
 			pass(
-				new Types.EnumerationType({
-					zero: new Types.NumberLiteralType(0),
-					foo: new Types.StringLiteralType("foo"),
-				}),
+				{
+					typeName: "Enumeration",
+					items: {
+						zero: { typeName: "NumberLiteral", value: 0 },
+						foo: { typeName: "StringLiteral", value: "foo" },
+					},
+				},
 				0,
 				"foo"
 			)
 			fail(
-				new Types.EnumerationType({
-					zero: new Types.NumberLiteralType(0),
-					foo: new Types.StringLiteralType("foo"),
-				}),
+				{
+					typeName: "Enumeration",
+					items: {
+						zero: { typeName: "NumberLiteral", value: 0 },
+						foo: { typeName: "StringLiteral", value: "foo" },
+					},
+				},
 				1,
 				"bar"
 			)
 		},
 		Function() {
 			pass(
-				new Types.FunctionType([]),
+				{ typeName: "Function", signatures: [] },
 				function () {},
 				() => {}
 			)
-			fail(new Types.FunctionType([]), {})
+			fail({ typeName: "Function", signatures: [] }, {})
 		},
 		Class() {
-			pass(new Types.FunctionType([]), class {})
-			fail(new Types.FunctionType([]), {})
+			// pass({ typeName: "Function", signatures: [] }, class {})
+			// fail({ typeName: "Function", signatures: [] }, {})
 		},
 	}
 
