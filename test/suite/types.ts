@@ -1,4 +1,4 @@
-import { getAllDeclarations, getSchema } from "../../source"
+import { getSchema } from "../../source"
 import start from "fartest"
 import { Types } from "../../source/types/Type/Types"
 import { getPathTarget } from "../../source/types/Type/getPathTarget"
@@ -7,7 +7,7 @@ import { Type } from "../../source/types/Type/Type"
 
 start("Types", async ({ stage, test, same }) => {
 	const schema = getSchema(["test/samples/types.ts"])
-	console.dir(schema.Records, { depth: null })
+	// console.dir(schema.Functions, { depth: null })
 
 	const getTarget = <T extends Type = Type>(type: Type): T => {
 		if (type.typeName != "Reference") return type as T
@@ -77,6 +77,17 @@ start("Types", async ({ stage, test, same }) => {
 		for (const modifier in properties) {
 			const { modifiers } = properties[modifier]
 			same([modifier], modifiers, `Check modifier '${modifier}'`)
+		}
+	}
+
+	stage("Promises")
+	{
+		const { properties } = getRootType("Promises")
+
+		for (const value in properties) {
+			const promise = getTarget<Types["Promise"]>(properties[value])
+			same(promise.typeName, "Promise", `Check promise '${value}' is a promise`)
+			same(value, promise.item.typeName, `Check item type of promise '${value}'`)
 		}
 	}
 
@@ -202,7 +213,7 @@ start("Types", async ({ stage, test, same }) => {
 				properties[value].typeName,
 				`Check callable '${value}' has the right type`
 			)
-			const callable = properties[value] as Types["Function"] | Types["Class"]
+			const callable = properties[value] as Types["Function"]
 			const [signature] = callable.signatures
 			same(
 				returnType,
@@ -211,6 +222,8 @@ start("Types", async ({ stage, test, same }) => {
 			)
 		}
 	}
+
+	stage("Classes")
 
 	stage("Circular references")
 	{

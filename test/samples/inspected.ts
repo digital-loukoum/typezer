@@ -1,4 +1,14 @@
-type Pee = PromiseLike<number>
+export class Coco {
+	static sx? = 0
+	x?: number
+	constructor(public z = 12) {}
+}
+export const Zabu = class {
+	static sy = 0
+	y = 0
+
+	constructor(public z = 12) {}
+}
 
 // export type GenericType<T extends String> = {
 // 	x: T

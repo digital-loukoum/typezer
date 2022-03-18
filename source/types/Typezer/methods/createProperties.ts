@@ -11,8 +11,8 @@ export function createProperties(
 	const properties: Properties = {}
 
 	rawType.getProperties().forEach(property => {
-		const rawType = this.checker.getTypeOfSymbolAtLocation(property, node)
-		properties[property.name] = this.createType(rawType, node, {
+		const rawPropertyType = this.checker.getTypeOfSymbolAtLocation(property, node)
+		properties[property.name] = this.createType(rawPropertyType, node, {
 			kind: "property",
 			name: property.name,
 		})

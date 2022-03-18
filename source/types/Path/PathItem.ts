@@ -12,6 +12,10 @@ export type PathItem =
 			name: string
 	  }
 	| {
+			kind: "parameter"
+			name: string
+	  }
+	| {
 			kind: "tupleItem"
 			index: number
 	  }

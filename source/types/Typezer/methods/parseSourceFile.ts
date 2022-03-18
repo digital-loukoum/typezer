@@ -1,4 +1,3 @@
-import print from "@digitak/print"
 import ts from "typescript"
 import { basename } from "../../../utilities/basename"
 import { findChildNode, findLastChildNode } from "../../../utilities/findChildNode"
@@ -9,7 +8,7 @@ export function parseSourceFile(
 	this: Typezer,
 	sourceFile: ts.SourceFile
 ): RawDeclaration[] {
-	print`[bold.magenta: [ ${sourceFile.fileName} ]]`
+	// print`[bold.magenta: [ ${sourceFile.fileName} ]]`
 	const result: RawDeclaration[] = []
 	const { fileName } = sourceFile
 	const exportAliases: [string, string][] = []

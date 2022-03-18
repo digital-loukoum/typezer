@@ -49,6 +49,10 @@ export function utilities(this: Typezer) {
 			return !!(returnType && returnType.flags & flags)
 		},
 
+		getTypeGenerics: (rawType: ts.Type): readonly ts.Type[] | undefined => {
+			return rawType.aliasTypeArguments
+		},
+
 		getFunctionGenerics: (rawType: ts.Type): ts.Type[] | undefined => {
 			const typeParameters = (
 				rawType.symbol?.valueDeclaration as ts.SignatureDeclarationBase | undefined

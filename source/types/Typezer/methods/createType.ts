@@ -13,21 +13,19 @@ export function createType(
 	node: ts.Node,
 	pathItem?: PathItem
 ): Type {
-	let typeParameters: Type[] | undefined = undefined
-
 	// we check if the type has not been already cached
 	let cached = this.typeCache.get(rawType)
 	if (cached) {
-		if (cached.type && isPrimitive(cached.type)) return { ...cached.type }
-		return {
-			typeName: "Reference",
-			path: cached.path,
-			...(typeParameters ? { typeParameters } : {}),
+		if (!(cached.type && isPrimitive(cached.type))) {
+			return {
+				typeName: "Reference",
+				path: cached.path,
+			}
 		}
 	}
 
-	console.log("node", node)
-	console.log("rawType", rawType.symbol?.escapedName, rawType)
+	// console.log("node", node)
+	// console.log("rawType", rawType.symbol?.escapedName, rawType)
 	// return
 	if (pathItem) this.path.push(pathItem)
 	this.typeCache.set(rawType, (cached = { path: this.path.slice() }))
@@ -35,8 +33,8 @@ export function createType(
 	// generics
 	const generics: Record<string, Type> = {}
 	new Set([
-		...(this.checker.getTypeArguments(rawType as ts.TypeReference) ?? []), // type generics
-		...(this.utilities.getFunctionGenerics(rawType) ?? []), // function generics
+		...(this.utilities.getTypeGenerics(rawType) ?? []),
+		...(this.utilities.getFunctionGenerics(rawType) ?? []),
 	]).forEach(rawGenericType => {
 		const name = String(rawGenericType.symbol?.escapedName ?? "")
 		if (!name) return
@@ -78,8 +76,8 @@ export function createType(
 
 		if (target != rawType && (cachedTarget = this.typeCache.get(target))) {
 			// then the type is a reference to a generic
-			const typeParameters = this.checker
-				.getTypeArguments(rawType as ts.TypeReference)
+			const typeParameters = this.utilities
+				.getTypeGenerics(rawType)
 				?.map(rawTypeParameter => this.createType(rawTypeParameter, node))
 
 			return {

@@ -3,6 +3,8 @@ import { getMappedType } from "../../utilities/getMappedType"
 import { getRecordType } from "../../utilities/getRecordType"
 import { getTypeTarget } from "../../utilities/getTypeTarget"
 import { typeMatchFeatures } from "../../utilities/typeMatchFeatures"
+import { createModifier } from "../Modifier/createModifier"
+import { Properties } from "../Properties/Properties"
 import { Signature } from "../Signature/Signature"
 import { Typezer } from "../Typezer/Typezer"
 import { Type } from "./Type"
@@ -123,6 +125,7 @@ export function typeDescriptors(this: Typezer): {
 		// ---------------------- //
 
 		Any: {
+			priority: -100,
 			create: ({ rawType }) => {
 				if (rawType.flags & ts.TypeFlags.Any) return { typeName: "Any" }
 			},
@@ -553,25 +556,66 @@ export function typeDescriptors(this: Typezer): {
 		//  */
 		Class: {
 			create: ({ rawType, node }) => {
-				const rawSignatures = rawType.getConstructSignatures()
+				if (
+					node.kind == ts.SyntaxKind.ClassDeclaration &&
+					rawType.symbol?.valueDeclaration == node
+				) {
+					// class declaration
+					const properties: Properties = {}
 
-				if (rawSignatures?.length) {
-					const signatures: Signature[] = rawSignatures.map(signature => {
-						const parameters = signature
-							.getParameters()
-							.map(symbol =>
-								this.createType(
-									this.checker.getTypeOfSymbolAtLocation(symbol, node),
-									node
-								)
-							)
-						const returnType = this.createType(signature.getReturnType(), node)
-						return { parameters, returnType }
-					})
+					for (const member of (node as ts.ClassDeclaration).members) {
+						const isStatic = member.modifiers?.some(
+							modifier => modifier.kind & ts.SyntaxKind.StaticKeyword
+						)
+						if (!isStatic) continue
 
-					const properties = this.createProperties(rawType, node)
+						const memberType = this.checker.getTypeAtLocation(member)
+						const memberSymbol = (member as any).symbol as ts.Symbol
+						if (!memberSymbol) continue
 
-					return { typeName: "Class", signatures, properties }
+						properties[memberSymbol.name] = this.createType(memberType, member, {
+							kind: "property",
+							name: memberSymbol.name,
+						})
+
+						if (memberSymbol.flags & ts.SymbolFlags.Optional) {
+							properties[memberSymbol.name].optional = true
+						}
+
+						member.modifiers?.forEach(modifier => {
+							const modifiers = (properties[memberSymbol.name].modifiers ??= [])
+							modifiers.push(createModifier(modifier))
+						})
+					}
+
+					Object.assign(properties, this.createProperties(rawType, node))
+					return { typeName: "Class", properties }
+				} else {
+					// class variable assignment
+					const [signature] = rawType.getConstructSignatures() ?? []
+					if (!signature) return
+
+					/**
+					 * We don't add constructor informations because I just can't figure
+					 * out how to get it from the class declaration.
+					 */
+					// const constructorParameters = signature
+					// 	.getParameters()
+					// 	.filter(({ name }) => name != "prototype")
+					// 	.map(symbol =>
+					// 		this.createType(
+					// 			this.checker.getTypeOfSymbolAtLocation(symbol, node),
+					// 			node,
+					// 			{ kind: "parameter", name: String(symbol.escapedName) }
+					// 		)
+					// 	)
+
+					const properties = {
+						...this.createProperties(signature.getReturnType(), node),
+						...this.createProperties(rawType, node),
+					}
+					delete properties.prototype
+					return { typeName: "Class", properties }
 				}
 			},
 		},

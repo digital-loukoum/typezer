@@ -30,6 +30,7 @@ export abstract class Modifiers {
 	protected protected = 12
 	private private = 12
 	abstract abstract: number
+	static static = 12
 }
 
 export type Arrays = {
@@ -37,10 +38,16 @@ export type Arrays = {
 	Reference: Array<Primitives>
 }
 
+export type Promises = {
+	Number: Promise<number>
+	Reference: PromiseLike<Primitives>
+}
+
 export type Records = {
 	String_Number: Record<string, number>
 	String_String: Record<string, string>
 	Union_String: Record<"12" | "15", string>
+	Never_Any: Record<never, any>
 }
 
 export type Tuples = {
@@ -73,7 +80,7 @@ export type Enumerations = {
 
 export type Functions = {
 	Function_Number: () => number
-	Class_String: new () => String
+	Function_String: () => String
 }
 
 export type CircularReference = {

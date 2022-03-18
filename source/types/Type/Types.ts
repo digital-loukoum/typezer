@@ -74,8 +74,8 @@ export type BaseTypes = {
 		signatures: Signature[]
 	}
 	Class: {
-		signatures: Signature[]
 		properties: Properties
+		// constructorParameters?: Type[] // can't figure out how to get it from a class declaration
 	}
 	Reference: {
 		path: Path

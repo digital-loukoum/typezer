@@ -1,6 +1,6 @@
 - Redo classes (instance properties + static properties + constructor)
-- Validate generics (based on constraints + several types sharing a generic must be compatible)
 - Validate promises
+- Validate generics (based on constraints + several types sharing a generic must be compatible)
 - Documentation
 - CI/CD
 
