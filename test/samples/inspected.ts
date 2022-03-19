@@ -1,14 +1,16 @@
-export class Coco {
-	static sx? = 0
-	x?: number
-	constructor(public z = 12) {}
-}
-export const Zabu = class {
-	static sy = 0
-	y = 0
+// export class Coco {
+// 	static sx? = 0
+// 	x?: number
+// 	constructor(public z = 12) {}
+// }
+// export const Zabu = class {
+// 	static sy = 0
+// 	y = 0
 
-	constructor(public z = 12) {}
-}
+// 	constructor(public z = 12) {}
+// }
+
+function coco(a: number, ...rest: string[]) {}
 
 // export type GenericType<T extends String> = {
 // 	x: T

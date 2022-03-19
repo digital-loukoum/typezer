@@ -529,21 +529,34 @@ export function typeDescriptors(this: Typezer): {
 				if (rawSignatures?.length) {
 					// console.log("Function type:", rawType)
 					const signatures: Signature[] = rawSignatures.map(signature => {
-						// signature
-						// 	.getParameters()
-						// 	.forEach(tsSymbol =>
-						// 		console.log("Parameter type:", getTypeOfSymbol(tsSymbol, node))
-						// 	)
-						const parameters = signature
-							.getParameters()
-							.map(symbol =>
-								this.createType(
-									this.checker.getTypeOfSymbolAtLocation(symbol, node),
-									node
-								)
+						let restParameters: undefined | Type = undefined
+						const parameters: Type[] = []
+						const rawParameters = signature.getParameters()
+						const minimumParameters = (signature as any).minArgumentCount
+
+						rawParameters.forEach((symbol, index) => {
+							const type = this.createType(
+								this.checker.getTypeOfSymbolAtLocation(symbol, node),
+								node
 							)
+							if (
+								index == rawParameters.length - 1 &&
+								type.typeName == "Array" &&
+								(symbol.valueDeclaration as ts.ParameterDeclaration)?.dotDotDotToken
+							) {
+								restParameters = type.items
+							} else {
+								parameters.push(type)
+							}
+						})
+
 						const returnType = this.createType(signature.getReturnType(), node)
-						return { parameters, returnType }
+						return {
+							minimumParameters,
+							parameters,
+							...(restParameters ? { restParameters } : {}),
+							returnType,
+						}
 					})
 
 					return { typeName: "Function", signatures }

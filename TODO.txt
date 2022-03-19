@@ -1,11 +1,13 @@
-- Validate promises
-- Validate generics (based on constraints + several types sharing a generic must be compatible)
+- Update function validation: two strategies - based on function type or on parameters. Return the returnType of the right signature
+- Update class validation: should be like an object, but ignore static statements
+
 - Documentation
 - CI/CD
 
 ✨ v2.0 done
 
 FUTURE
+- Validate constraint-less generics (several types sharing a generic must be compatible)
 - Fix Record<never, any>
 - Namespace declarations?
 - Symbols
