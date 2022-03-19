@@ -19,10 +19,14 @@ export class Validator {
 			...path,
 		])
 
+		return this.validateType(type, value)
+	}
+
+	validateType(type: Type, value: unknown) {
 		let validatedValues = this.validated.get(type)
 		if (!validatedValues) this.validated.set(type, (validatedValues = new Set()))
 
-		if (validatedValues.has(value)) {
+		if (!validatedValues.has(value)) {
 			validatedValues.add(value)
 			this.validators[type.typeName]?.(type as any, value)
 		}

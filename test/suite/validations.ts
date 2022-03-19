@@ -1,14 +1,13 @@
 import start from "fartest"
 import { Type } from "../../source/types/Type/Type"
-import * as Types from "../../source/types/Type/Types"
 import { TypeName } from "../../source/types/Type/TypeName"
-import { validate } from "../../source/validate"
+import { validateType } from "../../source/validate"
 import inspect from "object-inspect"
 
 start("Validations", async ({ stage, test, same }) => {
-	const pass = (schema: Type, ...values: Array<unknown>) => {
+	const pass = (type: Type, ...values: Array<unknown>) => {
 		for (const value of values) {
-			const errors = validate({}, schema, value)
+			const errors = validateType({}, type, value)
 			test(
 				errors.length == 0,
 				`Validation should pass but errors raised:\n${errors
@@ -17,9 +16,9 @@ start("Validations", async ({ stage, test, same }) => {
 			)
 		}
 	}
-	const fail = (schema: Type, ...values: Array<unknown>) => {
+	const fail = (type: Type, ...values: Array<unknown>) => {
 		for (const value of values) {
-			const errors = validate({}, schema, value)
+			const errors = validateType({}, type, value)
 			test(
 				errors.length > 0,
 				`Validation should fail but succeeded for value ${inspect(value)}`
@@ -31,7 +30,7 @@ start("Validations", async ({ stage, test, same }) => {
 		Reference: null,
 
 		Never() {
-			fail({ typeName: "Any" }, undefined, 0, false, "", {}, [], new Set(), new Map())
+			fail({ typeName: "Never" }, undefined, 0, false, "", {}, [], new Set(), new Map())
 		},
 		Any() {
 			pass({ typeName: "Any" }, undefined, 0, false, "", {}, [], new Set(), new Map())
@@ -169,17 +168,13 @@ start("Validations", async ({ stage, test, same }) => {
 
 		// -- Composables --
 		Promise() {
-			pass(
-				{ typeName: "Promise", item: { typeName: "Number" } },
-				12,
-				new Promise(resolve => resolve(12))
-			)
+			pass({ typeName: "Promise", item: { typeName: "Number" } }, 12)
 			fail(
 				{ typeName: "Promise", item: { typeName: "Number" } },
 				[],
 				"12",
 				{},
-				new Promise(resolve => resolve("12"))
+				new Promise(resolve => resolve(12))
 			)
 		},
 		Object() {

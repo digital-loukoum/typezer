@@ -1,6 +1,8 @@
 import { serializeTemplateLiteral } from "../../utilities/serializeTemplateLiteral"
 import { templateExpressions } from "../../utilities/templateExpressions"
+import { getSchemaReference } from "../Schema/getSchemaReference"
 import { badPathItemKind } from "../Type/getPathTarget"
+import { isStringOrNumberLiteral } from "../Type/isStringOrNumberLiteral"
 import { TypeName } from "../Type/TypeName"
 import { Types } from "../Type/Types"
 import { Validator } from "./Validator"
@@ -82,47 +84,51 @@ export function validators(this: Validator): {
 		},
 
 		// --    COMPOSABLES    -- //
+		Promise: (type, value) => {
+			this.validateType(type.item, value)
+		},
+
 		Object: (type, value) => {
 			if (!value || typeof value !== "object") this.mismatch(value, "an object")
 			else {
 				for (const key in type.properties) {
 					this.path.push(key)
-					this.validate(type.properties[key], value[key])
+					this.validateType(type.properties[key], value[key])
 					this.path.pop()
 				}
 			}
 		},
 
 		Record: (type, value) => {
-			// 	if (!value || typeof value !== "object") this.mismatch(value, "an record")
-			// 	else {
-			// 		let keyType = type.keys
-			// 		if (keyType.typeName == "") {
-			// 			keyType = this.definitions[(keyType as Types.ReferenceType).reference].type
-			// 		}
-			// 		const literals = []
-			// 		if (typeIs.stringOrNumber: (keyType)) => {
-			// 			literals.push(keyType)
-			// 		} else if (typeIs.union(keyType)) {
-			// 			literals.push(...keyType.types.filter(typeIs.stringOrNumberLiteral))
-			// 		} else if (typeIs.enumeration(keyType)) {
-			// 			literals.push(
-			// 				...Object.values(keyType.properties).filter(typeIs.stringOrNumberLiteral)
-			// 			)
-			// 		}
-			// 		for (const key in value) {
-			// 			this.path.push(key)
-			// 			this.validate(type.key, key)
-			// 			this.validate(type.value, value[key])
-			// 			this.path.pop()
-			// 		}
-			// 		// every literal value found in the key type must be present in the record
-			// 		for (const literal of literals) {
-			// 			if (!(literal.value in value)) {
-			// 				this.missing(String(literal.value))
-			// 			}
-			// 		}
-			// 	}
+			if (!value || typeof value !== "object") this.mismatch(value, "an record")
+			else {
+				let keysType = type.keys
+				if (keysType.typeName == "Reference") {
+					keysType = getSchemaReference(this.schema, keysType.path)
+				}
+				const literals: (Types["NumberLiteral"] | Types["StringLiteral"])[] = []
+				if (isStringOrNumberLiteral(keysType)) {
+					literals.push(keysType)
+				} else if (keysType.typeName == "Union") {
+					literals.push(...keysType.items.filter(isStringOrNumberLiteral))
+				} else if (keysType.typeName == "Enumeration") {
+					literals.push(...Object.values(keysType.items).filter(isStringOrNumberLiteral))
+				}
+
+				for (const key in value) {
+					this.path.push(key)
+					this.validateType(type.keys, key)
+					this.validateType(type.items, value[key])
+					this.path.pop()
+				}
+
+				// every literal value found in the key type must be present in the record
+				for (const literal of literals) {
+					if (!(literal.value in value)) {
+						this.missing(String(literal.value))
+					}
+				}
+			}
 		},
 
 		Array: (type, value) => {
@@ -130,7 +136,7 @@ export function validators(this: Validator): {
 			else {
 				value.forEach((item, index) => {
 					this.path.push(String(index))
-					this.validate(type.items, item)
+					this.validateType(type.items, item)
 					this.path.pop()
 				})
 			}
@@ -143,7 +149,7 @@ export function validators(this: Validator): {
 			else {
 				type.items.forEach((type, index) => {
 					this.path.push(String(index))
-					this.validate(type, value[index])
+					this.validateType(type, value[index])
 					this.path.pop()
 				})
 			}
@@ -154,8 +160,8 @@ export function validators(this: Validator): {
 			else {
 				for (const [key, item] of value.entries()) {
 					this.path.push(!key || typeof key != "object" ? String(key) : "")
-					this.validate(type.keys, key)
-					this.validate(type.items, item)
+					this.validateType(type.keys, key)
+					this.validateType(type.items, item)
 					this.path.pop()
 				}
 			}
@@ -166,7 +172,7 @@ export function validators(this: Validator): {
 			else {
 				this.path.push("")
 				for (const key of value) {
-					this.validate(type.items, key)
+					this.validateType(type.items, key)
 				}
 				this.path.pop()
 			}
@@ -174,7 +180,7 @@ export function validators(this: Validator): {
 
 		Union: (type, value) => {
 			for (const subtype of type.items) {
-				const check = this.fork().validate(subtype, value)
+				const check = this.fork().validateType(subtype, value)
 				if (!check.errors.length) return
 			}
 			this.mismatch(value, type.toString())
@@ -182,7 +188,7 @@ export function validators(this: Validator): {
 
 		Enumeration: (type, value) => {
 			for (const subtype of Object.values(type.items)) {
-				const check = this.fork().validate(subtype, value)
+				const check = this.fork().validateType(subtype, value)
 				if (!check.errors.length) return
 			}
 			this.mismatch(value, type.toString())
