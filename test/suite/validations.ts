@@ -201,6 +201,33 @@ start("Validations", async ({ stage, test, same }) => {
 				{ y: 513 }
 			)
 		},
+		Class() {
+			pass(
+				{
+					typeName: "Class",
+					properties: {
+						x: { typeName: "Number" },
+						static: { typeName: "Number", modifiers: ["static"] },
+					},
+				},
+				{ x: 12 },
+				{ x: 12, static: "653123" }
+			)
+			fail(
+				{
+					typeName: "Class",
+					properties: {
+						x: { typeName: "Number" },
+						static: { typeName: "Number", modifiers: ["static"] },
+					},
+				},
+				null,
+				{},
+				{ x: "12" },
+				{ static: 513 },
+				{ y: 513 }
+			)
+		},
 		Array() {
 			pass({ typeName: "Array", items: { typeName: "Number" } }, [], [12, 16, 12, 13])
 			fail({ typeName: "Array", items: { typeName: "Number" } }, [15, 16, "12"], [{}])
@@ -414,10 +441,6 @@ start("Validations", async ({ stage, test, same }) => {
 				() => {}
 			)
 			fail({ typeName: "Constructor", properties: {}, signatures: [] }, {})
-		},
-		Class() {
-			// pass({ typeName: "Function", signatures: [] }, class {})
-			// fail({ typeName: "Function", signatures: [] }, {})
 		},
 	}
 

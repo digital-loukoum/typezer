@@ -99,6 +99,19 @@ export function validators(this: Validator): {
 			}
 		},
 
+		Class: (type, value) => {
+			if (!value || typeof value !== "object") this.mismatch(value, "an object")
+			else {
+				for (const key in type.properties) {
+					const property = type.properties[key]
+					if (property.modifiers?.includes("static")) continue
+					this.path.push(key)
+					this.validate(type.properties[key], value[key])
+					this.path.pop()
+				}
+			}
+		},
+
 		Record: (type, value) => {
 			if (!value || typeof value !== "object") this.mismatch(value, "an record")
 			else {
@@ -196,10 +209,6 @@ export function validators(this: Validator): {
 
 		Function: (type, value) => {
 			if (typeof value !== "function") this.mismatch(value, "a function")
-		},
-
-		Class: (type, value) => {
-			// if (typeof value !== "function") this.mismatch(value, "a class")
 		},
 
 		Constructor: (type, value) => {
