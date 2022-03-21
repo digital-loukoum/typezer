@@ -184,6 +184,19 @@ export function creators(this: Typezer): {
 			},
 		},
 
+		Symbol: {
+			create: ({ rawType, node }) => {
+				if (rawType.flags & ts.TypeFlags.ESSymbolLike) {
+					return { typeName: "Symbol" }
+				}
+				if (!typeMatchFeatures(rawType, ["toString", "valueOf"])) return
+				const valueOf = this.utilities.getReturnTypeOfMethod(rawType, node, "valueOf")
+				if ((valueOf as any)?.intrinsicName == "symbol") {
+					return { typeName: "Symbol" }
+				}
+			},
+		},
+
 		String: {
 			create: ({ rawType }) => {
 				const features = [
@@ -340,6 +353,21 @@ export function creators(this: Typezer): {
 				typeName: "Object",
 				properties: this.createProperties(rawType, node),
 			}),
+		},
+		Namespace: {
+			create: ({ rawType, node }) => {
+				const symbolFlags = rawType.symbol?.flags
+				if (
+					symbolFlags &&
+					(symbolFlags & ts.SymbolFlags.NamespaceModule ||
+						symbolFlags & ts.SymbolFlags.ValueModule)
+				) {
+					return {
+						typeName: "Namespace",
+						properties: this.createProperties(rawType, node),
+					}
+				}
+			},
 		},
 		Promise: {
 			create: ({ rawType, node }) => {

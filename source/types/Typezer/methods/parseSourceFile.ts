@@ -42,6 +42,9 @@ export function parseSourceFile(
 
 		// find declaration nodes
 		switch (node.kind) {
+			case ts.SyntaxKind.ModuleDeclaration:
+				declare("namespace")
+				break
 			case ts.SyntaxKind.FunctionDeclaration:
 				declare("function")
 				break

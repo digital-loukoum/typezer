@@ -1,7 +1,7 @@
 import start from "fartest"
 import { Type } from "../../source/types/Type/Type"
 import { TypeName } from "../../source/types/Type/TypeName"
-import { validate } from "../../source/validate"
+import { validate, validateSignature } from "../../source/validate"
 import inspect from "object-inspect"
 
 start("Validations", async ({ stage, test, same }) => {
@@ -136,6 +136,10 @@ start("Validations", async ({ stage, test, same }) => {
 			pass({ typeName: "Boolean" }, true, false)
 			fail({ typeName: "Boolean" }, 0, "", null, undefined, {}, [])
 		},
+		Symbol() {
+			pass({ typeName: "Symbol" }, Symbol(12), Symbol("1213"))
+			fail({ typeName: "Symbol" }, 0, "", null, undefined, {}, [])
+		},
 		BigInteger() {
 			pass({ typeName: "BigInteger" }, 0n, BigInt(51321), -51312n, BigInt(-51321))
 			fail(
@@ -191,6 +195,30 @@ start("Validations", async ({ stage, test, same }) => {
 			fail(
 				{
 					typeName: "Object",
+					properties: {
+						x: { typeName: "Number" },
+					},
+				},
+				null,
+				{},
+				{ x: "12" },
+				{ y: 513 }
+			)
+		},
+		Namespace() {
+			pass(
+				{
+					typeName: "Namespace",
+					properties: {
+						x: { typeName: "Number" },
+					},
+				},
+				{ x: 12 },
+				{ x: 12, z: 653123 }
+			)
+			fail(
+				{
+					typeName: "Namespace",
 					properties: {
 						x: { typeName: "Number" },
 					},
@@ -433,6 +461,62 @@ start("Validations", async ({ stage, test, same }) => {
 				() => {}
 			)
 			fail({ typeName: "Function", signatures: [] }, {})
+
+			var { errors, returnType } = validateSignature(
+				{},
+				{
+					typeName: "Function",
+					signatures: [
+						{
+							minimumParameters: 1,
+							returnType: { typeName: "String" },
+							parameters: [{ typeName: "Number" }, { typeName: "String" }],
+						},
+					],
+				},
+				[12, "12"]
+			)
+			test(!errors?.length, "Signature validated")
+			same(returnType, { typeName: "String" }, "Good return type")
+
+			var { errors, returnType } = validateSignature(
+				{},
+				{
+					typeName: "Function",
+					signatures: [
+						{
+							minimumParameters: 3,
+							returnType: { typeName: "String" },
+							parameters: [{ typeName: "Number" }, { typeName: "String" }],
+						},
+						{
+							minimumParameters: 1,
+							returnType: { typeName: "Number" },
+							parameters: [{ typeName: "Number" }, { typeName: "String" }],
+						},
+					],
+				},
+				[12, "12"]
+			)
+			test(!errors?.length, "Second signature validated")
+			same(returnType, { typeName: "Number" }, "Second returnType returned")
+
+			var { errors, returnType } = validateSignature(
+				{},
+				{
+					typeName: "Function",
+					signatures: [
+						{
+							minimumParameters: 1,
+							returnType: { typeName: "Number" },
+							parameters: [{ typeName: "Number" }, { typeName: "String" }],
+						},
+					],
+				},
+				["12", "12"]
+			)
+			test(!!errors?.length, "Signature errors expected")
+			same(returnType, undefined, "No return type expected")
 		},
 		Constructor() {
 			pass(

@@ -4,6 +4,7 @@ import { Type } from "../Type/Type"
 export type RawDeclaration = {
 	id: string
 	declare:
+		| "namespace"
 		| "enumeration"
 		| "class"
 		| "interface"

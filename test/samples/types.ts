@@ -6,6 +6,8 @@ export type Primitives = {
 	Number: Number
 	string: string
 	String: String
+	symbol: symbol
+	Symbol: Symbol
 	boolean: boolean
 	Boolean: Boolean
 	BigInteger: BigInt

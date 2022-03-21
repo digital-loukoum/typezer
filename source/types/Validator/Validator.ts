@@ -52,8 +52,8 @@ export class Validator {
 		return this.validateSignature(type, parameters)
 	}
 
-	validateSignature = (
-		callable: Callable,
+	validateSignature = <Type extends Callable>(
+		callable: Type,
 		parameters: unknown[]
 	): ValidateSignatureResult => {
 		const errors: Array<string> = []

@@ -37,10 +37,14 @@ export type BaseTypes = {
 	Number: {}
 	BigInteger: {}
 	String: {}
+	Symbol: {}
 	RegularExpression: {}
 	Date: {}
 	ArrayBuffer: {}
 
+	Namespace: {
+		properties: Properties
+	}
 	Object: {
 		properties: Properties
 	}

@@ -9,6 +9,7 @@ export const isPrimitive = ({ typeName }: Type) =>
 	typeName == "RegularExpression" ||
 	typeName == "BigInteger" ||
 	typeName == "Date" ||
+	typeName == "Symbol" ||
 	typeName == "Number" ||
 	typeName == "StringLiteral" ||
 	typeName == "BigIntegerLiteral" ||
@@ -17,4 +18,5 @@ export const isPrimitive = ({ typeName }: Type) =>
 	typeName == "NumberLiteral" ||
 	typeName == "TemplateLiteral" ||
 	typeName == "ArrayBuffer" ||
+	typeName == "Function" ||
 	typeName == "String"

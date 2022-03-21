@@ -1,13 +1,8 @@
-- Update function validation: two strategies - based on function type or on parameters. Return the returnType of the right signature
-
-- Documentation
 - CI/CD
+- Documentation
 
 ✨ beta ready
 
 FUTURE
 - Validate constraint-less generics (several types sharing a generic must be compatible)
-- Fix Record<never, any>
-- Namespace declarations?
-- Symbols
 - Refining extended primitive types: if the extension define new fields, the type cannot be represented solely as a primitive type

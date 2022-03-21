@@ -82,12 +82,27 @@ export function validators(this: Validator): {
 			if (!(value instanceof ArrayBuffer)) this.mismatch(value, "an array buffer")
 		},
 
+		Symbol: (type, value) => {
+			if (typeof value != "symbol") this.mismatch(value, "a symbol")
+		},
+
 		// --    COMPOSABLES    -- //
 		Promise: (type, value) => {
 			this.validate(type.item, value)
 		},
 
 		Object: (type, value) => {
+			if (!value || typeof value !== "object") this.mismatch(value, "an object")
+			else {
+				for (const key in type.properties) {
+					this.path.push(key)
+					this.validate(type.properties[key], value[key])
+					this.path.pop()
+				}
+			}
+		},
+
+		Namespace: (type, value) => {
 			if (!value || typeof value !== "object") this.mismatch(value, "an object")
 			else {
 				for (const key in type.properties) {
