@@ -1,6 +1,5 @@
 import { serializeTemplateLiteral } from "../../utilities/serializeTemplateLiteral"
 import { templateExpressions } from "../../utilities/templateExpressions"
-import { getSchemaReference } from "../Schema/getSchemaReference"
 import { badPathItemKind } from "../Type/getPathTarget"
 import { isStringOrNumberLiteral } from "../Type/isStringOrNumberLiteral"
 import { TypeName } from "../Type/TypeName"
@@ -117,7 +116,7 @@ export function validators(this: Validator): {
 			else {
 				let keysType = type.keys
 				if (keysType.typeName == "Reference") {
-					keysType = getSchemaReference(this.schema, keysType.path)
+					keysType = this.findTypeByPath(keysType.path)
 				}
 				const literals: (Types["NumberLiteral"] | Types["StringLiteral"])[] = []
 				if (isStringOrNumberLiteral(keysType)) {

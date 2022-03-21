@@ -3,7 +3,7 @@
 - Documentation
 - CI/CD
 
-✨ v2.0 done
+✨ beta ready
 
 FUTURE
 - Validate constraint-less generics (several types sharing a generic must be compatible)

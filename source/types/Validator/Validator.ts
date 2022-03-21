@@ -4,6 +4,14 @@ import inspect from "object-inspect"
 import { validators } from "./validators"
 import { getSchemaReference } from "../Schema/getSchemaReference"
 import { Schema } from "../Schema/Schema"
+import { Types } from "../Type/Types"
+import { Signature } from "../Signature/Signature"
+import { Callable } from "../Signature/Callable"
+
+export type ValidateSignatureResult = {
+	errors?: Array<string>
+	returnType?: Type
+}
 
 export class Validator {
 	errors: Array<string> = []
@@ -13,8 +21,10 @@ export class Validator {
 
 	constructor(public schema: Schema) {}
 
-	validatePath = (path: Path = [], value: unknown) => {
-		const type = getSchemaReference(this.schema, path)
+	findTypeByPath = (path: Path): Type => getSchemaReference(this.schema, path)
+
+	validatePath = (path: Path, value: unknown) => {
+		const type = this.findTypeByPath(path)
 		return this.validate(type, value)
 	}
 
@@ -28,6 +38,67 @@ export class Validator {
 		}
 
 		return this
+	}
+
+	validateSignaturePath = (
+		path: Path,
+		parameters: unknown[]
+	): ValidateSignatureResult => {
+		const type = this.findTypeByPath(path)
+		if (type.typeName != "Function" && type.typeName != "Constructor") {
+			this.mismatch("a function or a constructor", type.typeName)
+			return { errors: this.errors }
+		}
+		return this.validateSignature(type, parameters)
+	}
+
+	validateSignature = (
+		callable: Callable,
+		parameters: unknown[]
+	): ValidateSignatureResult => {
+		const errors: Array<string> = []
+		const localValidator = this.fork()
+
+		for (const signature of callable.signatures) {
+			if (parameters.length < signature.minimumParameters) {
+				localValidator.mismatch(
+					`minimum ${signature.minimumParameters} minimum parameters`,
+					`${parameters.length} parameters`
+				)
+			} else if (
+				!signature.restParameters &&
+				parameters.length > signature.parameters.length
+			) {
+				localValidator.mismatch(
+					`maximum ${signature.parameters.length} parameters`,
+					`${parameters.length} parameters`
+				)
+			} else {
+				signature.parameters.forEach((parameterType, index) => {
+					localValidator.validate(parameterType, parameters[index])
+				})
+				if (signature.restParameters) {
+					for (
+						let index = signature.parameters.length;
+						index < parameters.length;
+						index++
+					) {
+						localValidator.validate(signature.restParameters, parameters[index])
+					}
+				}
+			}
+
+			// if the localValidator has no errors, then the signature passed
+			if (!localValidator.errors.length) {
+				return { returnType: signature.returnType }
+			} else {
+				errors.push(...localValidator.errors)
+				localValidator.errors = []
+			}
+		}
+
+		this.errors.push(...errors)
+		return { errors }
 	}
 
 	mismatch = (value: any, expected: any) => {
