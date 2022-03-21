@@ -6,7 +6,7 @@
 		"module": "esnext",
 		"strict": true,
 		"esModuleInterop": true,
-
+		"experimentalDecorators": true,
 		"outDir": "library",
 		"declaration": true
 	},

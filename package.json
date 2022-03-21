@@ -1,15 +1,23 @@
 {
 	"name": "typezer",
-	"version": "1.0.0",
-	"description": "Parse Typescript files and retrieve a synthetic description of defined types and variables",
+	"version": "0.9.0",
+	"description": "Parse Typescript files to get a synthetic description of defined types and variables",
 	"type": "module",
-	"main": "library/index.js",
+	"files": [
+		"library"
+	],
+	"exports": {
+		".": "./library/index.js",
+		"./*": "./library/*.js"
+	},
 	"scripts": {
 		"dev": "esrun --watch:source/**/*.ts,test/**/*.ts test",
 		"test": "esrun test",
-		"inspect": "esrun --inspect test",
-		"check": "tsc --noEmit",
-		"build": "tsc-esm"
+		"inspect": "esrun --inspect test/inspect",
+		"watch": "esrun --inspect test/watch",
+		"check": "tsc --noEmit --watch",
+		"build": "esrun scripts/build",
+		"deploy": "esrun scripts/deploy"
 	},
 	"repository": {
 		"type": "git",
@@ -28,15 +36,18 @@
 	},
 	"homepage": "https://github.com/digital-loukoum/typezer#readme",
 	"dependencies": {
-		"@types/node": "^15.6.1",
-		"polka": "^0.5.2",
-		"typescript": "^4.2.4"
+		"@digitak/print": "^1.1.4",
+		"@types/object-inspect": "^1.8.1",
+		"chokidar": "^3.5.3",
+		"fast-glob": "^3.2.11",
+		"object-inspect": "^1.12.0",
+		"tosource": "^2.0.0-alpha.3",
+		"typescript": "^4.5"
 	},
 	"devDependencies": {
-		"@digitak/esrun": "^1.2.7",
-		"@digitak/tsc-esm": "^1.0.3",
-		"cute-print": "^1.0.4",
-		"ts-json-schema-generator": "^0.96.0",
-		"typescript-json-schema": "^0.51.0"
+		"@digitak/esrun": "^3.0.2",
+		"@digitak/tsc-esm": "^3.1.2",
+		"@types/node": "^15.6.1",
+		"fartest": "^2.1.8"
 	}
 }

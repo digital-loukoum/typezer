@@ -1,0 +1,92 @@
+import { Path } from "../Path/Path"
+import { Properties } from "../Properties/Properties"
+import { Signature } from "../Signature/Signature"
+import { Type } from "./Type"
+
+export type Types = {
+	[Key in keyof BaseTypes]: {
+		typeName: Key
+		generics?: Record<string, Type>
+	} & BaseTypes[Key]
+}
+
+export type BaseTypes = {
+	Never: {}
+	Void: {}
+	Null: {}
+	Undefined: {}
+	StringLiteral: {
+		value: string
+	}
+	TemplateLiteral: {
+		texts: string[]
+		types: ("string" | "number" | "bigint")[]
+	}
+	NumberLiteral: {
+		value: number
+	}
+	BigIntegerLiteral: {
+		value: string
+	}
+	BooleanLiteral: {
+		value: boolean
+	}
+	Any: {}
+
+	Boolean: {}
+	Number: {}
+	BigInteger: {}
+	String: {}
+	Symbol: {}
+	RegularExpression: {}
+	Date: {}
+	ArrayBuffer: {}
+
+	Namespace: {
+		properties: Properties
+	}
+	Object: {
+		properties: Properties
+	}
+	Promise: {
+		item: Type
+	}
+	Record: {
+		keys: Type
+		items: Type
+	}
+	Map: {
+		keys: Type
+		items: Type
+	}
+	Array: {
+		items: Type
+	}
+	Set: {
+		items: Type
+	}
+	Tuple: {
+		items: Type[]
+	}
+	Union: {
+		items: Type[]
+	}
+	Enumeration: {
+		items: Record<string, Type>
+	}
+	Function: {
+		signatures: Signature[]
+	}
+	Constructor: {
+		signatures: Signature[]
+		properties: Properties
+	}
+	Class: {
+		properties: Properties
+		// constructorParameters?: Type[] // can't figure out how to get it from a class declaration
+	}
+	Reference: {
+		path: Path
+		typeParameters?: Type[]
+	}
+}
