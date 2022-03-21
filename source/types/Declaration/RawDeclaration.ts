@@ -17,6 +17,5 @@ export type RawDeclaration = {
 	exportedAs: string[]
 	node: ts.Node
 	rawType: ts.Type
-	generics?: ts.Type[]
 	type?: Type // undefined when not cmputed yet
 }

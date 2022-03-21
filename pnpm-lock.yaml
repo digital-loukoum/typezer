@@ -3,7 +3,7 @@ lockfileVersion: 5.3
 specifiers:
   '@digitak/esrun': ^3.0.2
   '@digitak/print': ^1.1.4
-  '@digitak/tsc-esm': ^2.0.3
+  '@digitak/tsc-esm': ^3.1.2
   '@types/node': ^15.6.1
   '@types/object-inspect': ^1.8.1
   chokidar: ^3.5.3
@@ -24,7 +24,7 @@ dependencies:
 
 devDependencies:
   '@digitak/esrun': 3.1.2
-  '@digitak/tsc-esm': 2.0.6
+  '@digitak/tsc-esm': 3.1.2
   '@types/node': 15.14.9
   fartest: 2.1.8
 
@@ -40,19 +40,19 @@ packages:
       esbuild: 0.12.29
     dev: true
 
-  /@digitak/grubber/3.0.2:
-    resolution: {integrity: sha512-Vs1zYsmejKxGwshnmHm4YmykHZuYyX09qe7zWjPJHBOnxDfsyQX8jBOHYEfukY2aVY2T1ftxHU165PSMFFjRBA==}
+  /@digitak/grubber/3.1.1:
+    resolution: {integrity: sha512-xHpmj3Erk5AA/nKpOJzap23TJSV0MFRTgtciG8XZg0GP0CUwms0g02SQQaKEPCe2mvKVlqfzad3xV4DiHlq2jA==}
     dev: true
 
   /@digitak/print/1.1.4:
     resolution: {integrity: sha512-0RHK/VmKO/JXxvDjpUJo1IwYVf+ZSBx543sk8FVBegp9pUPkGnSnd9waQv5yBLuaRg+WneNiFBmnhOKdPV4pOQ==}
     dev: false
 
-  /@digitak/tsc-esm/2.0.6:
-    resolution: {integrity: sha512-a8aIFbCwOI7EazUtgFg3lfk95oPK5/yikfsjCmC87+1McBIsXGX0a0k2DsrSs39UPn5QVSUaTp7uMNy/xxaFZw==}
+  /@digitak/tsc-esm/3.1.2:
+    resolution: {integrity: sha512-9pey4YgsWA5dmE/KFahIvNukRItibNBryzqKnHr72JRBOk4WP1ZFQWzYJA3DzlPgLEzlcR+j4McXZJFl+2NVCA==}
     hasBin: true
     dependencies:
-      '@digitak/grubber': 3.0.2
+      '@digitak/grubber': 3.1.1
       fast-glob: 3.2.11
       relaxed-json: 1.0.3
     dev: true
