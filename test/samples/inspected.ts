@@ -10,7 +10,10 @@
 // 	constructor(public z = 12) {}
 // }
 
-function coco(a: number, ...rest: string[]) {}
+const coco = class {
+	static z = 12
+	y = "12"
+}
 
 // export type GenericType<T extends String> = {
 // 	x: T

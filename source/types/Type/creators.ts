@@ -11,7 +11,7 @@ import { Type } from "./Type"
 import { TypeName } from "./TypeName"
 import { Types } from "./Types"
 
-export type TypeDescriptor<T> = {
+export type Creator<T> = {
 	priority?: number
 	create?: (_: {
 		node: ts.Node
@@ -20,8 +20,8 @@ export type TypeDescriptor<T> = {
 	}) => T | undefined
 }
 
-export function typeDescriptors(this: Typezer): {
-	[Key in TypeName]: TypeDescriptor<Types[Key]>
+export function creators(this: Typezer): {
+	[Key in TypeName]: Creator<Types[Key]>
 } {
 	return {
 		Reference: {}, // not concerned
@@ -526,40 +526,24 @@ export function typeDescriptors(this: Typezer): {
 		Function: {
 			create: ({ rawType, node }) => {
 				const rawSignatures = rawType.getCallSignatures()
-				if (rawSignatures?.length) {
-					// console.log("Function type:", rawType)
-					const signatures: Signature[] = rawSignatures.map(signature => {
-						let restParameters: undefined | Type = undefined
-						const parameters: Type[] = []
-						const rawParameters = signature.getParameters()
-						const minimumParameters = (signature as any).minArgumentCount
+				if (!rawSignatures?.length) return
+				// console.log("Function type:", rawType)
+				return {
+					typeName: "Function",
+					signatures: this.utilities.getSignatures(node, rawSignatures),
+				}
+			},
+		},
 
-						rawParameters.forEach((symbol, index) => {
-							const type = this.createType(
-								this.checker.getTypeOfSymbolAtLocation(symbol, node),
-								node
-							)
-							if (
-								index == rawParameters.length - 1 &&
-								type.typeName == "Array" &&
-								(symbol.valueDeclaration as ts.ParameterDeclaration)?.dotDotDotToken
-							) {
-								restParameters = type.items
-							} else {
-								parameters.push(type)
-							}
-						})
-
-						const returnType = this.createType(signature.getReturnType(), node)
-						return {
-							minimumParameters,
-							parameters,
-							...(restParameters ? { restParameters } : {}),
-							returnType,
-						}
-					})
-
-					return { typeName: "Function", signatures }
+		Constructor: {
+			create: ({ rawType, node }) => {
+				const rawSignatures = rawType.getConstructSignatures()
+				if (!rawSignatures?.length) return
+				// console.log("Function type:", rawType)
+				return {
+					typeName: "Constructor",
+					properties: this.createProperties(rawType, node),
+					signatures: this.utilities.getSignatures(node, rawSignatures),
 				}
 			},
 		},
@@ -603,32 +587,32 @@ export function typeDescriptors(this: Typezer): {
 
 					Object.assign(properties, this.createProperties(rawType, node))
 					return { typeName: "Class", properties }
-				} else {
-					// class variable assignment
-					const [signature] = rawType.getConstructSignatures() ?? []
-					if (!signature) return
+					// } else {
+					// 	// class variable assignment
+					// 	const [signature] = rawType.getConstructSignatures() ?? []
+					// 	if (!signature) return
 
-					/**
-					 * We don't add constructor informations because I just can't figure
-					 * out how to get it from the class declaration.
-					 */
-					// const constructorParameters = signature
-					// 	.getParameters()
-					// 	.filter(({ name }) => name != "prototype")
-					// 	.map(symbol =>
-					// 		this.createType(
-					// 			this.checker.getTypeOfSymbolAtLocation(symbol, node),
-					// 			node,
-					// 			{ kind: "parameter", name: String(symbol.escapedName) }
-					// 		)
-					// 	)
+					// 	/**
+					// 	 * We don't add constructor informations because I just can't figure
+					// 	 * out how to get it from the class declaration.
+					// 	 */
+					// 	// const constructorParameters = signature
+					// 	// 	.getParameters()
+					// 	// 	.filter(({ name }) => name != "prototype")
+					// 	// 	.map(symbol =>
+					// 	// 		this.createType(
+					// 	// 			this.checker.getTypeOfSymbolAtLocation(symbol, node),
+					// 	// 			node,
+					// 	// 			{ kind: "parameter", name: String(symbol.escapedName) }
+					// 	// 		)
+					// 	// 	)
 
-					const properties = {
-						...this.createProperties(signature.getReturnType(), node),
-						...this.createProperties(rawType, node),
-					}
-					delete properties.prototype
-					return { typeName: "Class", properties }
+					// 	const properties = {
+					// 		...this.createProperties(signature.getReturnType(), node),
+					// 		...this.createProperties(rawType, node),
+					// 	}
+					// 	delete properties.prototype
+					// 	return { typeName: "Class", properties }
 				}
 			},
 		},

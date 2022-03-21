@@ -24,8 +24,8 @@ export function createType(
 		}
 	}
 
-	console.log("node", node)
-	console.log("rawType", rawType.symbol?.escapedName, rawType)
+	// console.log("node", node)
+	// console.log("rawType", rawType.symbol?.escapedName, rawType)
 	// return
 	if (pathItem) this.path.push(pathItem)
 	this.typeCache.set(rawType, (cached = { path: this.path.slice() }))
@@ -47,24 +47,24 @@ export function createType(
 
 	// we traverse all base types of the given type to look for its true type
 	const baseRawTypes = getOriginalBaseTypes(rawType)
-	let priority = -Infinity
+	let currentPriority = -Infinity
 	let type: Type | undefined = undefined
 
 	for (const baseRawType of baseRawTypes) {
 		let typeName: TypeName
 
-		for (typeName in this.types) {
+		for (typeName in this.creators) {
 			// objects are used in last resort
 			if (typeName == "Object") continue
 
-			const constructor = this.types[typeName]
+			const { create, priority } = this.creators[typeName]
 
-			const challenger = constructor.create?.({
+			const challenger = create?.({
 				rawType: baseRawType,
 				node,
 			})
-			if (challenger && (constructor.priority ?? 0) > priority) {
-				;(type = challenger), (priority = constructor.priority ?? 0)
+			if (challenger && (priority ?? 0) > currentPriority) {
+				;(type = challenger), (currentPriority = priority ?? 0)
 			}
 		}
 	}
@@ -87,7 +87,7 @@ export function createType(
 			}
 		} else {
 			// else the type is a plain object
-			type = this.types.Object.create!({ rawType, node })!
+			type = this.creators.Object.create!({ rawType, node })!
 		}
 	}
 

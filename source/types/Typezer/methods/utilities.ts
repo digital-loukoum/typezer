@@ -1,4 +1,6 @@
 import ts from "typescript"
+import { Signature } from "../../Signature/Signature"
+import { Type } from "../../Type/Type"
 import { Typezer } from "../Typezer"
 
 export function utilities(this: Typezer) {
@@ -76,6 +78,42 @@ export function utilities(this: Typezer) {
 				const [signature] = thenType.getCallSignatures()
 				return (signature?.typeParameters?.[1] as any)?.mapper?.mapper2?.targets?.[0]
 			}
+		},
+
+		getSignatures: (
+			node: ts.Node,
+			rawSignatures: readonly ts.Signature[]
+		): Signature[] => {
+			return rawSignatures.map(signature => {
+				let restParameters: undefined | Type = undefined
+				const parameters: Type[] = []
+				const rawParameters = signature.getParameters()
+				const minimumParameters = (signature as any).minArgumentCount
+
+				rawParameters.forEach((symbol, index) => {
+					const type = this.createType(
+						this.checker.getTypeOfSymbolAtLocation(symbol, node),
+						node
+					)
+					if (
+						index == rawParameters.length - 1 &&
+						type.typeName == "Array" &&
+						(symbol.valueDeclaration as ts.ParameterDeclaration)?.dotDotDotToken
+					) {
+						restParameters = type.items
+					} else {
+						parameters.push(type)
+					}
+				})
+
+				const returnType = this.createType(signature.getReturnType(), node)
+				return {
+					minimumParameters,
+					parameters,
+					...(restParameters ? { restParameters } : {}),
+					returnType,
+				}
+			})
 		},
 	}
 }

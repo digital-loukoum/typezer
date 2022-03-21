@@ -70,6 +70,17 @@ start("Types", async ({ stage, test, same }) => {
 		}
 	}
 
+	stage("Classes")
+	{
+		const root = getRootType<Types["Class"]>("Class")
+		same(root.typeName, "Class")
+		for (const [propertyName, property] of Object.entries(root.properties)) {
+			if (property.modifiers?.includes("static"))
+				same(propertyName, "static", `'static' property should be static`)
+			else same(propertyName, "notStatic", `'notStatic' property should not be static`)
+		}
+	}
+
 	stage("Modifiers")
 	{
 		const { properties } = getRootType("Modifiers")
@@ -202,7 +213,7 @@ start("Types", async ({ stage, test, same }) => {
 		}
 	}
 
-	stage("Functions and constructors")
+	stage("Functions")
 	{
 		const { properties } = getRootType("Functions")
 
@@ -211,19 +222,59 @@ start("Types", async ({ stage, test, same }) => {
 			same(
 				type,
 				properties[value].typeName,
-				`Check callable '${value}' has the right type`
+				`Check function '${value}' has the right type`
 			)
 			const callable = properties[value] as Types["Function"]
 			const [signature] = callable.signatures
 			same(
 				returnType,
 				signature.returnType.typeName,
-				`Check return type of callable '${value}'`
+				`Check return type of function '${value}'`
 			)
 		}
 	}
 
-	stage("Classes")
+	stage("Constructors")
+	{
+		const constructor = getRootType<Types["Constructor"]>("Constructor")
+		same(constructor.typeName, "Constructor", `Check constructor is a constructor`)
+		const prototype = constructor.properties.prototype as Types["Object"]
+		for (const [propertyName, property] of Object.entries(prototype.properties)) {
+			same(
+				propertyName,
+				property.typeName,
+				`Property of constructor prototype has the right type`
+			)
+		}
+		test(
+			!!constructor.properties.static?.modifiers?.includes("static"),
+			`Constructor static property`
+		)
+	}
+	{
+		const { properties } = getRootType("Constructors")
+
+		for (const value in properties) {
+			const [type, minimumParameters, ...parameters] = value.split("_")
+			same(
+				type,
+				properties[value].typeName,
+				`Check constructor '${value}' has the right type`
+			)
+			const callable = properties[value] as Types["Constructor"]
+			const [signature] = callable.signatures
+			same(
+				+minimumParameters,
+				signature.minimumParameters,
+				`Minimum parameters of constructor '${value}'`
+			)
+			same(
+				parameters,
+				signature.parameters.map(type => type.typeName),
+				`Parameters type of constructor '${value}'`
+			)
+		}
+	}
 
 	stage("Circular references")
 	{

@@ -83,6 +83,22 @@ export type Functions = {
 	Function_String: () => String
 }
 
+export const Constructor = class {
+	static static = 12
+	constructor(public Number: number, public String: string) {}
+}
+
+export type Constructors = {
+	Constructor_1_String: new (_: string) => any
+	Constructor_1_Number_String: new (_1: number, _2?: string) => any
+	Constructor_0_Number_String: new (_1?: number, _2?: string) => any
+}
+
+export class Class {
+	static static = 12
+	notStatic = 12
+}
+
 export type CircularReference = {
 	primitives: Primitives
 	self: CircularReference

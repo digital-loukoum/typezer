@@ -13,16 +13,12 @@ export class Validator {
 
 	constructor(public schema: Schema) {}
 
-	validate(value: unknown, declarationId: string, path: Path = []) {
-		const type = getSchemaReference(this.schema, [
-			{ kind: "declaration", id: declarationId },
-			...path,
-		])
-
-		return this.validateType(type, value)
+	validatePath = (path: Path = [], value: unknown) => {
+		const type = getSchemaReference(this.schema, path)
+		return this.validate(type, value)
 	}
 
-	validateType(type: Type, value: unknown) {
+	validate = (type: Type, value: unknown) => {
 		let validatedValues = this.validated.get(type)
 		if (!validatedValues) this.validated.set(type, (validatedValues = new Set()))
 
@@ -34,7 +30,7 @@ export class Validator {
 		return this
 	}
 
-	mismatch(value: any, expected: any) {
+	mismatch = (value: any, expected: any) => {
 		const path = this.joinPath()
 		const pathInfos = path ? `at '${this.joinPath()}'` : ""
 		this.errors.push(
@@ -42,7 +38,7 @@ export class Validator {
 		)
 	}
 
-	missing(key: string) {
+	missing = (key: string) => {
 		const path = this.joinPath()
 		const pathInfos = path ? `in '${this.joinPath()}'` : ""
 		this.errors.push(`Key '${key}' missing ${pathInfos}`)
@@ -51,13 +47,13 @@ export class Validator {
 	/**
 	 * Create a new validator that shares the validated values
 	 */
-	fork() {
+	fork = () => {
 		const forked = new Validator(this.schema)
 		forked.validated = this.validated
 		return forked
 	}
 
-	joinPath() {
+	joinPath = () => {
 		return this.path.join(".")
 	}
 }

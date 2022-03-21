@@ -73,6 +73,10 @@ export type BaseTypes = {
 	Function: {
 		signatures: Signature[]
 	}
+	Constructor: {
+		signatures: Signature[]
+		properties: Properties
+	}
 	Class: {
 		properties: Properties
 		// constructorParameters?: Type[] // can't figure out how to get it from a class declaration

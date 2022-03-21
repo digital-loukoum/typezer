@@ -85,7 +85,7 @@ export function validators(this: Validator): {
 
 		// --    COMPOSABLES    -- //
 		Promise: (type, value) => {
-			this.validateType(type.item, value)
+			this.validate(type.item, value)
 		},
 
 		Object: (type, value) => {
@@ -93,7 +93,7 @@ export function validators(this: Validator): {
 			else {
 				for (const key in type.properties) {
 					this.path.push(key)
-					this.validateType(type.properties[key], value[key])
+					this.validate(type.properties[key], value[key])
 					this.path.pop()
 				}
 			}
@@ -117,8 +117,8 @@ export function validators(this: Validator): {
 
 				for (const key in value) {
 					this.path.push(key)
-					this.validateType(type.keys, key)
-					this.validateType(type.items, value[key])
+					this.validate(type.keys, key)
+					this.validate(type.items, value[key])
 					this.path.pop()
 				}
 
@@ -136,7 +136,7 @@ export function validators(this: Validator): {
 			else {
 				value.forEach((item, index) => {
 					this.path.push(String(index))
-					this.validateType(type.items, item)
+					this.validate(type.items, item)
 					this.path.pop()
 				})
 			}
@@ -149,7 +149,7 @@ export function validators(this: Validator): {
 			else {
 				type.items.forEach((type, index) => {
 					this.path.push(String(index))
-					this.validateType(type, value[index])
+					this.validate(type, value[index])
 					this.path.pop()
 				})
 			}
@@ -160,8 +160,8 @@ export function validators(this: Validator): {
 			else {
 				for (const [key, item] of value.entries()) {
 					this.path.push(!key || typeof key != "object" ? String(key) : "")
-					this.validateType(type.keys, key)
-					this.validateType(type.items, item)
+					this.validate(type.keys, key)
+					this.validate(type.items, item)
 					this.path.pop()
 				}
 			}
@@ -172,7 +172,7 @@ export function validators(this: Validator): {
 			else {
 				this.path.push("")
 				for (const key of value) {
-					this.validateType(type.items, key)
+					this.validate(type.items, key)
 				}
 				this.path.pop()
 			}
@@ -180,7 +180,7 @@ export function validators(this: Validator): {
 
 		Union: (type, value) => {
 			for (const subtype of type.items) {
-				const check = this.fork().validateType(subtype, value)
+				const check = this.fork().validate(subtype, value)
 				if (!check.errors.length) return
 			}
 			this.mismatch(value, type.toString())
@@ -188,7 +188,7 @@ export function validators(this: Validator): {
 
 		Enumeration: (type, value) => {
 			for (const subtype of Object.values(type.items)) {
-				const check = this.fork().validateType(subtype, value)
+				const check = this.fork().validate(subtype, value)
 				if (!check.errors.length) return
 			}
 			this.mismatch(value, type.toString())
@@ -199,6 +199,10 @@ export function validators(this: Validator): {
 		},
 
 		Class: (type, value) => {
+			// if (typeof value !== "function") this.mismatch(value, "a class")
+		},
+
+		Constructor: (type, value) => {
 			if (typeof value !== "function") this.mismatch(value, "a class")
 		},
 
@@ -207,7 +211,7 @@ export function validators(this: Validator): {
 			if (declarationItem.kind != "declaration") {
 				throw badPathItemKind(declarationItem, "declaration")
 			}
-			return this.validate(value, declarationItem.id, type.path.slice(1))
+			return this.validatePath(value, type.path)
 		},
 	}
 }

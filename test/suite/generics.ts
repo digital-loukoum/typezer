@@ -2,7 +2,6 @@ import { getSchema } from "../../source"
 import start from "fartest"
 import { Types } from "../../source/types/Type/Types"
 import { Path } from "../../source/types/Path/Path"
-import { Signature } from "../../source/types/Signature/Signature"
 
 start("Generics", async ({ stage, test, same }) => {
 	const schema = getSchema(["test/samples/generics.ts"])

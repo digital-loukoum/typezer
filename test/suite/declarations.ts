@@ -1,4 +1,4 @@
-import { getAllDeclarations, getSchema } from "../../source"
+import { getSchema } from "../../source"
 import start from "fartest"
 
 start("Declarations", async ({ stage, test, same }) => {

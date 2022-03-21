@@ -1,13 +1,13 @@
 import start from "fartest"
 import { Type } from "../../source/types/Type/Type"
 import { TypeName } from "../../source/types/Type/TypeName"
-import { validateType } from "../../source/validate"
+import { validate } from "../../source/validate"
 import inspect from "object-inspect"
 
 start("Validations", async ({ stage, test, same }) => {
 	const pass = (type: Type, ...values: Array<unknown>) => {
 		for (const value of values) {
-			const errors = validateType({}, type, value)
+			const errors = validate({}, type, value)
 			test(
 				errors.length == 0,
 				`Validation should pass but errors raised:\n${errors
@@ -18,7 +18,7 @@ start("Validations", async ({ stage, test, same }) => {
 	}
 	const fail = (type: Type, ...values: Array<unknown>) => {
 		for (const value of values) {
-			const errors = validateType({}, type, value)
+			const errors = validate({}, type, value)
 			test(
 				errors.length > 0,
 				`Validation should fail but succeeded for value ${inspect(value)}`
@@ -406,6 +406,14 @@ start("Validations", async ({ stage, test, same }) => {
 				() => {}
 			)
 			fail({ typeName: "Function", signatures: [] }, {})
+		},
+		Constructor() {
+			pass(
+				{ typeName: "Constructor", properties: {}, signatures: [] },
+				function () {},
+				() => {}
+			)
+			fail({ typeName: "Constructor", properties: {}, signatures: [] }, {})
 		},
 		Class() {
 			// pass({ typeName: "Function", signatures: [] }, class {})

@@ -14,7 +14,7 @@ import { RawDeclaration } from "../Declaration/RawDeclaration"
 import { createRawDeclaration } from "./methods/createRawDeclaration"
 import { createType } from "./methods/createType"
 import { createManyTypes } from "./methods/createManyTypes"
-import { typeDescriptors } from "../Type/descriptors"
+import { creators } from "../Type/creators"
 import { createProperties } from "./methods/createProperties"
 import { utilities } from "./methods/utilities"
 import { getRawDeclarationType } from "./methods/getRawDeclarationType"
@@ -70,7 +70,7 @@ export class Typezer {
 	public watch = watch.bind(this)
 
 	protected utilities = utilities.call(this)
-	protected types = typeDescriptors.call(this)
+	protected creators = creators.call(this)
 
 	protected parseSourceFile = parseSourceFile.bind(this)
 	protected parseSourceFiles = parseSourceFiles.bind(this)
