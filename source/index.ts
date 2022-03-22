@@ -12,14 +12,15 @@ export const getSchema = (files: string[], options: ts.CompilerOptions = {}) => 
 	return new Typezer(files, options).schema
 }
 
-// export const findDeclarationByName = (
-// 	files: string[],
-// 	declarationName: string,
-// 	options: ts.CompilerOptions = {}
-// ) => {
-// 	const declarations = getAllDeclarations(files, options)
-// 	return declarations.find(declaration => declaration.name == declarationName)
-// }
+export const findDeclarationByName = (
+	files: string[],
+	declarationName: string,
+	options: ts.CompilerOptions
+) => {
+	const { schema, declarations } = new Typezer(files, options)
+	const declaration = schema[declarationName]
+	return { declaration, schema, declarations }
+}
 
 export const watch = (
 	files: string[],
