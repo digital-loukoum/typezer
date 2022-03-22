@@ -4,7 +4,7 @@ import { getOriginalBaseTypes } from "../../../utilities/getOriginalBaseType"
 import { Type } from "../../Type/Type"
 import { TypeName } from "../../Type/TypeName"
 import { PathItem } from "../../Path/PathItem"
-import { isPrimitive } from "../../Type/isPrimitive"
+import { isReferencable } from "../../Type/isReferencable"
 import { getTypeTarget } from "../../../utilities/getTypeTarget"
 
 export function createType(
@@ -14,9 +14,9 @@ export function createType(
 	pathItem?: PathItem
 ): Type {
 	// we check if the type has not been already cached
-	let cached = this.typeCache.get(rawType)
+	let cached = this.useReferences ? this.typeCache.get(rawType) : undefined
 	if (cached) {
-		if (!(cached.type && isPrimitive(cached.type))) {
+		if (!cached.type || isReferencable(cached.type)) {
 			return {
 				typeName: "Reference",
 				path: cached.path,
@@ -28,7 +28,10 @@ export function createType(
 	// console.log("rawType", rawType.symbol?.escapedName, rawType)
 	// return
 	if (pathItem) this.path.push(pathItem)
-	this.typeCache.set(rawType, (cached = { path: this.path.slice() }))
+
+	if (this.useReferences) {
+		this.typeCache.set(rawType, (cached = { path: this.path.slice() }))
+	}
 
 	// generics
 	const generics: Record<string, Type> = {}
@@ -64,17 +67,22 @@ export function createType(
 				node,
 			})
 			if (challenger && (priority ?? 0) > currentPriority) {
-				;(type = challenger), (currentPriority = priority ?? 0)
+				type = challenger
+				currentPriority = priority ?? 0
 			}
 		}
 	}
 
 	// if the type could not be guessed, it's a regular object or a generic
 	if (!type) {
-		const target = getTypeTarget(rawType)
+		let target: ts.Type
 		let cachedTarget
 
-		if (target != rawType && (cachedTarget = this.typeCache.get(target))) {
+		if (
+			this.useReferences &&
+			(target = getTypeTarget(rawType)) != rawType &&
+			(cachedTarget = this.typeCache.get(target))
+		) {
 			// then the type is a reference to a generic
 			const typeParameters = this.utilities
 				.getTypeGenerics(rawType)
@@ -96,5 +104,7 @@ export function createType(
 	}
 
 	if (pathItem) this.path.pop()
-	return (cached.type = type)
+	if (cached) cached.type = type
+
+	return type
 }

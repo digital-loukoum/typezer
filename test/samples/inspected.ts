@@ -1,2 +1,1 @@
-export var x: symbol
-type Toto = Record<symbol, number>
+type Zabu<T> = T extends string ? number : never

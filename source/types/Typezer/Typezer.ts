@@ -25,11 +25,22 @@ import { Type } from "../Type/Type"
 import { Path } from "../Path/Path"
 import { createSchema } from "./methods/createSchema"
 import { Schema } from "../Schema/Schema"
+import micromatch from "micromatch"
+
+export type TypezerOptions = {
+	files?: string[]
+	symbols?: string[] // list of target symbols
+	useReferences?: boolean // whether to use references or to embed all types (may cause circular reference issues)
+	compilerOptions?: ts.CompilerOptions
+}
 
 export class Typezer {
-	public readonly options: ts.CompilerOptions
+	public readonly compilerOptions: ts.CompilerOptions
 
 	public files: Array<string>
+	public readonly useReferences: boolean
+	public readonly symbols?: string[]
+	public readonly matchRootSymbol: (value: string) => boolean
 	public sourceFiles: readonly ts.SourceFile[] = []
 	public localSourceFiles: readonly ts.SourceFile[] = []
 	public entrySourceFiles: readonly ts.SourceFile[] = []
@@ -46,7 +57,21 @@ export class Typezer {
 	protected host: ts.CompilerHost
 	protected sourceFileCache = new Map<string, ts.SourceFile | undefined>()
 
-	constructor(files: string[], options: ts.CompilerOptions = {}) {
+	constructor({
+		files = [],
+		symbols,
+		useReferences = true,
+		compilerOptions = {},
+	}: TypezerOptions) {
+		this.useReferences = useReferences
+		this.symbols = symbols
+
+		if (!this.symbols) this.matchRootSymbol = () => true
+		else {
+			const matchers = this.symbols.map(symbol => micromatch.matcher(symbol))
+			this.matchRootSymbol = (value: string) => matchers.some(matcher => matcher(value))
+		}
+
 		this.files = files
 			.map(file => glob.sync(file))
 			.flat()
@@ -56,10 +81,10 @@ export class Typezer {
 			print`[yellow:No files found matching ${JSON.stringify(files)}]`
 		}
 
-		this.options = {
+		this.compilerOptions = {
 			skipDefaultLibCheck: true,
 			noEmit: true,
-			...options,
+			...compilerOptions,
 		}
 
 		this.host = this.createHost()

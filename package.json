@@ -40,6 +40,7 @@
 		"@types/object-inspect": "^1.8.1",
 		"chokidar": "^3.5.3",
 		"fast-glob": "^3.2.11",
+		"micromatch": "^4.0.4",
 		"object-inspect": "^1.12.0",
 		"tosource": "^2.0.0-alpha.3",
 		"typescript": "^4.5"
@@ -47,6 +48,7 @@
 	"devDependencies": {
 		"@digitak/esrun": "^3.0.2",
 		"@digitak/tsc-esm": "^3.1.2",
+		"@types/micromatch": "^4.0.2",
 		"@types/node": "^15.6.1",
 		"fartest": "^2.1.8"
 	}

@@ -4,11 +4,13 @@ specifiers:
   '@digitak/esrun': ^3.0.2
   '@digitak/print': ^1.1.4
   '@digitak/tsc-esm': ^3.1.2
+  '@types/micromatch': ^4.0.2
   '@types/node': ^15.6.1
   '@types/object-inspect': ^1.8.1
   chokidar: ^3.5.3
   fartest: ^2.1.8
   fast-glob: ^3.2.11
+  micromatch: ^4.0.4
   object-inspect: ^1.12.0
   tosource: ^2.0.0-alpha.3
   typescript: ^4.5
@@ -18,6 +20,7 @@ dependencies:
   '@types/object-inspect': 1.8.1
   chokidar: 3.5.3
   fast-glob: 3.2.11
+  micromatch: 4.0.4
   object-inspect: 1.12.0
   tosource: 2.0.0-alpha.3
   typescript: 4.5.4
@@ -25,6 +28,7 @@ dependencies:
 devDependencies:
   '@digitak/esrun': 3.1.2
   '@digitak/tsc-esm': 3.1.2
+  '@types/micromatch': 4.0.2
   '@types/node': 15.14.9
   fartest: 2.1.8
 
@@ -74,6 +78,16 @@ packages:
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.13.0
+
+  /@types/braces/3.0.1:
+    resolution: {integrity: sha512-+euflG6ygo4bn0JHtn4pYqcXwRtLvElQ7/nnjDu7iYG56H0+OhCd7d6Ug0IE3WcFpZozBKW2+80FUbv5QGk5AQ==}
+    dev: true
+
+  /@types/micromatch/4.0.2:
+    resolution: {integrity: sha512-oqXqVb0ci19GtH0vOA/U2TmHTcRY9kuZl4mqUxe0QmJAlIW13kzhuK5pi1i9+ngav8FjpSb9FVS/GE00GLX1VA==}
+    dependencies:
+      '@types/braces': 3.0.1
+    dev: true
 
   /@types/node/15.14.9:
     resolution: {integrity: sha512-qjd88DrCxupx/kJD5yQgZdcYKZKSIGBVDIBE1/LTGcNm3d2Np/jxojkdePDdfnBHJc5W7vSMpbJ1aB7p/Py69A==}
