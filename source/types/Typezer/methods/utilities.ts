@@ -52,6 +52,10 @@ export function utilities(this: Typezer) {
 		},
 
 		getTypeGenerics: (rawType: ts.Type): readonly ts.Type[] | undefined => {
+			return (rawType as any).types
+		},
+
+		getTypeArguments: (rawType: ts.Type): readonly ts.Type[] | undefined => {
 			return rawType.aliasTypeArguments
 		},
 

@@ -24,9 +24,8 @@ export function createType(
 		}
 	}
 
-	// console.log("node", node)
-	// console.log("rawType", rawType.symbol?.escapedName, rawType)
-	// return
+	console.log("node", node)
+	console.log("rawType", rawType.symbol?.escapedName, rawType)
 	if (pathItem) this.path.push(pathItem)
 
 	if (this.useReferences) {
@@ -85,7 +84,7 @@ export function createType(
 		) {
 			// then the type is a reference to a generic
 			const typeParameters = this.utilities
-				.getTypeGenerics(rawType)
+				.getTypeArguments(rawType)
 				?.map(rawTypeParameter => this.createType(rawTypeParameter, node))
 
 			return {

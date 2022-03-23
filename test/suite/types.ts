@@ -6,8 +6,12 @@ import { getSchemaReference } from "../../source/types/Schema/getSchemaReference
 import { Type } from "../../source/types/Type/Type"
 
 start("Types", async ({ stage, test, same }) => {
-	const schema = getSchema(["test/samples/types.ts"])
-	// console.dir(schema.Functions, { depth: null })
+	const schema = getSchema({
+		files: ["test/samples/types.ts"],
+	})
+
+	// console.dir(schema, { depth: null })
+	// return
 
 	const getTarget = <T extends Type = Type>(type: Type): T => {
 		if (type.typeName != "Reference") return type as T

@@ -20,6 +20,10 @@ export type PathItem =
 			index: number
 	  }
 	| {
+			kind: "unionItem"
+			index: number
+	  }
+	| {
 			kind: "keys"
 	  }
 	| {

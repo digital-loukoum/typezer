@@ -48,5 +48,5 @@ export const walkers: (
 			if (restParameters) walk(restParameters)
 		})
 	},
-	Reference: type => walk(getSchemaReference(schema, type.path)),
+	// Reference: type => walk(getSchemaReference(schema, type.path)),
 })

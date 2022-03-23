@@ -26,6 +26,7 @@ import { Path } from "../Path/Path"
 import { createSchema } from "./methods/createSchema"
 import { Schema } from "../Schema/Schema"
 import micromatch from "micromatch"
+import { treeshake } from "./methods/treeshake"
 
 export type TypezerOptions = {
 	files?: string[]
@@ -45,6 +46,7 @@ export class Typezer {
 	public localSourceFiles: readonly ts.SourceFile[] = []
 	public entrySourceFiles: readonly ts.SourceFile[] = []
 	public schema: Schema = {}
+	public fullSchema: Schema = {}
 	public declarations: Declaration[] = []
 	public rawDeclarations: RawDeclaration[] = []
 
@@ -113,4 +115,5 @@ export class Typezer {
 	protected refineRawDeclaration = refineRawDeclaration.bind(this)
 	protected createProperties = createProperties.bind(this)
 	protected createSchema = createSchema.bind(this)
+	protected treeshake = treeshake.bind(this)
 }

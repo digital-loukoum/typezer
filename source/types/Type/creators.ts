@@ -509,12 +509,11 @@ export function creators(this: Typezer): {
 		Union: {
 			priority: 5,
 			create: ({ rawType, node }) => {
-				if (rawType.isUnion()) {
-					return {
-						typeName: "Union",
-						items: this.createManyTypes(rawType.types, node),
-					}
-				}
+				if (!rawType.isUnion()) return
+				const items = rawType.types.map((rawItem, index) =>
+					this.createType(rawItem, node, { kind: "unionItem", index })
+				)
+				return { typeName: "Union", items }
 			},
 		},
 
