@@ -43,8 +43,20 @@ export const pathTargetByType: {
 } = {
 	Object: getPropertyItem,
 	Namespace: getPropertyItem,
-	Constructor: getPropertyItem,
-	Class: getPropertyItem,
+	Class: (type, pathItem) => {
+		if (pathItem.kind == "property") {
+			if (pathItem.name in type.properties) {
+				return type.properties[pathItem.name]
+			}
+			throw new Error(`Property ${pathItem.name} missing in ${typeToString(type)}`)
+		} else if (pathItem.kind == "staticProperty") {
+			if (pathItem.name in type.staticProperties) {
+				return type.staticProperties[pathItem.name]
+			}
+			throw new Error(`Static property ${pathItem.name} missing in ${typeToString(type)}`)
+		}
+		throw badPathItemKind(pathItem, "property | staticProperty")
+	},
 	Promise: (type, pathItem) => {
 		if (pathItem.kind != "item") throw badPathItemKind(pathItem, "item")
 		return type.item
@@ -88,6 +100,9 @@ export const pathTargetByType: {
 	},
 }
 
-export function badPathItemKind(pathItem: PathItem, expected: PathItem["kind"]): string {
+export function badPathItemKind(
+	pathItem: PathItem,
+	expected: PathItem["kind"] | (string & {})
+): string {
 	return `Expecting a path item of kind '${expected}' but received '${pathItem.kind}'`
 }

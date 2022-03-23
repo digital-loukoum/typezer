@@ -40,13 +40,5 @@ export const walkers: (
 			if (restParameters) walk(restParameters)
 		})
 	},
-	Constructor: type => {
-		Object.values(type.properties).forEach(walk)
-		type.signatures.forEach(({ parameters, returnType, restParameters }) => {
-			parameters.forEach(walk)
-			walk(returnType)
-			if (restParameters) walk(restParameters)
-		})
-	},
 	// Reference: type => walk(getSchemaReference(schema, type.path)),
 })

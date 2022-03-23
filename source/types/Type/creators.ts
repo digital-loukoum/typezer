@@ -5,7 +5,7 @@ import { getTypeTarget } from "../../utilities/getTypeTarget"
 import { typeMatchFeatures } from "../../utilities/typeMatchFeatures"
 import { createModifier } from "../Modifier/createModifier"
 import { Properties } from "../Properties/Properties"
-import { Signature } from "../Signature/Signature"
+import { Constructor } from "../Signature/Constructor"
 import { Typezer } from "../Typezer/Typezer"
 import { Type } from "./Type"
 import { TypeName } from "./TypeName"
@@ -554,7 +554,6 @@ export function creators(this: Typezer): {
 			create: ({ rawType, node }) => {
 				const rawSignatures = rawType.getCallSignatures()
 				if (!rawSignatures?.length) return
-				// console.log("Function type:", rawType)
 				return {
 					typeName: "Function",
 					signatures: this.utilities.getSignatures(node, rawSignatures),
@@ -562,34 +561,74 @@ export function creators(this: Typezer): {
 			},
 		},
 
-		Constructor: {
-			create: ({ rawType, node }) => {
-				const rawSignatures = rawType.getConstructSignatures()
-				if (!rawSignatures?.length) return
-				// console.log("Function type:", rawType)
-				return {
-					typeName: "Constructor",
-					properties: this.createProperties(rawType, node),
-					signatures: this.utilities.getSignatures(node, rawSignatures),
-				}
-			},
-		},
-
-		// /**
-		//  * Class as value (not a type declaration, do not mix up with a class declaration)
-		//  */
 		Class: {
 			create: ({ rawType, node }) => {
-				if (
-					node.kind == ts.SyntaxKind.ClassDeclaration &&
-					rawType.symbol?.valueDeclaration == node
-				) {
-					// class declaration
-					const properties: Properties = {}
+				// from a given constructor
+				const rawSignatures = rawType.getConstructSignatures()
+				if (rawSignatures?.length) {
+					const signature: Constructor = this.utilities.getSignatures(
+						node,
+						rawSignatures
+					)[0]
+					const properties: Properties = (signature as any).returnType?.properties ?? {}
+					delete (signature as any).returnType
 
-					for (const member of (node as ts.ClassDeclaration).members) {
+					const staticProperties = this.createProperties(rawType, node, {
+						staticProperties: true,
+					})
+					delete staticProperties.prototype
+
+					return {
+						typeName: "Class",
+						staticProperties,
+						properties,
+						signature,
+					}
+				}
+
+				// from a class declaration node
+				const classDeclarationNode = rawType.symbol?.valueDeclaration
+				if (classDeclarationNode?.kind == ts.SyntaxKind.ClassDeclaration) {
+					// class declaration
+					const staticProperties: Properties = {}
+					let signature: Constructor | undefined = undefined
+
+					for (const member of (classDeclarationNode as ts.ClassDeclaration).members) {
+						if (/\s*constructor\s*\(/.test(member.getText())) {
+							const parameterNodes = (member as any).parameters as ts.Node[]
+							let minimumParameters = 0
+							let restParameters: undefined | Type = undefined
+							const parameters: Type[] = []
+
+							parameterNodes?.forEach(parameterNode => {
+								const type = this.createType(
+									this.checker.getTypeAtLocation(parameterNode),
+									parameterNode
+								)
+
+								if (type.typeName == "Array" && (parameterNode as any).dotDotDotToken) {
+									restParameters = type.items
+								} else {
+									parameters.push(type)
+									if (
+										!(parameterNode as any).questionToken &&
+										!(parameterNode as any).initializer
+									) {
+										minimumParameters++
+									}
+								}
+							})
+
+							signature = {
+								minimumParameters,
+								parameters,
+								...(restParameters ? { restParameters } : {}),
+							}
+							continue
+						}
+
 						const isStatic = member.modifiers?.some(
-							modifier => modifier.kind & ts.SyntaxKind.StaticKeyword
+							modifier => modifier.kind == ts.SyntaxKind.StaticKeyword
 						)
 						if (!isStatic) continue
 
@@ -597,49 +636,27 @@ export function creators(this: Typezer): {
 						const memberSymbol = (member as any).symbol as ts.Symbol
 						if (!memberSymbol) continue
 
-						properties[memberSymbol.name] = this.createType(memberType, member, {
-							kind: "property",
+						staticProperties[memberSymbol.name] = this.createType(memberType, member, {
+							kind: "staticProperty",
 							name: memberSymbol.name,
 						})
 
 						if (memberSymbol.flags & ts.SymbolFlags.Optional) {
-							properties[memberSymbol.name].optional = true
+							staticProperties[memberSymbol.name].optional = true
 						}
 
 						member.modifiers?.forEach(modifier => {
-							const modifiers = (properties[memberSymbol.name].modifiers ??= [])
+							const modifiers = (staticProperties[memberSymbol.name].modifiers ??= [])
 							modifiers.push(createModifier(modifier))
 						})
 					}
 
-					Object.assign(properties, this.createProperties(rawType, node))
-					return { typeName: "Class", properties }
-					// } else {
-					// 	// class variable assignment
-					// 	const [signature] = rawType.getConstructSignatures() ?? []
-					// 	if (!signature) return
-
-					// 	/**
-					// 	 * We don't add constructor informations because I just can't figure
-					// 	 * out how to get it from the class declaration.
-					// 	 */
-					// 	// const constructorParameters = signature
-					// 	// 	.getParameters()
-					// 	// 	.filter(({ name }) => name != "prototype")
-					// 	// 	.map(symbol =>
-					// 	// 		this.createType(
-					// 	// 			this.checker.getTypeOfSymbolAtLocation(symbol, node),
-					// 	// 			node,
-					// 	// 			{ kind: "parameter", name: String(symbol.escapedName) }
-					// 	// 		)
-					// 	// 	)
-
-					// 	const properties = {
-					// 		...this.createProperties(signature.getReturnType(), node),
-					// 		...this.createProperties(rawType, node),
-					// 	}
-					// 	delete properties.prototype
-					// 	return { typeName: "Class", properties }
+					return {
+						typeName: "Class",
+						staticProperties,
+						properties: this.createProperties(rawType, node),
+						...(signature ? { signature } : {}),
+					}
 				}
 			},
 		},

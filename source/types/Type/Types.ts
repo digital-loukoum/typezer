@@ -1,5 +1,6 @@
 import { Path } from "../Path/Path"
 import { Properties } from "../Properties/Properties"
+import { Constructor } from "../Signature/Constructor"
 import { Signature } from "../Signature/Signature"
 import { Type } from "./Type"
 
@@ -77,13 +78,10 @@ export type BaseTypes = {
 	Function: {
 		signatures: Signature[]
 	}
-	Constructor: {
-		signatures: Signature[]
-		properties: Properties
-	}
 	Class: {
+		staticProperties: Properties
 		properties: Properties
-		// constructorParameters?: Type[] // can't figure out how to get it from a class declaration
+		signature?: Constructor
 	}
 	Reference: {
 		path: Path

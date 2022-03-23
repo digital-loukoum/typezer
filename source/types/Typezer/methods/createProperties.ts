@@ -6,14 +6,15 @@ import { Typezer } from "../Typezer"
 export function createProperties(
 	this: Typezer,
 	rawType: ts.Type,
-	node: ts.Node
+	node: ts.Node,
+	{ staticProperties = true }: { staticProperties?: boolean } = {}
 ): Properties {
 	const properties: Properties = {}
 
 	rawType.getProperties().forEach(property => {
 		const rawPropertyType = this.checker.getTypeOfSymbolAtLocation(property, node)
 		properties[property.name] = this.createType(rawPropertyType, node, {
-			kind: "property",
+			kind: staticProperties ? "staticProperty" : "property",
 			name: property.name,
 		})
 

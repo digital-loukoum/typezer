@@ -60,5 +60,4 @@ export const stringifiers: {
 		`Enum<${Object.values(items).map(typeToString).join(" | ")}>`,
 
 	Function: ({ signatures }) => stringifySignatures(signatures),
-	Constructor: ({ signatures }) => `new ${stringifySignatures(signatures)}`,
 }

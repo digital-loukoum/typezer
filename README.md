@@ -71,7 +71,6 @@ The following types are handled by Typezer:
 ✓ Map
 ✓ Enumeration
 ✓ Function
-✓ Constructor
 
 Also, Typezer correctly handles:
 

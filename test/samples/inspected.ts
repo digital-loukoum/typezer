@@ -1,20 +1,40 @@
-// export type Circular_1<C1> = {
-// 	self<C2 = C1>(): Circular_1<C2>
-// }
+export class SuperCoco<A> {
+	a!: A
+	x: number
+	static s = 12
+	private p = 12
 
-namespace Zabu {
-	export type CocoType<A extends string> = { x: number; a: A }
-
-	export type CocoTypePartial<A extends string> = Partial<{ x: number; a: A }>
-	export interface CocoInterface<A extends string> {
-		a: A
-	}
-
-	export function CocoFunction<A>(a: A): A {
-		return a
-	}
-
-	export class CocoClass<A> {
-		a!: A
+	constructor(a: A, b = 0, c?: string, ...other: string[]) {
+		this.a = a
+		this.x = 12
 	}
 }
+
+export const SuperZabu = class<A> {
+	a!: A
+	x: number
+	static s = 12
+
+	constructor(a: A, b = 0, c?: string, ...other: string[]) {
+		this.a = a
+		this.x = 12
+	}
+}
+
+// namespace Zabu {
+// 	export class CocoClass<A> {
+// 		a!: A
+// 		x: number
+
+// 		constructor(a: A) {
+// 			this.a = a
+// 			this.x = 12
+// 		}
+// 	}
+
+// 	export const ZabuClass = class {
+// 		constructor(public z: number, t: number) {
+// 			this.z = z + t
+// 		}
+// 	}
+// }

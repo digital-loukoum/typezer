@@ -12,6 +12,10 @@ export type PathItem =
 			name: string
 	  }
 	| {
+			kind: "staticProperty"
+			name: string
+	  }
+	| {
 			kind: "parameter"
 			name: string
 	  }

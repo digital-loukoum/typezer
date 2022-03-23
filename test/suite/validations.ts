@@ -518,14 +518,6 @@ start("Validations", async ({ stage, test, same }) => {
 			test(!!errors?.length, "Signature errors expected")
 			same(returnType, undefined, "No return type expected")
 		},
-		Constructor() {
-			pass(
-				{ typeName: "Constructor", properties: {}, signatures: [] },
-				function () {},
-				() => {}
-			)
-			fail({ typeName: "Constructor", properties: {}, signatures: [] }, {})
-		},
 	}
 
 	for (const type in checkers) {

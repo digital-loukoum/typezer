@@ -61,13 +61,15 @@ export function createType(
 
 			const { create, priority } = this.creators[typeName]
 
-			const challenger = create?.({
-				rawType: baseRawType,
-				node,
-			})
-			if (challenger && (priority ?? 0) > currentPriority) {
-				type = challenger
-				currentPriority = priority ?? 0
+			if ((priority ?? 0) > currentPriority) {
+				const challenger = create?.({
+					rawType: baseRawType,
+					node,
+				})
+				if (challenger) {
+					type = challenger
+					currentPriority = priority ?? 0
+				}
 			}
 		}
 	}
