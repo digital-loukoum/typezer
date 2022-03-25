@@ -2,14 +2,15 @@ import ts from "typescript"
 import { Typezer } from "../Typezer"
 
 export function startProgram(this: Typezer): ts.Program {
-	this.program = ts.createProgram(this.files, this.options, this.host)
+	this.program = ts.createProgram(this.files, this.compilerOptions, this.host)
 	this.checker = this.program.getTypeChecker()
 
 	this.getSourceFiles()
 	this.parseSourceFiles()
 	this.getRawDeclarationTypes()
 	this.declarations = this.rawDeclarations.map(this.refineRawDeclaration)
-	this.schema = this.createSchema()
+	this.fullSchema = this.createSchema()
+	this.schema = this.treeshake()
 
 	return this.program
 }

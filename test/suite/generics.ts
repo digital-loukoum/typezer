@@ -4,7 +4,9 @@ import { Types } from "../../source/types/Type/Types"
 import { Path } from "../../source/types/Path/Path"
 
 start("Generics", async ({ stage, test, same }) => {
-	const schema = getSchema(["test/samples/generics.ts"])
+	const schema = getSchema({
+		files: ["test/samples/generics.ts"],
+	})
 	// console.dir(schema, { depth: null })
 
 	for (const [declarationName, generic] of Object.entries(schema)) {

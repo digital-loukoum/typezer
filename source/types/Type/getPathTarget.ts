@@ -1,8 +1,10 @@
 import { Path } from "../Path/Path"
 import { PathItem } from "../Path/PathItem"
+import { Properties } from "../Properties/Properties"
 import { Type } from "./Type"
 import { TypeName } from "./TypeName"
 import { Types } from "./Types"
+import { typeToString } from "./typeToString"
 
 export function getPathTarget(type: Type, path: Path): Type {
 	if (!path.length) return type
@@ -25,15 +27,35 @@ export function getPathTarget(type: Type, path: Path): Type {
 	return getPathTarget(targetType, path.slice(1))
 }
 
+function getPropertyItem(
+	type: Type & { properties: Properties },
+	pathItem: PathItem
+): Type {
+	if (pathItem.kind != "property") throw badPathItemKind(pathItem, "property")
+	if (pathItem.name in type.properties) {
+		return type.properties[pathItem.name]
+	}
+	throw new Error(`Property ${pathItem.name} missing in ${typeToString(type)}`)
+}
+
 export const pathTargetByType: {
 	[Key in TypeName]?: (type: Types[Key], pathItem: PathItem) => Type
 } = {
-	Object: (type, pathItem) => {
-		if (pathItem.kind != "property") throw badPathItemKind(pathItem, "property")
-		if (pathItem.name in type.properties) {
-			return type.properties[pathItem.name]
+	Object: getPropertyItem,
+	Namespace: getPropertyItem,
+	Class: (type, pathItem) => {
+		if (pathItem.kind == "property") {
+			if (pathItem.name in type.properties) {
+				return type.properties[pathItem.name]
+			}
+			throw new Error(`Property ${pathItem.name} missing in ${typeToString(type)}`)
+		} else if (pathItem.kind == "staticProperty") {
+			if (pathItem.name in type.staticProperties) {
+				return type.staticProperties[pathItem.name]
+			}
+			throw new Error(`Static property ${pathItem.name} missing in ${typeToString(type)}`)
 		}
-		throw new Error(`Property ${pathItem.name} missing in object ${type.properties}`)
+		throw badPathItemKind(pathItem, "property | staticProperty")
 	},
 	Promise: (type, pathItem) => {
 		if (pathItem.kind != "item") throw badPathItemKind(pathItem, "item")
@@ -46,6 +68,15 @@ export const pathTargetByType: {
 		}
 		throw new Error(
 			`Index ${pathItem.index} is not in tuple range of length ${type.items.length}`
+		)
+	},
+	Union: (type, pathItem) => {
+		if (pathItem.kind != "unionItem") throw badPathItemKind(pathItem, "unionItem")
+		if (pathItem.index >= 0 && pathItem.index < type.items.length) {
+			return type.items[pathItem.index]
+		}
+		throw new Error(
+			`Index ${pathItem.index} is not in union range of length ${type.items.length}`
 		)
 	},
 	Array: (type, pathItem) => {
@@ -69,6 +100,9 @@ export const pathTargetByType: {
 	},
 }
 
-export function badPathItemKind(pathItem: PathItem, expected: PathItem["kind"]): string {
+export function badPathItemKind(
+	pathItem: PathItem,
+	expected: PathItem["kind"] | (string & {})
+): string {
 	return `Expecting a path item of kind '${expected}' but received '${pathItem.kind}'`
 }

@@ -45,8 +45,8 @@ export class Validator {
 		parameters: unknown[]
 	): ValidateSignatureResult => {
 		const type = this.findTypeByPath(path)
-		if (type.typeName != "Function" && type.typeName != "Constructor") {
-			this.mismatch("a function or a constructor", type.typeName)
+		if (type.typeName != "Function") {
+			this.mismatch("a function", type.typeName)
 			return { errors: this.errors }
 		}
 		return this.validateSignature(type, parameters)

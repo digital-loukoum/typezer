@@ -2,7 +2,9 @@ import { getSchema } from "../../source"
 import start from "fartest"
 
 start("Declarations", async ({ stage, test, same }) => {
-	const schema = getSchema(["test/samples/declarations.ts"])
+	const schema = getSchema({
+		files: ["test/samples/declarations.ts"],
+	})
 
 	// console.dir(schema)
 

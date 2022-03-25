@@ -2,7 +2,7 @@ import ts from "typescript"
 import { Typezer } from "../Typezer"
 
 export function createHost(this: Typezer) {
-	const host = ts.createCompilerHost(this.options)
+	const host = ts.createCompilerHost(this.compilerOptions)
 	const { getSourceFile } = host
 	host.getSourceFile = (fileName: string, languageVersion: ts.ScriptTarget) => {
 		let sourceFile = this.sourceFileCache.get(fileName)

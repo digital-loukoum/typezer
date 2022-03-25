@@ -6,8 +6,12 @@ import { getSchemaReference } from "../../source/types/Schema/getSchemaReference
 import { Type } from "../../source/types/Type/Type"
 
 start("Types", async ({ stage, test, same }) => {
-	const schema = getSchema(["test/samples/types.ts"])
-	// console.dir(schema.Functions, { depth: null })
+	const schema = getSchema({
+		files: ["test/samples/types.ts"],
+	})
+
+	// console.dir(schema, { depth: null })
+	// return
 
 	const getTarget = <T extends Type = Type>(type: Type): T => {
 		if (type.typeName != "Reference") return type as T
@@ -236,7 +240,7 @@ start("Types", async ({ stage, test, same }) => {
 
 	stage("Constructors")
 	{
-		const constructor = getRootType<Types["Constructor"]>("Constructor")
+		const constructor = getRootType<Types["Class"]>("Constructor")
 		same(constructor.typeName, "Constructor", `Check constructor is a constructor`)
 		const prototype = constructor.properties.prototype as Types["Object"]
 		for (const [propertyName, property] of Object.entries(prototype.properties)) {
@@ -261,16 +265,16 @@ start("Types", async ({ stage, test, same }) => {
 				properties[value].typeName,
 				`Check constructor '${value}' has the right type`
 			)
-			const callable = properties[value] as Types["Constructor"]
-			const [signature] = callable.signatures
+			const callable = properties[value] as Types["Class"]
+			const { constructor } = callable
 			same(
 				+minimumParameters,
-				signature.minimumParameters,
+				constructor.minimumParameters,
 				`Minimum parameters of constructor '${value}'`
 			)
 			same(
 				parameters,
-				signature.parameters.map(type => type.typeName),
+				constructor.parameters.map(type => type.typeName),
 				`Parameters type of constructor '${value}'`
 			)
 		}
