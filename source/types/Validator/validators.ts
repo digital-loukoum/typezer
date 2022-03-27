@@ -1,3 +1,4 @@
+import { resolveTypeOfValue } from "../../utilities/resolveTypeOfValue"
 import { serializeTemplateLiteral } from "../../utilities/serializeTemplateLiteral"
 import { templateExpressions } from "../../utilities/templateExpressions"
 import { isStringOrNumberLiteral } from "../Type/isStringOrNumberLiteral"
@@ -10,7 +11,11 @@ export function validators(this: Validator): {
 } {
 	return {
 		Any: () => {}, // never fails
-		Unresolved: () => {}, // TODO: add info about the generic when meeting for the first time
+		Unresolved: (type, value) => {
+			let resolvedType = this.resolvedGenericsCache.get(type.uniqueId)
+			if (resolvedType) this.validate(type, value)
+			else this.resolvedGenericsCache.set(type.uniqueId, resolveTypeOfValue(value))
+		},
 		Unknown: () => {}, // never fails
 		Never: (type, value) => this.mismatch(value, "never"), // always fails
 

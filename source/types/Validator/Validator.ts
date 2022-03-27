@@ -16,10 +16,12 @@ export class Validator {
 	validated = new WeakMap<Type, Set<unknown>>()
 	validators = validators.call(this)
 
+	protected resolvedGenericsCache = new Map<number, Type | undefined>()
+
 	constructor(public schema: Schema) {}
 
-	validate = (type: Type, value: unknown, scope: Type[] = []) => {
-		scope.push(type)
+	validate = (type: Type, value: unknown) => {
+		this.scope.push(type)
 		let validatedValues = this.validated.get(type)
 		if (!validatedValues) this.validated.set(type, (validatedValues = new Set()))
 
@@ -28,14 +30,13 @@ export class Validator {
 			this.validators[type.typeName]?.(type as any, value)
 		}
 
-		scope.pop()
+		this.scope.pop()
 		return this
 	}
 
 	validateSignature = <CallableType extends Callable>(
 		callable: CallableType,
-		parameters: unknown[],
-		scope: Type[] = []
+		parameters: unknown[]
 	): ValidateSignatureResult => {
 		const errors: Array<string> = []
 		const localValidator = this.fork()
@@ -56,7 +57,7 @@ export class Validator {
 				)
 			} else {
 				signature.parameters.forEach((parameterType, index) => {
-					localValidator.validate(parameterType, parameters[index], scope)
+					localValidator.validate(parameterType, parameters[index])
 				})
 				if (signature.restParameters) {
 					for (
@@ -64,7 +65,7 @@ export class Validator {
 						index < parameters.length;
 						index++
 					) {
-						localValidator.validate(signature.restParameters, parameters[index], scope)
+						localValidator.validate(signature.restParameters, parameters[index])
 					}
 				}
 			}
