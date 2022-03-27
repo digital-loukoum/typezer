@@ -1,4 +1,3 @@
-import { Path } from "../Path/Path"
 import { Properties } from "../Properties/Properties"
 import { Constructor } from "../Signature/Constructor"
 import { Signature } from "../Signature/Signature"
@@ -7,11 +6,15 @@ import { Type } from "./Type"
 export type Types = {
 	[Key in keyof BaseTypes]: {
 		typeName: Key
-		generics?: Record<string, Type>
 	} & BaseTypes[Key]
 }
 
 export type BaseTypes = {
+	Unresolved: {
+		// generic type to be resolved
+		uniqueId: number // unique id to identify the generic
+	}
+	Unknown: {}
 	Never: {}
 	Void: {}
 	Null: {}
@@ -84,7 +87,10 @@ export type BaseTypes = {
 		signature?: Constructor
 	}
 	Reference: {
-		path: Path
+		id: string
 		typeParameters?: Type[]
+	}
+	CircularReference: {
+		level: number
 	}
 }

@@ -21,5 +21,5 @@ export function getRawDeclarationType(
 		}
 	}
 
-	return this.createType(rawType, node, { kind: "declaration", id })
+	return this.createType(rawType, node)
 }

@@ -9,8 +9,7 @@ export function startProgram(this: Typezer): ts.Program {
 	this.parseSourceFiles()
 	this.getRawDeclarationTypes()
 	this.declarations = this.rawDeclarations.map(this.refineRawDeclaration)
-	this.fullSchema = this.createSchema()
-	this.schema = this.treeshake()
+	this.schema = this.createSchema()
 
 	return this.program
 }

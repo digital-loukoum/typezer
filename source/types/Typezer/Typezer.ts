@@ -21,17 +21,14 @@ import { getRawDeclarationType } from "./methods/getRawDeclarationType"
 import { getRawDeclarationTypes } from "./methods/getRawDeclarationTypes"
 import { refineRawDeclaration } from "./methods/refineRawDeclaration"
 import { Declaration } from "../Declaration/Declaration"
-import { Type } from "../Type/Type"
-import { Path } from "../Path/Path"
 import { createSchema } from "./methods/createSchema"
 import { Schema } from "../Schema/Schema"
 import micromatch from "micromatch"
-import { treeshake } from "./methods/treeshake"
+import { Scope } from "../Scope/Scope"
 
 export type TypezerOptions = {
 	files?: string[]
 	symbols?: string[] // list of target symbols
-	useReferences?: boolean // whether to use references or to embed all types (may cause circular reference issues)
 	compilerOptions?: ts.CompilerOptions
 }
 
@@ -39,19 +36,16 @@ export class Typezer {
 	public readonly compilerOptions: ts.CompilerOptions
 
 	public files: Array<string>
-	public readonly useReferences: boolean
 	public readonly symbols?: string[]
 	public readonly matchRootSymbol: (value: string) => boolean
 	public sourceFiles: readonly ts.SourceFile[] = []
 	public localSourceFiles: readonly ts.SourceFile[] = []
 	public entrySourceFiles: readonly ts.SourceFile[] = []
 	public schema: Schema = {}
-	public fullSchema: Schema = {}
 	public declarations: Declaration[] = []
 	public rawDeclarations: RawDeclaration[] = []
 
-	protected path: Path = [] // path of the current type
-	protected typeCache = new Map<ts.Type, { path: Path; type?: Type }>()
+	protected scope: Scope = []
 
 	protected checker: ts.TypeChecker
 	protected program: ts.Program
@@ -59,13 +53,7 @@ export class Typezer {
 	protected host: ts.CompilerHost
 	protected sourceFileCache = new Map<string, ts.SourceFile | undefined>()
 
-	constructor({
-		files = [],
-		symbols,
-		useReferences = true,
-		compilerOptions = {},
-	}: TypezerOptions) {
-		this.useReferences = useReferences
+	constructor({ files = [], symbols, compilerOptions = {} }: TypezerOptions) {
 		this.symbols = symbols
 
 		if (!this.symbols) this.matchRootSymbol = () => true
@@ -115,5 +103,4 @@ export class Typezer {
 	protected refineRawDeclaration = refineRawDeclaration.bind(this)
 	protected createProperties = createProperties.bind(this)
 	protected createSchema = createSchema.bind(this)
-	protected treeshake = treeshake.bind(this)
 }

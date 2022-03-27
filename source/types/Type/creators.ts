@@ -1,6 +1,7 @@
 import ts from "typescript"
 import { getMappedType } from "../../utilities/getMappedType"
 import { getRecordType } from "../../utilities/getRecordType"
+import { getTypeId } from "../../utilities/getTypeId"
 import { getTypeTarget } from "../../utilities/getTypeTarget"
 import { typeMatchFeatures } from "../../utilities/typeMatchFeatures"
 import { createModifier } from "../Modifier/createModifier"
@@ -25,6 +26,7 @@ export function creators(this: Typezer): {
 } {
 	return {
 		Reference: {}, // not concerned
+		CircularReference: {}, // not concerned
 
 		// ---------------------- //
 		// --     LITERALS     -- //
@@ -128,6 +130,13 @@ export function creators(this: Typezer): {
 			priority: -100,
 			create: ({ rawType }) => {
 				if (rawType.flags & ts.TypeFlags.Any) return { typeName: "Any" }
+			},
+		},
+
+		Unknown: {
+			priority: -100,
+			create: ({ rawType }) => {
+				if (rawType.flags & ts.TypeFlags.Unknown) return { typeName: "Unknown" }
 			},
 		},
 
@@ -348,6 +357,21 @@ export function creators(this: Typezer): {
 		// ----------------------- //
 		// --    COMPOSABLES    -- //
 		// ----------------------- //
+		Unresolved: {
+			priority: -100,
+			create: ({ rawType }) => {
+				if (
+					rawType.flags & ts.TypeFlags.TypeParameter &&
+					Object.keys(rawType.getProperties()).length == 0
+				) {
+					return {
+						typeName: "Unresolved",
+						uniqueId: getTypeId(rawType),
+					}
+				}
+			},
+		},
+
 		Object: {
 			create: ({ rawType, node }) => ({
 				typeName: "Object",
@@ -373,7 +397,7 @@ export function creators(this: Typezer): {
 			create: ({ rawType, node }) => {
 				const rawItem = this.utilities.getPromiseType(rawType, node)
 				if (rawItem) {
-					const item = this.createType(rawItem, node, { kind: "item" })
+					const item = this.createType(rawItem, node)
 					return {
 						typeName: "Promise",
 						item,
@@ -394,8 +418,8 @@ export function creators(this: Typezer): {
 				) {
 					const recordType = getRecordType(rawType)
 					if (recordType) {
-						const keys = this.createType(recordType[0], node, { kind: "keys" })
-						const items = this.createType(recordType[1], node, { kind: "items" })
+						const keys = this.createType(recordType[0], node)
+						const items = this.createType(recordType[1], node)
 						return { typeName: "Record", keys, items }
 					}
 				}
@@ -403,11 +427,11 @@ export function creators(this: Typezer): {
 				const mappedType = getMappedType(rawType)
 				if (mappedType) {
 					const [rawKeys, rawItems] = mappedType
-					const items = this.createType(rawItems, node, { kind: "items" })
+					const items = this.createType(rawItems, node)
 					let keys: Type
 
 					if (rawKeys.length == 1) {
-						keys = this.createType(rawKeys[0], node, { kind: "keys" })
+						keys = this.createType(rawKeys[0], node)
 					} else {
 						keys = {
 							typeName: "Union",
@@ -431,7 +455,7 @@ export function creators(this: Typezer): {
 				if (rawItems)
 					return {
 						typeName: "Array",
-						items: this.createType(rawItems, node, { kind: "items" }),
+						items: this.createType(rawItems, node),
 					}
 			},
 		},
@@ -442,9 +466,7 @@ export function creators(this: Typezer): {
 				if (rawItems)
 					return {
 						typeName: "Tuple",
-						items: rawItems.map((rawType, index) =>
-							this.createType(rawType, node, { kind: "tupleItem", index })
-						),
+						items: rawItems.map((rawType, index) => this.createType(rawType, node)),
 					}
 			},
 		},
@@ -471,8 +493,8 @@ export function creators(this: Typezer): {
 					const [rawKeys, rawItems] = this.checker.getTypeArguments(
 						rawType as ts.TypeReference
 					)
-					const keys = this.createType(rawKeys, node, { kind: "keys" })
-					const items = this.createType(rawItems, node, { kind: "items" })
+					const keys = this.createType(rawKeys, node)
+					const items = this.createType(rawItems, node)
 					return { typeName: "Map", keys, items }
 				}
 			},
@@ -498,8 +520,7 @@ export function creators(this: Typezer): {
 				) {
 					const items = this.createType(
 						this.checker.getTypeArguments(rawType as ts.TypeReference)[0],
-						node,
-						{ kind: "items" }
+						node
 					)
 					return { typeName: "Set", items }
 				}
@@ -511,7 +532,7 @@ export function creators(this: Typezer): {
 			create: ({ rawType, node }) => {
 				if (!rawType.isUnion()) return
 				const items = rawType.types.map((rawItem, index) =>
-					this.createType(rawItem, node, { kind: "unionItem", index })
+					this.createType(rawItem, node)
 				)
 				return { typeName: "Union", items }
 			},
@@ -526,7 +547,7 @@ export function creators(this: Typezer): {
 					if (rawType.isUnion()) {
 						rawType.types.forEach(tsProperty => {
 							const name = String(tsProperty.symbol.escapedName)
-							items[name] = this.createType(tsProperty, node, { kind: "property", name })
+							items[name] = this.createType(tsProperty, node)
 						})
 					} else {
 						// enumeration of numbers that may not be constant
@@ -573,9 +594,7 @@ export function creators(this: Typezer): {
 					const properties: Properties = (signature as any).returnType?.properties ?? {}
 					delete (signature as any).returnType
 
-					const staticProperties = this.createProperties(rawType, node, {
-						staticProperties: true,
-					})
+					const staticProperties = this.createProperties(rawType, node)
 					delete staticProperties.prototype
 
 					return {
@@ -636,10 +655,7 @@ export function creators(this: Typezer): {
 						const memberSymbol = (member as any).symbol as ts.Symbol
 						if (!memberSymbol) continue
 
-						staticProperties[memberSymbol.name] = this.createType(memberType, member, {
-							kind: "staticProperty",
-							name: memberSymbol.name,
-						})
+						staticProperties[memberSymbol.name] = this.createType(memberType, member)
 
 						if (memberSymbol.flags & ts.SymbolFlags.Optional) {
 							staticProperties[memberSymbol.name].optional = true
