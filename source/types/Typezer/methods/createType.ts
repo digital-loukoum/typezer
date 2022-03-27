@@ -22,8 +22,8 @@ export function createType(this: Typezer, rawType: ts.Type, node: ts.Node): Type
 	}
 
 	this.scope.push(scopeItem)
-	console.log("node", node)
-	console.log("rawType", rawType.symbol?.escapedName, rawType)
+	// console.log("node", node)
+	// console.log("rawType", rawType.symbol?.escapedName, rawType)
 
 	// we traverse all base types of the given type to look for its true type
 	const baseRawTypes = getOriginalBaseTypes(rawType)
