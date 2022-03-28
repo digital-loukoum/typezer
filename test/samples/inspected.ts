@@ -1,16 +1,16 @@
 export type Coco<X> = {
 	// x: X
-	x: <Y = X>() => Y
+	x: <Y>() => Coco<Y>
 	// CocoString: Coco<string>
 }
 
-export type Par<X> = Partial<{
-	x: X
-}>
+// export type Par<X> = Partial<{
+// 	x: X
+// }>
 
-export const z = "12"
+// export const z = "12"
 
-export function callMe<A>(a1: A, a2: A) {}
+// export function callMe<A>(a1: A, a2: A) {}
 
 // export type User = {
 // 	name: string

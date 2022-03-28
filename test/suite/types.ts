@@ -232,30 +232,39 @@ start("Types", async ({ stage, test, same }) => {
 	stage("Constructors")
 	{
 		const constructor = getRootType<Types["Class"]>("Constructor")
-		same(constructor.typeName, "Constructor", `Check constructor is a constructor`)
+		same(constructor.typeName, "Class", `Check class is a class`)
 		const prototype = constructor.properties.prototype as Types["Object"]
-		for (const [propertyName, property] of Object.entries(prototype.properties)) {
+		for (const [propertyName, property] of Object.entries(constructor.properties)) {
 			same(
 				propertyName,
 				property.typeName,
 				`Property of constructor prototype has the right type`
 			)
+			same(
+				!!property.modifiers?.includes("static"),
+				false,
+				`Non-static property should not have static modifier`
+			)
 		}
-		test(
-			!!constructor.properties.static?.modifiers?.includes("static"),
-			`Constructor static property`
-		)
+		for (const [propertyName, property] of Object.entries(constructor.staticProperties)) {
+			same(
+				propertyName,
+				property.typeName,
+				`Property of constructor prototype has the right type`
+			)
+			same(
+				!!property.modifiers?.includes("static"),
+				true,
+				`Static property should have static modifier`
+			)
+		}
 	}
 	{
 		const { properties } = getRootType("Constructors")
 
 		for (const value in properties) {
 			const [type, minimumParameters, ...parameters] = value.split("_")
-			same(
-				type,
-				properties[value].typeName,
-				`Check constructor '${value}' has the right type`
-			)
+			same(type, properties[value].typeName, `Check class '${value}' is a class`)
 			const callable = properties[value] as Types["Class"]
 			const { signature } = callable
 			same(

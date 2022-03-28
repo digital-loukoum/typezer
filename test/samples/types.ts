@@ -37,12 +37,12 @@ export abstract class Modifiers {
 
 export type Arrays = {
 	Number: Array<number>
-	Reference: Array<Primitives>
+	Object: Array<Primitives>
 }
 
 export type Promises = {
 	Number: Promise<number>
-	Reference: PromiseLike<Primitives>
+	Object: PromiseLike<Primitives>
 }
 
 export type Records = {
@@ -53,25 +53,25 @@ export type Records = {
 }
 
 export type Tuples = {
-	NumberLiteral_StringLiteral_Reference: [1, "2", Primitives]
-	String_StringLiteral_String_Number_Reference: [string, "1", String, Number, Primitives]
+	NumberLiteral_StringLiteral_Object: [1, "2", Primitives]
+	String_StringLiteral_String_Number_Object: [string, "1", String, Number, Primitives]
 }
 
 export type Maps = {
 	String_Number: Map<string, number>
 	Number_String: Map<number, string>
-	Union_Reference: Map<12 | "string", Primitives>
+	Union_Object: Map<12 | "string", Primitives>
 }
 
 export type Sets = {
 	Number: Set<number>
-	Reference: Set<Primitives>
+	Object: Set<Primitives>
 	NumberLiteral: Set<12>
 	Union: Set<12 | "12">
 }
 
 export type Unions = {
-	NumberLiteral_StringLiteral_Reference: 12 | "string" | Primitives
+	NumberLiteral_StringLiteral_Object: 12 | "string" | Primitives
 	Number_String: Number | string
 }
 
@@ -86,14 +86,15 @@ export type Functions = {
 }
 
 export const Constructor = class {
-	static static = 12
+	static Number = 12
+	static String = "12"
 	constructor(public Number: number, public String: string) {}
 }
 
 export type Constructors = {
-	Constructor_1_String: new (_: string) => any
-	Constructor_1_Number_String: new (_1: number, _2?: string) => any
-	Constructor_0_Number_String: new (_1?: number, _2?: string) => any
+	Class_1_String: new (_: string) => any
+	Class_1_Number_String: new (_1: number, _2?: string) => any
+	Class_0_Number_String: new (_1?: number, _2?: string) => any
 }
 
 export class Class {
