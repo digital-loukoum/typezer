@@ -6,6 +6,7 @@
 	"files": [
 		"library"
 	],
+	"main": "./library/index.js",
 	"exports": {
 		".": "./library/index.js",
 		"./*": "./library/*.js"
