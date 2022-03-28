@@ -1,11 +1,7 @@
 import type { Type } from "../Type/Type"
-import type { Path } from "../Path/Path"
 import inspect from "object-inspect"
 import { validators } from "./validators"
-import { getSchemaReference } from "../Schema/getSchemaReference"
 import { Schema } from "../Schema/Schema"
-import { Types } from "../Type/Types"
-import { Signature } from "../Signature/Signature"
 import { Callable } from "../Signature/Callable"
 
 export type ValidateSignatureResult = {
@@ -16,19 +12,16 @@ export type ValidateSignatureResult = {
 export class Validator {
 	errors: Array<string> = []
 	path: Array<string> = []
+	scope: Array<Type> = []
 	validated = new WeakMap<Type, Set<unknown>>()
 	validators = validators.call(this)
 
+	protected resolvedGenericsCache = new Map<number, Type | undefined>()
+
 	constructor(public schema: Schema) {}
 
-	findTypeByPath = (path: Path): Type => getSchemaReference(this.schema, path)
-
-	validatePath = (path: Path, value: unknown) => {
-		const type = this.findTypeByPath(path)
-		return this.validate(type, value)
-	}
-
 	validate = (type: Type, value: unknown) => {
+		this.scope.push(type)
 		let validatedValues = this.validated.get(type)
 		if (!validatedValues) this.validated.set(type, (validatedValues = new Set()))
 
@@ -37,23 +30,12 @@ export class Validator {
 			this.validators[type.typeName]?.(type as any, value)
 		}
 
+		this.scope.pop()
 		return this
 	}
 
-	validateSignaturePath = (
-		path: Path,
-		parameters: unknown[]
-	): ValidateSignatureResult => {
-		const type = this.findTypeByPath(path)
-		if (type.typeName != "Function") {
-			this.mismatch("a function", type.typeName)
-			return { errors: this.errors }
-		}
-		return this.validateSignature(type, parameters)
-	}
-
-	validateSignature = <Type extends Callable>(
-		callable: Type,
+	validateSignature = <CallableType extends Callable>(
+		callable: CallableType,
 		parameters: unknown[]
 	): ValidateSignatureResult => {
 		const errors: Array<string> = []
@@ -113,6 +95,11 @@ export class Validator {
 		const path = this.joinPath()
 		const pathInfos = path ? `in '${this.joinPath()}'` : ""
 		this.errors.push(`Key '${key}' missing ${pathInfos}`)
+	}
+
+	findParentReference(level: number): Type {
+		if (level >= this.scope.length) throw new Error(`No parent at level ${level}`)
+		return this.scope[this.scope.length - level]
 	}
 
 	/**

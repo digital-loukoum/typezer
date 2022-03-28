@@ -12,12 +12,12 @@ export const getSchema = (options: TypezerOptions) => {
 }
 
 export const findSymbol = (symbol: string, options: Omit<TypezerOptions, "symbols">) => {
-	const { schema, fullSchema, declarations } = new Typezer({
+	const { schema, declarations } = new Typezer({
 		...options,
 		symbols: [symbol],
 	})
 	const declaration = schema[symbol]
-	return { declaration, schema, fullSchema, declarations }
+	return { declaration, schema, declarations }
 }
 
 export const watch = (options: TypezerOptions & { onChange: WatcherCallback }) =>

@@ -1,4 +1,3 @@
-import { getSchemaReference } from "../Schema/getSchemaReference"
 import { Schema } from "../Schema/Schema"
 import { Type } from "./Type"
 import { TypeName } from "./TypeName"
@@ -9,7 +8,6 @@ export type Walker = (type: Type) => any
 export const walk = (schema: Schema, callback: (type: Type) => any, root: Type) => {
 	const walker = walkers(schema, (type: Type) => {
 		callback(type)
-		if (type.generics) Object.values(type.generics).forEach(_walk)
 		_walk(type)
 	})
 	const _walk = (type: Type) => (walker[type.typeName] as Walker)?.(type)
@@ -40,5 +38,4 @@ export const walkers: (
 			if (restParameters) walk(restParameters)
 		})
 	},
-	// Reference: type => walk(getSchemaReference(schema, type.path)),
 })

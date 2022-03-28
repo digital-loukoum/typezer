@@ -1,6 +1,6 @@
+import { resolveTypeOfValue } from "../../utilities/resolveTypeOfValue"
 import { serializeTemplateLiteral } from "../../utilities/serializeTemplateLiteral"
 import { templateExpressions } from "../../utilities/templateExpressions"
-import { badPathItemKind } from "../Type/getPathTarget"
 import { isStringOrNumberLiteral } from "../Type/isStringOrNumberLiteral"
 import { TypeName } from "../Type/TypeName"
 import { Types } from "../Type/Types"
@@ -11,8 +11,22 @@ export function validators(this: Validator): {
 } {
 	return {
 		Any: () => {}, // never fails
+		Unresolved: (type, value) => {
+			let resolvedType = this.resolvedGenericsCache.get(type.uniqueId)
+			if (resolvedType) this.validate(type, value)
+			else this.resolvedGenericsCache.set(type.uniqueId, resolveTypeOfValue(value))
+		},
+		Unknown: () => {}, // never fails
 		Never: (type, value) => this.mismatch(value, "never"), // always fails
 
+		// references
+		Reference: (type, value) => {},
+
+		CircularReference: (type, value) => {
+			this.validate(this.findParentReference(type.level), value)
+		},
+
+		// primitives
 		Void: (type, value) => {
 			if (value !== undefined) this.mismatch(value, "undefined")
 		},
@@ -130,9 +144,6 @@ export function validators(this: Validator): {
 			if (!value || typeof value !== "object") this.mismatch(value, "an record")
 			else {
 				let keysType = type.keys
-				if (keysType.typeName == "Reference") {
-					keysType = this.findTypeByPath(keysType.path)
-				}
 				const literals: (Types["NumberLiteral"] | Types["StringLiteral"])[] = []
 				if (isStringOrNumberLiteral(keysType)) {
 					literals.push(keysType)
@@ -223,18 +234,6 @@ export function validators(this: Validator): {
 
 		Function: (type, value) => {
 			if (typeof value !== "function") this.mismatch(value, "a function")
-		},
-
-		Constructor: (type, value) => {
-			if (typeof value !== "function") this.mismatch(value, "a class")
-		},
-
-		Reference: (type, value) => {
-			const [declarationItem] = type.path
-			if (declarationItem.kind != "declaration") {
-				throw badPathItemKind(declarationItem, "declaration")
-			}
-			return this.validatePath(value, type.path)
 		},
 	}
 }

@@ -3,6 +3,7 @@ import { Type } from "../../source/types/Type/Type"
 import { TypeName } from "../../source/types/Type/TypeName"
 import { validate, validateSignature } from "../../source/validate"
 import inspect from "object-inspect"
+import { Types } from "../../source/types/Type/Types"
 
 start("Validations", async ({ stage, test, same }) => {
 	const pass = (type: Type, ...values: Array<unknown>) => {
@@ -28,7 +29,12 @@ start("Validations", async ({ stage, test, same }) => {
 
 	const checkers: Record<TypeName, any> = {
 		Reference: null,
+		CircularReference: null,
+		Unresolved: null,
 
+		Unknown() {
+			pass({ typeName: "Unknown" }, undefined, 0, false, "", {}, [], new Set(), new Map())
+		},
 		Never() {
 			fail({ typeName: "Never" }, undefined, 0, false, "", {}, [], new Set(), new Map())
 		},
@@ -230,31 +236,17 @@ start("Validations", async ({ stage, test, same }) => {
 			)
 		},
 		Class() {
-			pass(
-				{
-					typeName: "Class",
-					properties: {
-						x: { typeName: "Number" },
-						static: { typeName: "Number", modifiers: ["static"] },
-					},
+			const classType: Types["Class"] = {
+				typeName: "Class",
+				staticProperties: {
+					static: { typeName: "Number", modifiers: ["static"] },
 				},
-				{ x: 12 },
-				{ x: 12, static: "653123" }
-			)
-			fail(
-				{
-					typeName: "Class",
-					properties: {
-						x: { typeName: "Number" },
-						static: { typeName: "Number", modifiers: ["static"] },
-					},
+				properties: {
+					x: { typeName: "Number" },
 				},
-				null,
-				{},
-				{ x: "12" },
-				{ static: 513 },
-				{ y: 513 }
-			)
+			}
+			pass(classType, { x: 12 }, { x: 12, static: "653123" })
+			fail(classType, null, {}, { x: "12" }, { static: 513 }, { y: 513 })
 		},
 		Array() {
 			pass({ typeName: "Array", items: { typeName: "Number" } }, [], [12, 16, 12, 13])

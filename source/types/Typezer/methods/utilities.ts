@@ -67,6 +67,29 @@ export function utilities(this: Typezer) {
 			return typeParameters.map(node => this.checker.getTypeAtLocation(node))
 		},
 
+		getRawGenerics: (rawType: ts.Type): Record<string, ts.Type> => {
+			return {} // generics are too complicated to deal with right now
+
+			// const node =
+			// 	rawType.symbol?.valueDeclaration ??
+			// 	rawType.aliasSymbol?.valueDeclaration ??
+			// 	rawType.aliasSymbol?.declarations?.[0] ??
+			// 	rawType.symbol?.declarations?.[0]
+
+			// if (!node) return {}
+			// const rawGenerics: Record<string, ts.Type> = {}
+
+			// node.forEachChild(child => {
+			// 	if (child.kind == ts.SyntaxKind.TypeParameter) {
+			// 		const typeParameter = child as ts.TypeParameterDeclaration
+			// 		const type = this.checker.getTypeAtLocation(typeParameter)
+			// 		rawGenerics[typeParameter.name.getText()] = type
+			// 	}
+			// })
+
+			// return rawGenerics
+		},
+
 		getPromiseType: (rawType: ts.Type, node: ts.Node): ts.Type | undefined => {
 			if (!["Promise", "PromiseLike"].includes(String(rawType.symbol?.escapedName))) {
 				return

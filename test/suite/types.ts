@@ -1,8 +1,6 @@
 import { getSchema } from "../../source"
 import start from "fartest"
 import { Types } from "../../source/types/Type/Types"
-import { getPathTarget } from "../../source/types/Type/getPathTarget"
-import { getSchemaReference } from "../../source/types/Schema/getSchemaReference"
 import { Type } from "../../source/types/Type/Type"
 
 start("Types", async ({ stage, test, same }) => {
@@ -14,19 +12,12 @@ start("Types", async ({ stage, test, same }) => {
 	// return
 
 	const getTarget = <T extends Type = Type>(type: Type): T => {
-		if (type.typeName != "Reference") return type as T
-		const declaration = type.path[0]
-		if (declaration.kind != "declaration") throw "First path item must be a declaration"
-		const rootType = schema[declaration.id]
-		return getPathTarget(rootType, type.path.slice(1)) as T
+		return type as T
 	}
 
 	const getRootType = <T extends Type = Types["Object"]>(name: string): T => {
 		let result: Type = schema[name]
 		if (!result) throw new Error(`Declaration '${name}' does not exist in schema`)
-		if (result.typeName == "Reference") {
-			result = getSchemaReference(schema, result.path)
-		}
 		return result as T
 	}
 
@@ -241,40 +232,49 @@ start("Types", async ({ stage, test, same }) => {
 	stage("Constructors")
 	{
 		const constructor = getRootType<Types["Class"]>("Constructor")
-		same(constructor.typeName, "Constructor", `Check constructor is a constructor`)
+		same(constructor.typeName, "Class", `Check class is a class`)
 		const prototype = constructor.properties.prototype as Types["Object"]
-		for (const [propertyName, property] of Object.entries(prototype.properties)) {
+		for (const [propertyName, property] of Object.entries(constructor.properties)) {
 			same(
 				propertyName,
 				property.typeName,
 				`Property of constructor prototype has the right type`
 			)
+			same(
+				!!property.modifiers?.includes("static"),
+				false,
+				`Non-static property should not have static modifier`
+			)
 		}
-		test(
-			!!constructor.properties.static?.modifiers?.includes("static"),
-			`Constructor static property`
-		)
+		for (const [propertyName, property] of Object.entries(constructor.staticProperties)) {
+			same(
+				propertyName,
+				property.typeName,
+				`Property of constructor prototype has the right type`
+			)
+			same(
+				!!property.modifiers?.includes("static"),
+				true,
+				`Static property should have static modifier`
+			)
+		}
 	}
 	{
 		const { properties } = getRootType("Constructors")
 
 		for (const value in properties) {
 			const [type, minimumParameters, ...parameters] = value.split("_")
-			same(
-				type,
-				properties[value].typeName,
-				`Check constructor '${value}' has the right type`
-			)
+			same(type, properties[value].typeName, `Check class '${value}' is a class`)
 			const callable = properties[value] as Types["Class"]
-			const { constructor } = callable
+			const { signature } = callable
 			same(
 				+minimumParameters,
-				constructor.minimumParameters,
+				signature?.minimumParameters,
 				`Minimum parameters of constructor '${value}'`
 			)
 			same(
 				parameters,
-				constructor.parameters.map(type => type.typeName),
+				signature?.parameters.map(type => type.typeName),
 				`Parameters type of constructor '${value}'`
 			)
 		}
@@ -283,8 +283,8 @@ start("Types", async ({ stage, test, same }) => {
 	stage("Circular references")
 	{
 		const root = getRootType("CircularReference")
-		const self = root.properties.self as Types["Reference"]
-		same(self.typeName, "Reference")
-		same(self.path, [{ kind: "declaration", id: "CircularReference" }])
+		const self = root.properties.self as Types["CircularReference"]
+		same(self.typeName, "CircularReference")
+		same(self.level, 1)
 	}
 })
