@@ -1,24 +1,27 @@
 import { WatcherCallback } from "./types/WatcherCallback"
 import { Typezer, TypezerOptions } from "./types/Typezer/Typezer"
 
-export { Typezer } from "./types/Typezer/Typezer"
+export { Typezer, TypezerOptions }
 
-export const getAllDeclarations = (options: TypezerOptions) => {
-	return new Typezer(options).declarations
-}
-
-export const getSchema = (options: TypezerOptions) => {
+export const findManyDeclarations = (options: TypezerOptions) => {
 	return new Typezer(options).schema
 }
 
-export const findSymbol = (symbol: string, options: Omit<TypezerOptions, "symbols">) => {
-	const { schema, declarations } = new Typezer({
+/**
+ * @param {string} symbol name of the declaration
+ */
+export const findDeclaration = (
+	symbol: string,
+	options: Omit<TypezerOptions, "symbols">
+) => {
+	const { schema } = new Typezer({
 		...options,
 		symbols: [symbol],
 	})
 	const declaration = schema[symbol]
-	return { declaration, schema, declarations }
+	return { declaration, schema }
 }
 
-export const watch = (options: TypezerOptions & { onChange: WatcherCallback }) =>
-	new Typezer(options).watch(options.onChange)
+export const watchDeclarations = (
+	options: TypezerOptions & { onChange: WatcherCallback }
+) => new Typezer(options).watch(options.onChange)

@@ -1,14 +1,25 @@
 import start from "fartest"
 import { Type } from "../../source/types/Type/Type"
 import { TypeName } from "../../source/types/Type/TypeName"
-import { validate, validateSignature } from "../../source/validate"
+import { validateType, validateSignature } from "../../source/validate"
 import inspect from "object-inspect"
 import { Types } from "../../source/types/Type/Types"
+import { findManyDeclarations } from "../../source"
+import { primitives } from "../samples/toValidate"
 
 start("Validations", async ({ stage, test, same }) => {
+	stage("Validation API")
+	{
+		const schema = findManyDeclarations({
+			files: ["test/samples/toValidate.ts"],
+		})
+		const errors = validateType(schema, "primitives", primitives)
+		same(errors, [], "Validation of primitives")
+	}
+
 	const pass = (type: Type, ...values: Array<unknown>) => {
 		for (const value of values) {
-			const errors = validate({}, type, value)
+			const errors = validateType({ type } as any, "type", value)
 			test(
 				errors.length == 0,
 				`Validation should pass but errors raised:\n${errors
@@ -19,7 +30,7 @@ start("Validations", async ({ stage, test, same }) => {
 	}
 	const fail = (type: Type, ...values: Array<unknown>) => {
 		for (const value of values) {
-			const errors = validate({}, type, value)
+			const errors = validateType({ type } as any, "type", value)
 			test(
 				errors.length > 0,
 				`Validation should fail but succeeded for value ${inspect(value)}`
@@ -455,56 +466,77 @@ start("Validations", async ({ stage, test, same }) => {
 			fail({ typeName: "Function", signatures: [] }, {})
 
 			var { errors, returnType } = validateSignature(
-				{},
 				{
-					typeName: "Function",
-					signatures: [
-						{
-							minimumParameters: 1,
-							returnType: { typeName: "String" },
-							parameters: [{ typeName: "Number" }, { typeName: "String" }],
-						},
-					],
+					function: {
+						declare: "function",
+						exportedAs: [],
+						fileName: "",
+						id: "",
+						name: "",
+						typeName: "Function",
+						signatures: [
+							{
+								minimumParameters: 1,
+								returnType: { typeName: "String" },
+								parameters: [{ typeName: "Number" }, { typeName: "String" }],
+							},
+						],
+					},
 				},
+				"function",
 				[12, "12"]
 			)
 			test(!errors?.length, "Signature validated")
 			same(returnType, { typeName: "String" }, "Good return type")
 
 			var { errors, returnType } = validateSignature(
-				{},
 				{
-					typeName: "Function",
-					signatures: [
-						{
-							minimumParameters: 3,
-							returnType: { typeName: "String" },
-							parameters: [{ typeName: "Number" }, { typeName: "String" }],
-						},
-						{
-							minimumParameters: 1,
-							returnType: { typeName: "Number" },
-							parameters: [{ typeName: "Number" }, { typeName: "String" }],
-						},
-					],
+					function: {
+						declare: "function",
+						exportedAs: [],
+						fileName: "",
+						id: "",
+						name: "",
+						typeName: "Function",
+						signatures: [
+							{
+								minimumParameters: 1,
+								returnType: { typeName: "String" },
+								parameters: [{ typeName: "String" }, { typeName: "String" }],
+							},
+							{
+								minimumParameters: 1,
+								returnType: { typeName: "Number" },
+								parameters: [{ typeName: "Number" }, { typeName: "String" }],
+							},
+						],
+					},
 				},
+				"function",
 				[12, "12"]
 			)
 			test(!errors?.length, "Second signature validated")
 			same(returnType, { typeName: "Number" }, "Second returnType returned")
 
 			var { errors, returnType } = validateSignature(
-				{},
 				{
-					typeName: "Function",
-					signatures: [
-						{
-							minimumParameters: 1,
-							returnType: { typeName: "Number" },
-							parameters: [{ typeName: "Number" }, { typeName: "String" }],
-						},
-					],
+					function: {
+						declare: "function",
+						exportedAs: [],
+						fileName: "",
+						id: "",
+						name: "",
+						typeName: "Function",
+						signatures: [
+							{
+								minimumParameters: 1,
+								returnType: { typeName: "String" },
+								parameters: [{ typeName: "Number" }, { typeName: "String" }],
+							},
+						],
+					},
 				},
+				"function",
 				["12", "12"]
 			)
 			test(!!errors?.length, "Signature errors expected")

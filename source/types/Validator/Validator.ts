@@ -2,7 +2,7 @@ import type { Type } from "../Type/Type"
 import inspect from "object-inspect"
 import { validators } from "./validators"
 import { Schema } from "../Schema/Schema"
-import { Callable } from "../Signature/Callable"
+import { Types } from "../Type/Types"
 
 export type ValidateSignatureResult = {
 	errors?: Array<string>
@@ -34,14 +34,14 @@ export class Validator {
 		return this
 	}
 
-	validateSignature = <CallableType extends Callable>(
-		callable: CallableType,
+	validateSignature = (
+		type: Types["Function"],
 		parameters: unknown[]
 	): ValidateSignatureResult => {
 		const errors: Array<string> = []
 		const localValidator = this.fork()
 
-		for (const signature of callable.signatures) {
+		for (const signature of type.signatures) {
 			if (parameters.length < signature.minimumParameters) {
 				localValidator.mismatch(
 					`minimum ${signature.minimumParameters} minimum parameters`,

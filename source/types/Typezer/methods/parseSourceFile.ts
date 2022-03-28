@@ -29,6 +29,9 @@ export function parseSourceFile(
 			const name =
 				findChildNode(declarationNode, ts.SyntaxKind.Identifier)?.getText() ??
 				(isDefaultExport ? basename(fileName) : "")
+
+			if (!this.matchRootSymbol(name)) return
+
 			result.push(
 				this.createRawDeclaration({
 					fileName,

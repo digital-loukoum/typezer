@@ -1,10 +1,10 @@
-import { getSchema } from "../../source"
 import start from "fartest"
 import { Types } from "../../source/types/Type/Types"
 import { Type } from "../../source/types/Type/Type"
+import { findManyDeclarations } from "../../source"
 
 start("Types", async ({ stage, test, same }) => {
-	const schema = getSchema({
+	const schema = findManyDeclarations({
 		files: ["test/samples/types.ts"],
 	})
 

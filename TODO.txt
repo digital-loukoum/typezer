@@ -1,5 +1,4 @@
-- CI/CD
-- Documentation
+- Create a scope when validating a path
 
 ✨ beta ready
 

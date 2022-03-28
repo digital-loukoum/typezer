@@ -1,7 +1,7 @@
 import print from "@digitak/print"
-import { getSchema } from "../source"
+import { findManyDeclarations } from "../source"
 
-const schema = getSchema({
+const schema = findManyDeclarations({
 	files: ["test/samples/inspected.ts"],
 })
 

@@ -87,12 +87,12 @@ export class Typezer {
 	protected utilities = utilities.call(this)
 	protected creators = creators.call(this)
 
+	protected startProgram = startProgram.bind(this)
+	protected getSourceFiles = getSourceFiles.bind(this)
 	protected parseSourceFile = parseSourceFile.bind(this)
 	protected parseSourceFiles = parseSourceFiles.bind(this)
 
 	protected createHost = createHost.bind(this)
-	protected startProgram = startProgram.bind(this)
-	protected getSourceFiles = getSourceFiles.bind(this)
 	protected updateWatchedFiles = updateWatchedFiles.bind(this)
 
 	protected createRawDeclaration = createRawDeclaration.bind(this)

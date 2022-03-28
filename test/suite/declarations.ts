@@ -1,8 +1,8 @@
-import { getSchema } from "../../source"
+import { findManyDeclarations } from "../../source"
 import start from "fartest"
 
 start("Declarations", async ({ stage, test, same }) => {
-	const schema = getSchema({
+	const schema = findManyDeclarations({
 		files: ["test/samples/declarations.ts"],
 	})
 
