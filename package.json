@@ -1,6 +1,6 @@
 {
 	"name": "typezer",
-	"version": "0.9.2",
+	"version": "0.9.3",
 	"description": "Parse Typescript files to get a synthetic description of defined types and variables",
 	"type": "module",
 	"files": [
