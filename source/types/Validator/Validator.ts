@@ -1,7 +1,6 @@
 import type { Type } from "../Type/Type"
 import inspect from "object-inspect"
 import { validators } from "./validators"
-import { Schema } from "../Schema/Schema"
 import { Types } from "../Type/Types"
 
 export type ValidateSignatureResult = {

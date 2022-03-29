@@ -1,3 +1,3 @@
-import { Type } from "./Type/Type"
+import { Schema } from "./Schema/Schema"
 
-export type WatcherCallback = (schema: Record<string, Type>) => any
+export type WatcherCallback = (schema: Schema) => any
