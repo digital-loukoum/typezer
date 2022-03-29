@@ -2,6 +2,7 @@ import { execSync } from "child_process"
 import { bumpVersion } from "./utilities/bumpVersion"
 import { print } from "@digitak/print"
 
+console.log("Bumping version...")
 const version = bumpVersion()
 
 execSync(`git add .`)
@@ -13,7 +14,7 @@ import "./build"
 print`[yellow: Starting deploy...]`
 
 try {
-	execSync(`npm publish`)
+	execSync(`npm publish`, { cwd: "./package" })
 } catch (error) {
 	print`[red: －－－ An error occured during deploy －－－]`
 	console.log(error, "\n")

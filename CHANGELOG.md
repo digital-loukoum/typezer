@@ -3,6 +3,9 @@
 
 ### 0.9.10
 - Export Typezer types
+- No more "/library" needed to access subpackage file
+- Delete unused `expression` type
+
 ### 0.9.9
 - Reset raw declarations when watching
 

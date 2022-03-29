@@ -3,13 +3,10 @@
 	"version": "0.9.8",
 	"description": "Parse Typescript files to get a synthetic description of defined types and variables",
 	"type": "module",
-	"files": [
-		"library"
-	],
-	"main": "./library/index.js",
+	"main": "./index.js",
 	"exports": {
-		".": "./library/index.js",
-		"./*": "./library/*.js"
+		".": "./index.js",
+		"./*": "./*.js"
 	},
 	"scripts": {
 		"dev": "esrun --watch:source/**/*.ts,test/**/*.ts test",
