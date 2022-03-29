@@ -3,7 +3,7 @@
 
 ### 0.9.10
 - Export Typezer types
-- No more "/library" needed to access subpackage file
+- No more "/library" needed to access subpackage files
 - Delete unused `expression` type
 
 ### 0.9.9
