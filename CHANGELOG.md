@@ -1,5 +1,8 @@
 
 # Beta
+
+### 0.9.10
+- Export Typezer types
 ### 0.9.9
 - Reset raw declarations when watching
 
