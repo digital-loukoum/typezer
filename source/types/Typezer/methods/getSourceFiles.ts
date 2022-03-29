@@ -11,6 +11,4 @@ export function getSourceFiles(this: Typezer) {
 	this.entrySourceFiles = this.localSourceFiles.filter(({ fileName }) =>
 		this.files.includes(fileName)
 	)
-
-	this.sourceFiles = this.entrySourceFiles
 }
