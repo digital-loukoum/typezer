@@ -18,7 +18,7 @@ export class Validator {
 
 	protected resolvedGenericsCache = new Map<number, Type | undefined>()
 
-	constructor(public schema: Schema) {}
+	constructor(public schema: Record<string, Type>) {}
 
 	validate = (type: Type, value: unknown) => {
 		this.scope.push(type)
