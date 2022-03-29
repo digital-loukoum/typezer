@@ -39,7 +39,7 @@ export function createType(this: Typezer, rawType: ts.Type, node: ts.Node): Type
 
 			const { create, priority } = this.creators[typeName]
 
-			if ((priority ?? 0) >= currentPriority) {
+			if ((priority ?? 0) > currentPriority) {
 				const challenger = create?.({
 					rawType: baseRawType,
 					node,
