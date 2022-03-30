@@ -2,10 +2,10 @@ import start from "fartest"
 import { Type } from "../../source/types/Type/Type"
 import { TypeName } from "../../source/types/Type/TypeName"
 import { validateType, validateSignature } from "../../source/validate"
-import inspect from "object-inspect"
 import { Types } from "../../source/types/Type/Types"
 import { findManyDeclarations } from "../../source"
 import { primitives } from "../samples/toValidate"
+import { inspect } from "../../source/utilities/inspect"
 
 start("Validations", async ({ stage, test, same }) => {
 	stage("Validation API")
@@ -468,11 +468,6 @@ start("Validations", async ({ stage, test, same }) => {
 			var { errors, returnType } = validateSignature(
 				{
 					function: {
-						declare: "function",
-						exportedAs: [],
-						fileName: "",
-						id: "",
-						name: "",
 						typeName: "Function",
 						signatures: [
 							{
@@ -492,11 +487,6 @@ start("Validations", async ({ stage, test, same }) => {
 			var { errors, returnType } = validateSignature(
 				{
 					function: {
-						declare: "function",
-						exportedAs: [],
-						fileName: "",
-						id: "",
-						name: "",
 						typeName: "Function",
 						signatures: [
 							{
@@ -521,11 +511,6 @@ start("Validations", async ({ stage, test, same }) => {
 			var { errors, returnType } = validateSignature(
 				{
 					function: {
-						declare: "function",
-						exportedAs: [],
-						fileName: "",
-						id: "",
-						name: "",
 						typeName: "Function",
 						signatures: [
 							{

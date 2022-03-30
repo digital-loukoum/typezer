@@ -35,11 +35,11 @@
 	"homepage": "https://github.com/digital-loukoum/typezer#readme",
 	"dependencies": {
 		"@digitak/print": "^1.1.4",
-		"@types/object-inspect": "^1.8.1",
+		"@types/prettyjson": "^0.0.30",
 		"chokidar": "^3.5.3",
 		"fast-glob": "^3.2.11",
 		"micromatch": "^4.0.4",
-		"object-inspect": "^1.12.0",
+		"prettyjson": "^1.2.5",
 		"tosource": "^2.0.0-alpha.3",
 		"typescript": "^4.5"
 	},

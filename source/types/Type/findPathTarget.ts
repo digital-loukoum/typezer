@@ -1,4 +1,3 @@
-import { Schema } from "../Schema/Schema"
 import { Type } from "./Type"
 import { TypeName } from "./TypeName"
 import { Types } from "./Types"

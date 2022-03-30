@@ -1,5 +1,8 @@
 # Beta
 
+### 0.9.11
+- Do not use `object-inspect` package that does not run with Vite
+
 ### 0.9.10
 - Export Typezer types
 - No more "/library" needed to access subpackage files
