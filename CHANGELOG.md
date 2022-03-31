@@ -1,5 +1,8 @@
 # Beta
 
+### 0.9.13
+- Remove prettyjson as it is not compatible with Vite. Using JSON.stringify for now
+
 ### 0.9.12
 - Remove sourcemaps (not compatible with .d.ts files)
 
