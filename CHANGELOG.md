@@ -1,6 +1,9 @@
 # Beta
 
 ### 0.9.12
+- Remove sourcemaps (not compatible with .d.ts files)
+
+### 0.9.12
 - Export sourcemaps
 
 ### 0.9.11
