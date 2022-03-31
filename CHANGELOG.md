@@ -1,5 +1,8 @@
 # Beta
 
+### 0.9.12
+- Export sourcemaps
+
 ### 0.9.11
 - Do not use `object-inspect` package that does not run with Vite
 
