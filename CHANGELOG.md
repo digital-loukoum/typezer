@@ -1,5 +1,10 @@
 # Beta
 
+### 0.9.16
+- Use [@digitak/cute](https://www.npmjs.com/package/@digitak/cute) to stringify values (the only stringify library that does not crach with big integers 😅)
+- Use NodeNext module resolution and add '.js' extension to all js/ts imports
+- Remove dependency on `tsc-esm` for build
+
 ### 0.9.13
 - Remove prettyjson as it is not compatible with Vite. Using JSON.stringify for now
 

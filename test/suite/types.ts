@@ -1,6 +1,6 @@
 import start from "fartest"
-import { Types } from "../../source/types/Type/Types"
-import { Type } from "../../source/types/Type/Type"
+import { Types } from "../../source/types/Type/Types.js"
+import { Type } from "../../source/types/Type/Type.js"
 import { findManyDeclarations } from "../../source"
 
 start("Types", async ({ stage, test, same }) => {

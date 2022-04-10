@@ -1,7 +1,7 @@
 import ts from "typescript"
-import { Signature } from "../../Signature/Signature"
-import { Type } from "../../Type/Type"
-import { Typezer } from "../Typezer"
+import { Signature } from "../../Signature/Signature.js"
+import { Type } from "../../Type/Type.js"
+import { Typezer } from "../Typezer.js"
 
 export function utilities(this: Typezer) {
 	return {

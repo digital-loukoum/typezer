@@ -1,4 +1,4 @@
-import { Type } from "../types/Type/Type"
+import { Type } from "../types/Type/Type.js"
 
 export function resolveTypeOfValue(value: unknown): Type | undefined {
 	const type = _resolveTypeOfValue(value)

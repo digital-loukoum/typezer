@@ -1,6 +1,6 @@
 import chokidar, { FSWatcher } from "chokidar"
-import { getWatchedFiles } from "../../../utilities/getWatchedFiles"
-import { Typezer } from "../Typezer"
+import { getWatchedFiles } from "../../../utilities/getWatchedFiles.js"
+import { Typezer } from "../Typezer.js"
 
 export function updateWatchedFiles(this: Typezer): FSWatcher {
 	const filesToWatch = this.sourceFiles.map(({ fileName }) => fileName)

@@ -1,3 +1,3 @@
-import { Signature } from "./Signature"
+import { Signature } from "./Signature.js"
 
 export type Constructor = Omit<Signature, "returnType">

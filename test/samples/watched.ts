@@ -1,3 +1,3 @@
-import { secret } from "./anotherWatchedDependency"
+import { secret } from "./anotherWatchedDependency.js"
 
 export default secret

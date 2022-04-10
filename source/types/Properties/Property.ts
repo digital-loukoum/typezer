@@ -1,5 +1,5 @@
-import { Modifier } from "../Modifier/Modifier"
-import { Type } from "../Type/Type"
+import { Modifier } from "../Modifier/Modifier.js"
+import { Type } from "../Type/Type.js"
 
 export type Property = Type & {
 	optional?: boolean

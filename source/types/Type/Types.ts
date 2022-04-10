@@ -1,7 +1,7 @@
-import { Properties } from "../Properties/Properties"
-import { Constructor } from "../Signature/Constructor"
-import { Signature } from "../Signature/Signature"
-import { Type } from "./Type"
+import { Properties } from "../Properties/Properties.js"
+import { Constructor } from "../Signature/Constructor.js"
+import { Signature } from "../Signature/Signature.js"
+import { Type } from "./Type.js"
 
 export type Types = {
 	[Key in keyof BaseTypes]: {

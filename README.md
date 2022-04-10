@@ -92,20 +92,20 @@ import {
 } from "typezer"
 
 function findDeclaration(
-	symbol: string, // name of the declaration
-	options: Omit<TypezerOptions, "symbols"> // additional options
+  symbol: string, // name of the declaration
+  options: Omit<TypezerOptions, "symbols"> // additional options
 ): {
   declaration: Declaration
   schema: Record<string, Declaration>
 }
  
 function findManyDeclarations(
-	options: TypezerOptions
+  options: TypezerOptions
 ): Record<string, Declaration>
  
  
 function watchDeclarations(
-	options: TypezerOptions & { onChange: WatcherCallback }
+  options: TypezerOptions & { onChange: WatcherCallback }
 ): Record<string, Declaration>
 ```
 
@@ -235,7 +235,7 @@ Example:
 ```ts
 // ./sample.ts
 function foo(someNumber: number, someString: string): string {
-	...
+  ...
 }
 ```
 
@@ -248,9 +248,9 @@ const schema = findManyDeclarations({
 })
 
 const { errors, returnType } = validateSignature(
-	schema,
-	"foo",
-	[123, "123"] // parameters: one number then one string
+  schema,
+  "foo",
+  [123, "123"] // parameters: one number then one string
 )
 
 console.log(errors) // []
@@ -282,9 +282,9 @@ The TS compiler API makes it very hard to deal with this kind of situation, so f
 
 ```ts
 type TypezerOptions = {
-	files?: string[] // globs of files to look declarations in
-	symbols?: string[] // globs of symbol names to match
-	compilerOptions?: ts.CompilerOptions // custom ts compiler options
+  files?: string[] // globs of files to look declarations in
+  symbols?: string[] // globs of symbol names to match
+  compilerOptions?: ts.CompilerOptions // custom ts compiler options
 }
 ```
 
@@ -292,19 +292,19 @@ type TypezerOptions = {
 
 ```ts
 type Declaration = Type & {
-	id: string
-	declare:
-		| "namespace"
-		| "enumeration"
-		| "class"
-		| "interface"
-		| "type"
-		| "variable"
-		| "function"
-		| "default"
-	fileName: string
-	name: string
-	exportedAs: string[]
+  id: string
+  declare:
+    | "namespace"
+    | "enumeration"
+    | "class"
+    | "interface"
+    | "type"
+    | "variable"
+    | "function"
+    | "default"
+  fileName: string
+  name: string
+  exportedAs: string[]
 }
 ```
 
@@ -313,105 +313,105 @@ type Declaration = Type & {
 ```ts
 type Type =
   // -- primitives --
-	| { typeName: "Unknown" }
-	| { typeName: "Never" }
-	| { typeName: "Void" }
-	| { typeName: "Any" }
-	| { typeName: "Boolean" }
-	| { typeName: "Number" }
-	| { typeName: "BigInteger" }
-	| { typeName: "String" }
-	| { typeName: "Symbol" }
-	| { typeName: "RegularExpression" }
-	| { typeName: "Date" }
-	| { typeName: "ArrayBuffer" }
+  | { typeName: "Unknown" }
+  | { typeName: "Never" }
+  | { typeName: "Void" }
+  | { typeName: "Any" }
+  | { typeName: "Boolean" }
+  | { typeName: "Number" }
+  | { typeName: "BigInteger" }
+  | { typeName: "String" }
+  | { typeName: "Symbol" }
+  | { typeName: "RegularExpression" }
+  | { typeName: "Date" }
+  | { typeName: "ArrayBuffer" }
 
   // -- literals --
-	| { typeName: "Null" }
-	| { typeName: "Undefined" }
-	| {
-			typeName: "StringLiteral"
-			value: string
-	  }
-	| {
-			typeName: "TemplateLiteral"
-			texts: string[]
-			types: ("string" | "number" | "bigint")[]
-	  }
-	| {
-			typeName: "NumberLiteral"
-			value: number
-	  }
-	| {
-			typeName: "BigIntegerLiteral"
-			value: string
-	  }
-	| {
-			typeName: "BooleanLiteral"
-			value: boolean
-	  }
+  | { typeName: "Null" }
+  | { typeName: "Undefined" }
+  | {
+      typeName: "StringLiteral"
+      value: string
+    }
+  | {
+      typeName: "TemplateLiteral"
+      texts: string[]
+      types: ("string" | "number" | "bigint")[]
+    }
+  | {
+      typeName: "NumberLiteral"
+      value: number
+    }
+  | {
+      typeName: "BigIntegerLiteral"
+      value: string
+    }
+  | {
+      typeName: "BooleanLiteral"
+      value: boolean
+    }
 
   // -- objects --
   | {
-			typeName: "Namespace"
-			properties: Properties
-	  }
-	| {
-			typeName: "Object"
-			properties: Properties
-	  }
-	| {
-			typeName: "Promise"
-			item: Type
-	  }
-	| {
-			typeName: "Record"
-			keys: Type
-			items: Type
-	  }
-	| {
-			typeName: "Map"
-			keys: Type
-			items: Type
-	  }
-	| {
-			typeName: "Array"
-			items: Type
-	  }
-	| {
-			typeName: "Set"
-			items: Type
-	  }
-	| {
-			typeName: "Tuple"
-			items: Type[]
-	  }
-	| {
-			typeName: "Union"
-			items: Type[]
-	  }
-	| {
-			typeName: "Enumeration"
-			items: Record<string, Type>
-	  }
-	| {
-			typeName: "Function"
-			signatures: Signature[]
-	  }
-	| {
-			typeName: "Class"
-			staticProperties: Properties
-			properties: Properties
-			signature?: Constructor
-	  }
+      typeName: "Namespace"
+      properties: Properties
+    }
+  | {
+      typeName: "Object"
+      properties: Properties
+    }
+  | {
+      typeName: "Promise"
+      item: Type
+    }
+  | {
+      typeName: "Record"
+      keys: Type
+      items: Type
+    }
+  | {
+      typeName: "Map"
+      keys: Type
+      items: Type
+    }
+  | {
+      typeName: "Array"
+      items: Type
+    }
+  | {
+      typeName: "Set"
+      items: Type
+    }
+  | {
+      typeName: "Tuple"
+      items: Type[]
+    }
+  | {
+      typeName: "Union"
+      items: Type[]
+    }
+  | {
+      typeName: "Enumeration"
+      items: Record<string, Type>
+    }
+  | {
+      typeName: "Function"
+      signatures: Signature[]
+    }
+  | {
+      typeName: "Class"
+      staticProperties: Properties
+      properties: Properties
+      signature?: Constructor
+    }
 
   // -- others --
-	| {
-			typeName: "CircularReference"
-			level: number // level of the parent
-	  }
-	| {
-			typeName: "Unresolved" // constraint-less generic
-			uniqueId: number // unique id to identify the generic
-	  }
+  | {
+      typeName: "CircularReference"
+      level: number // level of the parent
+    }
+  | {
+      typeName: "Unresolved" // constraint-less generic
+      uniqueId: number // unique id to identify the generic
+    }
 ```

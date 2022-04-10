@@ -1,4 +1,4 @@
-import { Typezer } from "../Typezer"
+import { Typezer } from "../Typezer.js"
 
 /**
  * Find rawDeclaration.type from rawDeclaration.rawType

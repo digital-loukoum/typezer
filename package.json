@@ -34,19 +34,18 @@
 	},
 	"homepage": "https://github.com/digital-loukoum/typezer#readme",
 	"dependencies": {
+		"@digitak/cute": "^1.0.2",
 		"@digitak/print": "^1.1.4",
-		"@types/prettyjson": "^0.0.30",
+		"@types/micromatch": "^4.0.2",
 		"chokidar": "^3.5.3",
 		"fast-glob": "^3.2.11",
-		"micromatch": "^4.0.4",
-		"tosource": "^2.0.0-alpha.3",
-		"typescript": "^4.5"
+		"micromatch": "^4.0.4"
 	},
 	"devDependencies": {
 		"@digitak/esrun": "^3.0.2",
 		"@digitak/tsc-esm": "^3.1.2",
-		"@types/micromatch": "^4.0.2",
 		"@types/node": "^15.6.1",
-		"fartest": "^2.1.8"
+		"fartest": "^2.1.8",
+		"typescript": "^4.7.0-dev.20220408"
 	}
 }

@@ -1,36 +1,38 @@
 lockfileVersion: 5.3
 
 specifiers:
+  '@digitak/cute': ^1.0.2
   '@digitak/esrun': ^3.0.2
   '@digitak/print': ^1.1.4
   '@digitak/tsc-esm': ^3.1.2
   '@types/micromatch': ^4.0.2
   '@types/node': ^15.6.1
-  '@types/prettyjson': ^0.0.30
   chokidar: ^3.5.3
   fartest: ^2.1.8
   fast-glob: ^3.2.11
   micromatch: ^4.0.4
-  tosource: ^2.0.0-alpha.3
-  typescript: ^4.5
+  typescript: ^4.7.0-dev.20220408
 
 dependencies:
+  '@digitak/cute': 1.0.2
   '@digitak/print': 1.1.4
-  '@types/prettyjson': 0.0.30
+  '@types/micromatch': 4.0.2
   chokidar: 3.5.3
   fast-glob: 3.2.11
   micromatch: 4.0.4
-  tosource: 2.0.0-alpha.3
-  typescript: 4.5.4
 
 devDependencies:
   '@digitak/esrun': 3.1.2
   '@digitak/tsc-esm': 3.1.2
-  '@types/micromatch': 4.0.2
   '@types/node': 15.14.9
   fartest: 2.1.8
+  typescript: 4.7.0-dev.20220408
 
 packages:
+
+  /@digitak/cute/1.0.2:
+    resolution: {integrity: sha512-Lr5Wz5So9p0rO6JEGAw6HaknLTZd0c9CVsTbGYiyh66bnyEk1qY1ZqFHF05nswm1M/vF9txiF36WjBGgPfLbAw==}
+    dev: false
 
   /@digitak/esrun/3.1.2:
     resolution: {integrity: sha512-15zbkLp7Ex8uPEO92GZKygdXkRBovLEN7l2rSmbNT7mRY89MXYjwUqiKe+SWWOw1B1vTuMiabPWouGLWA8q5qg==}
@@ -79,21 +81,17 @@ packages:
 
   /@types/braces/3.0.1:
     resolution: {integrity: sha512-+euflG6ygo4bn0JHtn4pYqcXwRtLvElQ7/nnjDu7iYG56H0+OhCd7d6Ug0IE3WcFpZozBKW2+80FUbv5QGk5AQ==}
-    dev: true
+    dev: false
 
   /@types/micromatch/4.0.2:
     resolution: {integrity: sha512-oqXqVb0ci19GtH0vOA/U2TmHTcRY9kuZl4mqUxe0QmJAlIW13kzhuK5pi1i9+ngav8FjpSb9FVS/GE00GLX1VA==}
     dependencies:
       '@types/braces': 3.0.1
-    dev: true
+    dev: false
 
   /@types/node/15.14.9:
     resolution: {integrity: sha512-qjd88DrCxupx/kJD5yQgZdcYKZKSIGBVDIBE1/LTGcNm3d2Np/jxojkdePDdfnBHJc5W7vSMpbJ1aB7p/Py69A==}
     dev: true
-
-  /@types/prettyjson/0.0.30:
-    resolution: {integrity: sha512-BQ15wnnSvzlvDAVvd4t+zXjd9o6QAcfBeEUlZcinDYeb0A1xTfRBc0s8nxHlctojnsxDrbiG7amTqLWbXsiK7Q==}
-    dev: false
 
   /ansi-styles/3.2.1:
     resolution: {integrity: sha512-VT0ZI6kZRdTh8YyJw3SMbYm/u+NqfsAxEpWO0Pf9sq8/e94WxxOpPKx9FR1FlyCtOVDNOQ+8ntlqFxiRc+r5qA==}
@@ -291,13 +289,8 @@ packages:
     dependencies:
       is-number: 7.0.0
 
-  /tosource/2.0.0-alpha.3:
-    resolution: {integrity: sha512-KAB2lrSS48y91MzFPFuDg4hLbvDiyTjOVgaK7Erw+5AmZXNq4sFRVn8r6yxSLuNs15PaokrDRpS61ERY9uZOug==}
-    engines: {node: '>=10'}
-    dev: false
-
-  /typescript/4.5.4:
-    resolution: {integrity: sha512-VgYs2A2QIRuGphtzFV7aQJduJ2gyfTljngLzjpfW9FoYZF6xuw1W0vW9ghCKLfcWrCFxK81CSGRAvS1pn4fIUg==}
+  /typescript/4.7.0-dev.20220408:
+    resolution: {integrity: sha512-2KgXRQXrjFEbm+ismaGoR803nTRQuc03XQ1crnlxXvQYIXasPiidwiczLc9i0rTo33KXIN2M6YiNtn1tZihHgw==}
     engines: {node: '>=4.2.0'}
     hasBin: true
-    dev: false
+    dev: true

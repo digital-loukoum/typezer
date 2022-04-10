@@ -1,7 +1,7 @@
 import print from "@digitak/print"
-import { getDependentSourceFiles } from "../../../utilities/getDependentSourceFiles"
-import { WatcherCallback } from "../../WatcherCallback"
-import { Typezer } from "../Typezer"
+import { getDependentSourceFiles } from "../../../utilities/getDependentSourceFiles.js"
+import { WatcherCallback } from "../../WatcherCallback.js"
+import { Typezer } from "../Typezer.js"
 
 export function watch(this: Typezer, callback?: WatcherCallback) {
 	callback?.(this.schema)

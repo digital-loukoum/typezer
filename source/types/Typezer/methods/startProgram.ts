@@ -1,5 +1,5 @@
 import ts from "typescript"
-import { Typezer } from "../Typezer"
+import { Typezer } from "../Typezer.js"
 
 export function startProgram(this: Typezer): ts.Program {
 	this.program = ts.createProgram(this.files, this.compilerOptions, this.host)

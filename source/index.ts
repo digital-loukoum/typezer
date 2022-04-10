@@ -1,15 +1,15 @@
-import { WatcherCallback } from "./types/WatcherCallback"
-import { Typezer, TypezerOptions } from "./types/Typezer/Typezer"
+import { WatcherCallback } from "./types/WatcherCallback.js"
+import { Typezer, TypezerOptions } from "./types/Typezer/Typezer.js"
 
-export type { Type } from "./types/Type/Type"
-export type { TypeName } from "./types/Type/TypeName"
-export type { Types } from "./types/Type/Types"
-export type { Schema } from "./types/Schema/Schema"
-export type { Signature } from "./types/Signature/Signature"
-export type { Declaration } from "./types/Declaration/Declaration"
-export type { Modifier } from "./types/Modifier/Modifier"
-export type { Property } from "./types/Properties/Property"
-export type { Properties } from "./types/Properties/Properties"
+export type { Type } from "./types/Type/Type.js"
+export type { TypeName } from "./types/Type/TypeName.js"
+export type { Types } from "./types/Type/Types.js"
+export type { Schema } from "./types/Schema/Schema.js"
+export type { Signature } from "./types/Signature/Signature.js"
+export type { Declaration } from "./types/Declaration/Declaration.js"
+export type { Modifier } from "./types/Modifier/Modifier.js"
+export type { Property } from "./types/Properties/Property.js"
+export type { Properties } from "./types/Properties/Properties.js"
 
 export { Typezer, TypezerOptions }
 

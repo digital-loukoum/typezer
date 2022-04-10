@@ -1,11 +1,11 @@
 import start from "fartest"
-import { Type } from "../../source/types/Type/Type"
-import { TypeName } from "../../source/types/Type/TypeName"
-import { validateType, validateSignature } from "../../source/validate"
-import { Types } from "../../source/types/Type/Types"
 import { findManyDeclarations } from "../../source"
-import { primitives } from "../samples/toValidate"
-import { inspect } from "../../source/utilities/inspect"
+import { Type } from "../../source/types/Type/Type.js"
+import { TypeName } from "../../source/types/Type/TypeName.js"
+import { validateType, validateSignature } from "../../source/validate.js"
+import { Types } from "../../source/types/Type/Types.js"
+import { primitives } from "../samples/toValidate.js"
+import { inspect } from "../../source/utilities/inspect.js"
 
 start("Validations", async ({ stage, test, same }) => {
 	stage("Validation API")
@@ -33,7 +33,7 @@ start("Validations", async ({ stage, test, same }) => {
 			const errors = validateType({ type } as any, "type", value)
 			test(
 				errors.length > 0,
-				`Validation should fail but succeeded for value ${inspect(value)}`
+				`Validation should fail but succeeded for value ${inspect(value, true)}`
 			)
 		}
 	}

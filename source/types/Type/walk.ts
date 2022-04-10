@@ -1,7 +1,7 @@
-import { Schema } from "../Schema/Schema"
-import { Type } from "./Type"
-import { TypeName } from "./TypeName"
-import { Types } from "./Types"
+import { Schema } from "../Schema/Schema.js"
+import { Type } from "./Type.js"
+import { TypeName } from "./TypeName.js"
+import { Types } from "./Types.js"
 
 export type Walker = (type: Type) => any
 

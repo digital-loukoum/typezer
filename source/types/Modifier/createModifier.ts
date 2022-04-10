@@ -1,5 +1,5 @@
 import ts from "typescript"
-import { Modifier } from "./Modifier"
+import { Modifier } from "./Modifier.js"
 
 export function createModifier(tsModifier: ts.Modifier): Modifier {
 	const { kind } = tsModifier

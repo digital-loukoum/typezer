@@ -1,13 +1,5 @@
-// import prettyjson from "prettyjson"
+import { stringify } from "@digitak/cute"
 
-export function inspect(value: any): string {
-	return JSON.stringify(value)
-	// const result = prettyjson.render(value, {
-	// 	keysColor: "white",
-	// 	numberColor: "blue",
-	// 	stringColor: "green",
-	// })
-	// if (typeof value !== "object") return result
-	// if (result.split("\n").length == 1) return `{ ${result} }`
-	// return `\n${result}\n`
+export function inspect(value: any, colors = false): string {
+	return stringify(value, { colors })
 }

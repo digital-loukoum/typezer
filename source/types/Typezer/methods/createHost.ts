@@ -1,5 +1,5 @@
 import ts from "typescript"
-import { Typezer } from "../Typezer"
+import { Typezer } from "../Typezer.js"
 
 export function createHost(this: Typezer) {
 	const host = ts.createCompilerHost(this.compilerOptions)

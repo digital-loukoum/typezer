@@ -1,7 +1,7 @@
 import ts from "typescript"
-import { createModifier } from "../../Modifier/createModifier"
-import { Properties } from "../../Properties/Properties"
-import { Typezer } from "../Typezer"
+import { createModifier } from "../../Modifier/createModifier.js"
+import { Properties } from "../../Properties/Properties.js"
+import { Typezer } from "../Typezer.js"
 
 export function createProperties(
 	this: Typezer,

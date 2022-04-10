@@ -1,5 +1,5 @@
-import { Schema } from "../../Schema/Schema"
-import { Typezer } from "../Typezer"
+import { Schema } from "../../Schema/Schema.js"
+import { Typezer } from "../Typezer.js"
 
 export function createSchema(this: Typezer): Schema {
 	const schema: Schema = {}

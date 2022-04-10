@@ -1,10 +1,10 @@
-import { resolveTypeOfValue } from "../../utilities/resolveTypeOfValue"
-import { serializeTemplateLiteral } from "../../utilities/serializeTemplateLiteral"
-import { templateExpressions } from "../../utilities/templateExpressions"
-import { isStringOrNumberLiteral } from "../Type/isStringOrNumberLiteral"
-import { TypeName } from "../Type/TypeName"
-import { Types } from "../Type/Types"
-import { Validator } from "./Validator"
+import { resolveTypeOfValue } from "../../utilities/resolveTypeOfValue.js"
+import { serializeTemplateLiteral } from "../../utilities/serializeTemplateLiteral.js"
+import { templateExpressions } from "../../utilities/templateExpressions.js"
+import { isStringOrNumberLiteral } from "../Type/isStringOrNumberLiteral.js"
+import { TypeName } from "../Type/TypeName.js"
+import { Types } from "../Type/Types.js"
+import { Validator } from "./Validator.js"
 
 export function validators(this: Validator): {
 	[Key in TypeName]: (type: Types[Key], value: any) => any
@@ -60,6 +60,8 @@ export function validators(this: Validator): {
 		},
 
 		BigIntegerLiteral: (type, value) => {
+			// console.log("BIGINT!", type, value)
+			// return true
 			if (value !== BigInt(type.value)) this.mismatch(value, type.value)
 		},
 

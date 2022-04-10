@@ -1,5 +1,5 @@
 import ts from "typescript"
-import { Type } from "../Type/Type"
+import { Type } from "../Type/Type.js"
 
 export type RawDeclaration = {
 	id: string

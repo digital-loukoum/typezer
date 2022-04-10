@@ -1,6 +1,6 @@
-import { Type } from "./Type"
-import { TypeName } from "./TypeName"
-import { Types } from "./Types"
+import { Type } from "./Type.js"
+import { TypeName } from "./TypeName.js"
+import { Types } from "./Types.js"
 
 type Finder = (type: Type, pathItem: string) => Type | undefined
 

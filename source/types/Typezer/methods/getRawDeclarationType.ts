@@ -1,7 +1,7 @@
 import ts from "typescript"
-import { RawDeclaration } from "../../Declaration/RawDeclaration"
-import { Type } from "../../Type/Type"
-import { Typezer } from "../Typezer"
+import { RawDeclaration } from "../../Declaration/RawDeclaration.js"
+import { Type } from "../../Type/Type.js"
+import { Typezer } from "../Typezer.js"
 
 export function getRawDeclarationType(
 	this: Typezer,

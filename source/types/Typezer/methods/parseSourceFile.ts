@@ -1,8 +1,8 @@
 import ts from "typescript"
-import { basename } from "../../../utilities/basename"
-import { findChildNode, findLastChildNode } from "../../../utilities/findChildNode"
-import { RawDeclaration } from "../../Declaration/RawDeclaration"
-import { Typezer } from "../Typezer"
+import { basename } from "../../../utilities/basename.js"
+import { findChildNode, findLastChildNode } from "../../../utilities/findChildNode.js"
+import { RawDeclaration } from "../../Declaration/RawDeclaration.js"
+import { Typezer } from "../Typezer.js"
 
 export function parseSourceFile(
 	this: Typezer,

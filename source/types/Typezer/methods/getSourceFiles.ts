@@ -1,4 +1,4 @@
-import { Typezer } from "../Typezer"
+import { Typezer } from "../Typezer.js"
 
 export function getSourceFiles(this: Typezer) {
 	this.sourceFiles = this.program.getSourceFiles()

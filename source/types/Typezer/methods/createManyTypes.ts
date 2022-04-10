@@ -1,6 +1,6 @@
 import ts from "typescript"
-import { Type } from "../../Type/Type"
-import { Typezer } from "../Typezer"
+import { Type } from "../../Type/Type.js"
+import { Typezer } from "../Typezer.js"
 
 export function createManyTypes(
 	this: Typezer,

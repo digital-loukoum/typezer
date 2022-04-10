@@ -1,6 +1,6 @@
-import { findPathTarget } from "./types/Type/findPathTarget"
-import { Type } from "./types/Type/Type"
-import { Validator } from "./types/Validator/Validator"
+import { findPathTarget } from "./types/Type/findPathTarget.js"
+import { Type } from "./types/Type/Type.js"
+import { Validator } from "./types/Validator/Validator.js"
 
 function findTargetInSchema(schema: Record<string, Type>, path: string | Array<string>) {
 	if (typeof path == "string") return schema[path]

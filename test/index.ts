@@ -1,3 +1,3 @@
-import "./suite/declarations"
-import "./suite/types"
-import "./suite/validations"
+import "./suite/declarations.js"
+import "./suite/types.js"
+import "./suite/validations.js"

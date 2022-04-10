@@ -1,7 +1,7 @@
-import type { Type } from "../Type/Type"
-import { validators } from "./validators"
-import { Types } from "../Type/Types"
-import { inspect } from "../../utilities/inspect"
+import type { Type } from "../Type/Type.js"
+import { validators } from "./validators.js"
+import { Types } from "../Type/Types.js"
+import { inspect } from "../../utilities/inspect.js"
 
 export type ValidateSignatureResult = {
 	errors?: Array<string>

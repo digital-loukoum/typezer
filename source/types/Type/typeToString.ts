@@ -1,9 +1,9 @@
-import { serializeTemplateLiteral } from "../../utilities/serializeTemplateLiteral"
-import { Properties } from "../Properties/Properties"
-import { Signature } from "../Signature/Signature"
-import { Type } from "./Type"
-import { TypeName } from "./TypeName"
-import { Types } from "./Types"
+import { serializeTemplateLiteral } from "../../utilities/serializeTemplateLiteral.js"
+import { Properties } from "../Properties/Properties.js"
+import { Signature } from "../Signature/Signature.js"
+import { Type } from "./Type.js"
+import { TypeName } from "./TypeName.js"
+import { Types } from "./Types.js"
 
 export function typeToString(type: Type): string {
 	const { typeName } = type

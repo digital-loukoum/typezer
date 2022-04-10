@@ -1,6 +1,5 @@
-import ts from "typescript"
-import { RawDeclaration } from "../../Declaration/RawDeclaration"
-import { Typezer } from "../Typezer"
+import { RawDeclaration } from "../../Declaration/RawDeclaration.js"
+import { Typezer } from "../Typezer.js"
 
 const duplicate = (value: string, index: number) => `${value}$${index}`
 

@@ -1,10 +1,10 @@
 import ts from "typescript"
-import { Typezer } from "../Typezer"
-import { getOriginalBaseTypes } from "../../../utilities/getOriginalBaseType"
-import { Type } from "../../Type/Type"
-import { TypeName } from "../../Type/TypeName"
-import { getScopeReference } from "../../Scope/getScopeReference"
-import { ScopeItem } from "../../Scope/ScopeItem"
+import { Typezer } from "../Typezer.js"
+import { getOriginalBaseTypes } from "../../../utilities/getOriginalBaseType.js"
+import { Type } from "../../Type/Type.js"
+import { TypeName } from "../../Type/TypeName.js"
+import { getScopeReference } from "../../Scope/getScopeReference.js"
+import { ScopeItem } from "../../Scope/ScopeItem.js"
 
 export function createType(this: Typezer, rawType: ts.Type, node: ts.Node): Type {
 	// we check if the item is a parent (circular reference) or a generic (generic reference)
