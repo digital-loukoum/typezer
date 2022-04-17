@@ -84,9 +84,9 @@ export class Validator {
 
 	mismatch = (value: any, expected: any) => {
 		const path = this.joinPath()
-		const pathInfos = path ? `at '${this.joinPath()}'` : ""
+		const pathInfos = path ? ` at '${this.joinPath()}'` : ""
 		this.errors.push(
-			`Expected ${inspect(expected)} but received ${inspect(value)} ${pathInfos}`
+			`Expected ${inspect(expected)} but received ${inspect(value)}${pathInfos}`
 		)
 	}
 
