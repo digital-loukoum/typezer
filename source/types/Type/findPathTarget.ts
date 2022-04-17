@@ -12,6 +12,14 @@ export function findPathTarget(type: Type, path: Array<string>): Type | undefine
 	return target && findPathTarget(target, path.slice(1))
 }
 
+export function findTargetInSchema(
+	schema: Record<string, Type>,
+	path: string | Array<string>
+) {
+	if (typeof path == "string") return schema[path]
+	return findPathTarget(schema[path[0]], path.slice(1))
+}
+
 const finders: {
 	[Key in TypeName]?: (type: Types[Key], pathItem: string) => Type | undefined
 } = {
