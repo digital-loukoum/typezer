@@ -13,7 +13,7 @@ export function validateType(
 	value: unknown
 ) {
 	const type = findTargetInSchema(schema, path)
-	if (!type) return [`Invalid path '${path}'`]
+	if (!type) throw new Error(`Invalid path '${path}'`)
 	return new Validator(schema).validate(type, value).errors
 }
 
@@ -23,7 +23,7 @@ export function validateSignature(
 	value: unknown[]
 ) {
 	const type = findTargetInSchema(schema, path)
-	if (!type) return { errors: [`Invalid path '${path}'`] }
+	if (!type) throw new Error(`Invalid path '${path}'`)
 
 	if (type.typeName != "Function") {
 		return { errors: [`Type '${type}' is not a function`] }

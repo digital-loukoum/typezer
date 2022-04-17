@@ -1,5 +1,10 @@
 # Beta
 
+### 0.9.18
+- Make `validate()` and `validateSignature()` throw when the path is not correct
+
+### 0.9.17
+- Fix `findPathTarget` when path is an empty array
 ### 0.9.16
 - Use [@digitak/cute](https://www.npmjs.com/package/@digitak/cute) to stringify values (the only stringify library that does not crach with big integers 😅)
 - Use NodeNext module resolution and add '.js' extension to all js/ts imports
