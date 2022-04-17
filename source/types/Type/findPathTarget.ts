@@ -5,6 +5,7 @@ import { Types } from "./Types.js"
 type Finder = (type: Type, pathItem: string) => Type | undefined
 
 export function findPathTarget(type: Type, path: Array<string>): Type | undefined {
+	if (!path.length) return type
 	const finder = finders[type.typeName] as Finder
 	if (!finder) return undefined
 	const target = finder(type, path[0])
