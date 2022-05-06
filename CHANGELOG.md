@@ -1,5 +1,8 @@
 # Beta
 
+### 0.9.22
+- Fix optional type of optional parameter (is now union of original type and undefined)
+
 ### 0.9.18
 - Make `validate()` and `validateSignature()` throw when the path is not correct
 
