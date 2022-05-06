@@ -93,8 +93,8 @@ export const Constructor = class {
 
 export type Constructors = {
 	Class_1_String: new (_: string) => any
-	Class_1_Number_String: new (_1: number, _2?: string) => any
-	Class_0_Number_String: new (_1?: number, _2?: string) => any
+	Class_1_Number_Union: new (_1: number, _2?: string) => any
+	Class_0_Union_Union: new (_1?: number, _2?: string) => any
 }
 
 export class Class {

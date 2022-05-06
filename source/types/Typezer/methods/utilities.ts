@@ -118,10 +118,21 @@ export function utilities(this: Typezer) {
 				const minimumParameters = (signature as any).minArgumentCount
 
 				rawParameters.forEach((symbol, index) => {
-					const type = this.createType(
+					const declaration = symbol.valueDeclaration as ts.ParameterDeclaration
+					const isOptional = !!declaration.questionToken
+
+					let type = this.createType(
 						this.checker.getTypeOfSymbolAtLocation(symbol, node),
 						node
 					)
+
+					if (isOptional) {
+						type = {
+							typeName: "Union",
+							items: [type, { typeName: "Undefined" }],
+						}
+					}
+
 					if (
 						index == rawParameters.length - 1 &&
 						type.typeName == "Array" &&
