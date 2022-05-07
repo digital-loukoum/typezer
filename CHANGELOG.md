@@ -1,5 +1,8 @@
 # Beta
 
+### 0.9.23
+- Cleaner validator error messages
+
 ### 0.9.22
 - Fix optional type of optional parameter (is now union of original type and undefined)
 

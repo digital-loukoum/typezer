@@ -17,7 +17,7 @@ export function validators(this: Validator): {
 			else this.resolvedGenericsCache.set(type.uniqueId, resolveTypeOfValue(value))
 		},
 		Unknown: () => {}, // never fails
-		Never: (type, value) => this.mismatch(value, "never"), // always fails
+		Never: (type, value) => this.mismatchValue(value, "never"), // always fails
 
 		// references
 		Reference: (type, value) => {},
@@ -28,78 +28,78 @@ export function validators(this: Validator): {
 
 		// primitives
 		Void: (type, value) => {
-			if (value !== undefined) this.mismatch(value, "undefined")
+			if (value !== undefined) this.mismatchExact(value, undefined)
 		},
 
 		Null: (type, value) => {
-			if (value !== null) this.mismatch(value, "null")
+			if (value !== null) this.mismatchExact(value, null)
 		},
 
 		Undefined: (type, value) => {
-			if (value !== undefined) this.mismatch(value, "undefined")
+			if (value !== undefined) this.mismatchExact(value, undefined)
 		},
 
 		StringLiteral: (type, value) => {
-			if (value !== type.value) this.mismatch(value, type.value)
+			if (value !== type.value) this.mismatchExact(value, type.value)
 		},
 
 		TemplateLiteral: (type, value) => {
-			if (typeof value !== "string") return this.mismatch(value, "a string")
+			if (typeof value !== "string") return this.mismatchValue(value, "a string")
 			const { texts, types } = type
 			let expression = texts[0]
 			for (let i = 0; i < types.length; i++) {
 				expression += templateExpressions[types[i]] + texts[i + 1]
 			}
 			if (!new RegExp(`^${expression}$`).test(value)) {
-				this.mismatch(value, serializeTemplateLiteral(texts, types))
+				this.mismatchValue(value, serializeTemplateLiteral(texts, types))
 			}
 		},
 
 		NumberLiteral: (type, value) => {
-			if (value !== type.value) this.mismatch(value, type.value)
+			if (value !== type.value) this.mismatchExact(value, type.value)
 		},
 
 		BigIntegerLiteral: (type, value) => {
 			// console.log("BIGINT!", type, value)
 			// return true
-			if (value !== BigInt(type.value)) this.mismatch(value, type.value)
+			if (value !== BigInt(type.value)) this.mismatchExact(value, type.value)
 		},
 
 		BooleanLiteral: (type, value) => {
-			if (value !== type.value) this.mismatch(value, type.value)
+			if (value !== type.value) this.mismatchExact(value, type.value)
 		},
 
 		// --    PRIMITIVES    -- //
 		Boolean: (type, value) => {
-			if (typeof value !== "boolean") this.mismatch(value, "a boolean")
+			if (typeof value !== "boolean") this.mismatchValue(value, "a boolean")
 		},
 
 		Number: (type, value) => {
-			if (typeof value !== "number") this.mismatch(value, "a number")
+			if (typeof value !== "number") this.mismatchValue(value, "a number")
 		},
 
 		BigInteger: (type, value) => {
-			if (typeof value !== "bigint") this.mismatch(value, "a big integer")
+			if (typeof value !== "bigint") this.mismatchValue(value, "a big integer")
 		},
 
 		String: (type, value) => {
-			if (typeof value !== "string") this.mismatch(value, "a string")
+			if (typeof value !== "string") this.mismatchValue(value, "a string")
 		},
 
 		RegularExpression: (type, value) => {
-			if (!(value instanceof RegExp)) this.mismatch(value, "a regular expression")
+			if (!(value instanceof RegExp)) this.mismatchValue(value, "a regular expression")
 		},
 
 		Date: (type, value) => {
-			if (!(value instanceof Date)) this.mismatch(value, "a date")
+			if (!(value instanceof Date)) this.mismatchValue(value, "a date")
 		},
 
 		ArrayBuffer: (type, value) => {
-			if (!(value instanceof ArrayBuffer)) this.mismatch(value, "an array buffer")
+			if (!(value instanceof ArrayBuffer)) this.mismatchValue(value, "an array buffer")
 		},
 
 		Symbol: (type, value) => {
-			if (typeof value != "symbol") this.mismatch(value, "a symbol")
+			if (typeof value != "symbol") this.mismatchValue(value, "a symbol")
 		},
 
 		// --    COMPOSABLES    -- //
@@ -108,7 +108,7 @@ export function validators(this: Validator): {
 		},
 
 		Object: (type, value) => {
-			if (!value || typeof value !== "object") this.mismatch(value, "an object")
+			if (!value || typeof value !== "object") this.mismatchValue(value, "an object")
 			else {
 				for (const key in type.properties) {
 					this.path.push(key)
@@ -119,7 +119,7 @@ export function validators(this: Validator): {
 		},
 
 		Namespace: (type, value) => {
-			if (!value || typeof value !== "object") this.mismatch(value, "an object")
+			if (!value || typeof value !== "object") this.mismatchValue(value, "an object")
 			else {
 				for (const key in type.properties) {
 					this.path.push(key)
@@ -130,7 +130,7 @@ export function validators(this: Validator): {
 		},
 
 		Class: (type, value) => {
-			if (!value || typeof value !== "object") this.mismatch(value, "an object")
+			if (!value || typeof value !== "object") this.mismatchValue(value, "an object")
 			else {
 				for (const key in type.properties) {
 					const property = type.properties[key]
@@ -143,7 +143,7 @@ export function validators(this: Validator): {
 		},
 
 		Record: (type, value) => {
-			if (!value || typeof value !== "object") this.mismatch(value, "an record")
+			if (!value || typeof value !== "object") this.mismatchValue(value, "an record")
 			else {
 				let keysType = type.keys
 				const literals: (Types["NumberLiteral"] | Types["StringLiteral"])[] = []
@@ -172,7 +172,7 @@ export function validators(this: Validator): {
 		},
 
 		Array: (type, value) => {
-			if (!Array.isArray(value)) this.mismatch(value, "an array")
+			if (!Array.isArray(value)) this.mismatchValue(value, "an array")
 			else {
 				value.forEach((item, index) => {
 					this.path.push(String(index))
@@ -183,9 +183,9 @@ export function validators(this: Validator): {
 		},
 
 		Tuple: (type, value) => {
-			if (!Array.isArray(value)) this.mismatch(value, "a tuple")
+			if (!Array.isArray(value)) this.mismatchValue(value, "a tuple")
 			else if (value.length != type.items.length)
-				this.mismatch(value, `a tuple with ${type.items.length} elements`)
+				this.mismatchValue(value, `a tuple with ${type.items.length} elements`)
 			else {
 				type.items.forEach((type, index) => {
 					this.path.push(String(index))
@@ -196,7 +196,7 @@ export function validators(this: Validator): {
 		},
 
 		Map: (type, value) => {
-			if (!(value instanceof Map)) this.mismatch(value, "a map")
+			if (!(value instanceof Map)) this.mismatchValue(value, "a map")
 			else {
 				for (const [key, item] of value.entries()) {
 					this.path.push(!key || typeof key != "object" ? String(key) : "")
@@ -208,7 +208,7 @@ export function validators(this: Validator): {
 		},
 
 		Set: (type, value) => {
-			if (!(value instanceof Set)) this.mismatch(value, "a set")
+			if (!(value instanceof Set)) this.mismatchValue(value, "a set")
 			else {
 				this.path.push("")
 				for (const key of value) {
@@ -223,7 +223,7 @@ export function validators(this: Validator): {
 				const check = this.fork().validate(subtype, value)
 				if (!check.errors.length) return
 			}
-			this.mismatch(value, type.toString())
+			this.mismatchValue(value, type.toString())
 		},
 
 		Enumeration: (type, value) => {
@@ -231,11 +231,11 @@ export function validators(this: Validator): {
 				const check = this.fork().validate(subtype, value)
 				if (!check.errors.length) return
 			}
-			this.mismatch(value, type.toString())
+			this.mismatchValue(value, type.toString())
 		},
 
 		Function: (type, value) => {
-			if (typeof value !== "function") this.mismatch(value, "a function")
+			if (typeof value !== "function") this.mismatchValue(value, "a function")
 		},
 	}
 }

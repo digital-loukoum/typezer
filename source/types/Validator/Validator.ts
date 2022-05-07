@@ -43,16 +43,16 @@ export class Validator {
 		for (const signature of type.signatures) {
 			if (parameters.length < signature.minimumParameters) {
 				localValidator.mismatch(
-					`minimum ${signature.minimumParameters} minimum parameters`,
-					`${parameters.length} parameters`
+					`${parameters.length} parameters`,
+					`minimum ${signature.minimumParameters} parameters`
 				)
 			} else if (
 				!signature.restParameters &&
 				parameters.length > signature.parameters.length
 			) {
 				localValidator.mismatch(
-					`maximum ${signature.parameters.length} parameters`,
-					`${parameters.length} parameters`
+					`${parameters.length} parameters`,
+					`maximum ${signature.parameters.length} parameters`
 				)
 			} else {
 				signature.parameters.forEach((parameterType, index) => {
@@ -85,10 +85,13 @@ export class Validator {
 	mismatch = (value: any, expected: any) => {
 		const path = this.joinPath()
 		const pathInfos = path ? ` at '${this.joinPath()}'` : ""
-		this.errors.push(
-			`Expected ${inspect(expected)} but received ${inspect(value)}${pathInfos}`
-		)
+		this.errors.push(`Expected ${expected} but received ${value}${pathInfos}`)
 	}
+
+	mismatchValue = (value: any, expected: any) => this.mismatch(inspect(value), expected)
+
+	mismatchExact = (value: any, expected: any) =>
+		this.mismatchValue(value, inspect(expected))
 
 	missing = (key: string) => {
 		const path = this.joinPath()
