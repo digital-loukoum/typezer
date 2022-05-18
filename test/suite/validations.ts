@@ -229,6 +229,7 @@ start("Validations", async ({ stage, test, same }) => {
 					},
 				},
 				{},
+				{ x: undefined },
 				{ x: 12 },
 				{ x: 12, z: 653123 }
 			)
@@ -240,7 +241,8 @@ start("Validations", async ({ stage, test, same }) => {
 					},
 				},
 				null,
-				{ x: "12" }
+				{ x: "12" },
+				{ x: null }
 			)
 		},
 		Namespace() {

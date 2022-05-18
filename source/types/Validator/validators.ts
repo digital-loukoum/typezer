@@ -112,7 +112,7 @@ export function validators(this: Validator): {
 			else {
 				for (const key in type.properties) {
 					const property = type.properties[key]
-					if (property.optional && value[key] == null) continue
+					if (property.optional && value[key] === undefined) continue
 					this.path.push(key)
 					this.validate(property, value[key])
 					this.path.pop()
@@ -125,7 +125,7 @@ export function validators(this: Validator): {
 			else {
 				for (const key in type.properties) {
 					const property = type.properties[key]
-					if (property.optional && value[key] == null) continue
+					if (property.optional && value[key] === undefined) continue
 					this.path.push(key)
 					this.validate(property, value[key])
 					this.path.pop()
@@ -139,7 +139,7 @@ export function validators(this: Validator): {
 				for (const key in type.properties) {
 					const property = type.properties[key]
 					if (property.modifiers?.includes("static")) continue
-					if (property.optional && value[key] == null) continue
+					if (property.optional && value[key] === undefined) continue
 					this.path.push(key)
 					this.validate(type.properties[key], value[key])
 					this.path.pop()
