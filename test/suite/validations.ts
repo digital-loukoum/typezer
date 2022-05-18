@@ -221,6 +221,27 @@ start("Validations", async ({ stage, test, same }) => {
 				{ x: "12" },
 				{ y: 513 }
 			)
+			pass(
+				{
+					typeName: "Object",
+					properties: {
+						x: { typeName: "Number", optional: true },
+					},
+				},
+				{},
+				{ x: 12 },
+				{ x: 12, z: 653123 }
+			)
+			fail(
+				{
+					typeName: "Object",
+					properties: {
+						x: { typeName: "Number", optional: true },
+					},
+				},
+				null,
+				{ x: "12" }
+			)
 		},
 		Namespace() {
 			pass(

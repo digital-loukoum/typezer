@@ -1,5 +1,8 @@
 # Beta
 
+### 0.9.24
+- Fix optional values validation (accept null and undefined values)
+
 ### 0.9.23
 - Cleaner validator error messages
 

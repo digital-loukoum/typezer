@@ -111,8 +111,10 @@ export function validators(this: Validator): {
 			if (!value || typeof value !== "object") this.mismatchValue(value, "an object")
 			else {
 				for (const key in type.properties) {
+					const property = type.properties[key]
+					if (property.optional && value[key] == null) continue
 					this.path.push(key)
-					this.validate(type.properties[key], value[key])
+					this.validate(property, value[key])
 					this.path.pop()
 				}
 			}
@@ -122,8 +124,10 @@ export function validators(this: Validator): {
 			if (!value || typeof value !== "object") this.mismatchValue(value, "an object")
 			else {
 				for (const key in type.properties) {
+					const property = type.properties[key]
+					if (property.optional && value[key] == null) continue
 					this.path.push(key)
-					this.validate(type.properties[key], value[key])
+					this.validate(property, value[key])
 					this.path.pop()
 				}
 			}
@@ -135,6 +139,7 @@ export function validators(this: Validator): {
 				for (const key in type.properties) {
 					const property = type.properties[key]
 					if (property.modifiers?.includes("static")) continue
+					if (property.optional && value[key] == null) continue
 					this.path.push(key)
 					this.validate(type.properties[key], value[key])
 					this.path.pop()
