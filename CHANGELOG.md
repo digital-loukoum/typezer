@@ -1,5 +1,8 @@
 # Beta
 
+### 0.9.25
+- Fix optional values validation (accept undefined values, not null values)
+
 ### 0.9.24
 - Fix optional values validation (accept null and undefined values)
 
