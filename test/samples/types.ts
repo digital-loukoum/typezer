@@ -18,6 +18,8 @@ export type Primitives = {
 
 export type PartialPrimitives = Partial<Primitives>
 
+export type { Alias } from "~samples/Alias.js"
+
 export type Literals = {
 	numberLiteral: 12
 	stringLiteral: "12"

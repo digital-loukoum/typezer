@@ -332,7 +332,6 @@ export function creators(this: Typezer): {
 					"toUTCString",
 					"toISOString",
 					"toJSON",
-					"getVarDate",
 				]
 
 				if (typeMatchFeatures(rawType, features)) {

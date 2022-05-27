@@ -2,7 +2,7 @@ import ts from "typescript"
 import glob from "fast-glob"
 import { FSWatcher } from "chokidar"
 import { print } from "@digitak/print"
-import { resolve } from "path"
+import path, { resolve } from "path"
 import micromatch from "micromatch"
 import { parseSourceFiles } from "./methods/parseSourceFiles.js"
 import { getSourceFiles } from "./methods/getSourceFiles.js"
@@ -25,11 +25,13 @@ import { Declaration } from "../Declaration/Declaration.js"
 import { createSchema } from "./methods/createSchema.js"
 import { Schema } from "../Schema/Schema.js"
 import { Scope } from "../Scope/Scope.js"
+import { readConfigFileOptions } from "../../utilities/readConfigFileOptions.js"
 
 export type TypezerOptions = {
 	files?: string[]
 	symbols?: string[] // list of target symbols
 	compilerOptions?: ts.CompilerOptions
+	tsconfigFile?: string
 }
 
 export class Typezer {
@@ -53,7 +55,16 @@ export class Typezer {
 	protected host: ts.CompilerHost
 	protected sourceFileCache = new Map<string, ts.SourceFile | undefined>()
 
-	constructor({ files = [], symbols, compilerOptions = {} }: TypezerOptions) {
+	constructor({
+		files = [],
+		symbols,
+		tsconfigFile = ts.findConfigFile(
+			path.dirname(glob.sync(files[0])[0] ?? "."),
+			ts.sys.fileExists,
+			"tsconfig.json"
+		),
+		compilerOptions = {},
+	}: TypezerOptions) {
 		this.symbols = symbols
 
 		if (!this.symbols) this.matchRootSymbol = () => true
@@ -71,9 +82,13 @@ export class Typezer {
 			print`[yellow:No files found matching ${JSON.stringify(files)}]`
 		}
 
+		console.log("tsconfigFile", readConfigFileOptions(tsconfigFile))
+
 		this.compilerOptions = {
+			...readConfigFileOptions(tsconfigFile),
 			skipDefaultLibCheck: true,
 			noEmit: true,
+			strict: true,
 			...compilerOptions,
 		}
 

@@ -1,4 +1,4 @@
-lockfileVersion: 5.3
+lockfileVersion: 5.4
 
 specifiers:
   '@digitak/cute': ^1.0.2
@@ -11,7 +11,7 @@ specifiers:
   fartest: ^2.1.8
   fast-glob: ^3.2.11
   micromatch: ^4.0.4
-  typescript: ^4.7.0-dev.20220408
+  typescript: ^4.7.2
 
 dependencies:
   '@digitak/cute': 1.0.2
@@ -20,7 +20,7 @@ dependencies:
   chokidar: 3.5.3
   fast-glob: 3.2.11
   micromatch: 4.0.4
-  typescript: 4.7.0-dev.20220408
+  typescript: 4.7.2
 
 devDependencies:
   '@digitak/esrun': 3.1.2
@@ -289,8 +289,8 @@ packages:
     dependencies:
       is-number: 7.0.0
 
-  /typescript/4.7.0-dev.20220408:
-    resolution: {integrity: sha512-2KgXRQXrjFEbm+ismaGoR803nTRQuc03XQ1crnlxXvQYIXasPiidwiczLc9i0rTo33KXIN2M6YiNtn1tZihHgw==}
+  /typescript/4.7.2:
+    resolution: {integrity: sha512-Mamb1iX2FDUpcTRzltPxgWMKy3fhg0TN378ylbktPGPK/99KbDtMQ4W1hwgsbPAsG3a0xKa1vmw4VKZQbkvz5A==}
     engines: {node: '>=4.2.0'}
     hasBin: true
     dev: false

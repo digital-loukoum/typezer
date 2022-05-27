@@ -285,8 +285,11 @@ type TypezerOptions = {
   files?: string[] // globs of files to look declarations in
   symbols?: string[] // globs of symbol names to match
   compilerOptions?: ts.CompilerOptions // custom ts compiler options
+  tsconfigFile?: string // path to custom tscongif.json file
 }
 ```
+
+If no `tsconfigFile` is given, Typezer will look for a default config file depending on the path of the first file.
 
 #### <a name="type-declaration"></a> `Declaration`
 

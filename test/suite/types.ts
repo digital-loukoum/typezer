@@ -43,13 +43,49 @@ start("Types", async ({ stage, test, same }) => {
 
 		for (const primitive in properties) {
 			const { typeName, optional, modifiers } = properties[primitive]
-			same(
-				primitive.toLowerCase(),
-				typeName.toLowerCase(),
-				`Check partial primitive '${primitive}'`
-			)
+			if (primitive == "undefined") {
+				same(
+					typeName.toLowerCase(),
+					"undefined",
+					`Check partial primitive '${primitive}' is undefined`
+				)
+			} else {
+				same(
+					typeName.toLowerCase(),
+					"union",
+					`Check partial primitive '${primitive}' is a union`
+				)
+				if (primitive == "boolean") {
+					same(
+						[
+							{ typeName: "BooleanLiteral", value: false },
+							{ typeName: "BooleanLiteral", value: true },
+						],
+						(properties[primitive] as Types["Union"]).items.slice(1),
+						`Check partial primitive '${primitive}'`
+					)
+				} else {
+					same(
+						primitive.toLowerCase(),
+						(properties[primitive] as Types["Union"]).items[1].typeName.toLowerCase(),
+						`Check partial primitive '${primitive}'`
+					)
+				}
+			}
 			same(optional, true, `Check partial primitive '${primitive}' is optional`)
 			test(!modifiers?.length, `Check partial primitive '${primitive}' has no modifiers`)
+		}
+	}
+
+	stage("Alias")
+	{
+		const { properties } = getRootType("Alias")
+
+		for (const primitive in properties) {
+			const { typeName, optional, modifiers } = properties[primitive]
+			same(primitive.toLowerCase(), typeName.toLowerCase(), `Check alias '${primitive}'`)
+			test(!optional, `Check primitive '${primitive}' is required`)
+			test(!modifiers?.length, `Check primitive '${primitive}' has no modifiers`)
 		}
 	}
 

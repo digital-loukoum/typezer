@@ -1,4 +1,10 @@
 {
 	"extends": "../tsconfig.json",
-	"include": ["."]
+	"include": ["."],
+	"compilerOptions": {
+		"moduleResolution": "Node",
+		"paths": {
+			"~samples/*": ["./samples/*"],
+		}
+	}
 }

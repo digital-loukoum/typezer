@@ -9,6 +9,9 @@
 		"experimentalDecorators": true,
 		"outDir": "package",
 		"declaration": true,
+		"paths": {
+			"~samples/*": ["./test/samples/*"],
+		}
 	},
 	"include": ["source"]
 }
