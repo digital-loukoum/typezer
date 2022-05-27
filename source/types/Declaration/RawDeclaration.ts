@@ -12,6 +12,7 @@ export type RawDeclaration = {
 		| "variable"
 		| "function"
 		| "default"
+		| "transited"
 	fileName: string
 	name: string
 	exportedAs: string[]

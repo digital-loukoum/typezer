@@ -11,7 +11,11 @@ export function parseSourceFile(
 	// print`[bold.magenta: [ ${sourceFile.fileName} ]]`
 	const result: RawDeclaration[] = []
 	const { fileName } = sourceFile
-	const exportAliases: [string, string][] = []
+	const exportAliases: {
+		node: ts.Node
+		name: string
+		exportedAs: string
+	}[] = []
 
 	sourceFile.forEachChild(node => {
 		const syntaxList = findChildNode(node, ts.SyntaxKind.SyntaxList)
@@ -103,9 +107,12 @@ export function parseSourceFile(
 				)!
 				syntaxList.getChildren().forEach(child => {
 					if (child.kind != ts.SyntaxKind.ExportSpecifier) return
-					const exportedValue = findChildNode(child, ts.SyntaxKind.Identifier)!.getText()
-					const exportedAs = findLastChildNode(child, ts.SyntaxKind.Identifier)!.getText()
-					exportAliases.push([exportedValue, exportedAs])
+					const identifierNode = findChildNode(child, ts.SyntaxKind.Identifier)!
+					exportAliases.push({
+						node: identifierNode,
+						name: identifierNode.getText(),
+						exportedAs: findLastChildNode(child, ts.SyntaxKind.Identifier)!.getText(),
+					})
 				})
 				break
 			}
@@ -113,10 +120,22 @@ export function parseSourceFile(
 	})
 
 	// every value that has been exported in an export {...} statement is marked as exported
-	for (const [exportedValue, exportedAs] of exportAliases) {
-		const declaration = result.find(({ name }) => name == exportedValue)
-		if (declaration && !declaration.exportedAs.includes(exportedAs)) {
-			declaration.exportedAs.push(exportedAs)
+	for (const alias of exportAliases) {
+		const declaration = result.find(({ name }) => name == alias.name)
+		if (declaration) {
+			if (!declaration.exportedAs.includes(alias.exportedAs)) {
+				declaration.exportedAs.push(alias.exportedAs)
+			}
+		} else {
+			result.push(
+				this.createRawDeclaration({
+					fileName,
+					name: alias.name,
+					declare: "transited",
+					exportedAs: [alias.exportedAs],
+					node: alias.node,
+				})
+			)
 		}
 	}
 

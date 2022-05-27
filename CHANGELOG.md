@@ -1,15 +1,13 @@
 # Beta
 
-### 0.9.26
+### 0.9.25
 - Use strict mode by default
 - Typezer now loads by default the closest `tsconfig.json` relative to the first file to parse
-- Use can pass a custom `tsconfig.json` file path
-
-
-### 0.9.25
-- Fix optional values validation (accept undefined values, not null values)
+- User can pass a custom `tsconfig.json` file path
+- Add transited exports to declarations
 
 ### 0.9.24
+- Fix optional values validation (accept undefined values, not null values)
 - Fix optional values validation (accept null and undefined values)
 
 ### 0.9.23

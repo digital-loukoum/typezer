@@ -49,7 +49,7 @@ export class Typezer {
 
 	protected scope: Scope = []
 
-	protected checker: ts.TypeChecker
+	protected checker!: ts.TypeChecker
 	protected program: ts.Program
 	protected watcher?: FSWatcher
 	protected host: ts.CompilerHost
@@ -82,7 +82,7 @@ export class Typezer {
 			print`[yellow:No files found matching ${JSON.stringify(files)}]`
 		}
 
-		console.log("tsconfigFile", readConfigFileOptions(tsconfigFile))
+		// console.log("tsconfigFile", readConfigFileOptions(tsconfigFile))
 
 		this.compilerOptions = {
 			...readConfigFileOptions(tsconfigFile),
@@ -94,7 +94,6 @@ export class Typezer {
 
 		this.host = this.createHost()
 		this.program = this.startProgram()
-		this.checker = this.program.getTypeChecker()
 	}
 
 	public watch = watch.bind(this)
