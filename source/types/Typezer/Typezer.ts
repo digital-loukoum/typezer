@@ -82,13 +82,17 @@ export class Typezer {
 			print`[yellow:No files found matching ${JSON.stringify(files)}]`
 		}
 
-		// console.log("tsconfigFile", readConfigFileOptions(tsconfigFile))
+		const tsconfigOptions = readConfigFileOptions(tsconfigFile)
 
 		this.compilerOptions = {
-			...readConfigFileOptions(tsconfigFile),
+			...tsconfigOptions,
 			skipDefaultLibCheck: true,
 			noEmit: true,
 			strict: true,
+			moduleResolution:
+				tsconfigOptions.moduleResolution === ts.ModuleResolutionKind.Classic
+					? ts.ModuleResolutionKind.Classic
+					: ts.ModuleResolutionKind.NodeJs,
 			...compilerOptions,
 		}
 

@@ -1,5 +1,8 @@
 # Beta
 
+### 0.9.26
+- Use `moduleResolution: "node"` by default (more permissive than `"nodenext"`)
+
 ### 0.9.25
 - Use strict mode by default
 - Typezer now loads by default the closest `tsconfig.json` relative to the first file to parse
