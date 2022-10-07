@@ -2,7 +2,8 @@ import { Modifier } from "./Modifier.js"
 import ts from "typescript"
 
 export function createModifier(tsModifier: ts.ModifierLike): Modifier | undefined {
-	switch (tsModifier.kind) {
+	const { kind } = tsModifier
+	switch (kind) {
 		case ts.SyntaxKind.AbstractKeyword: return "abstract"
 		case ts.SyntaxKind.AsyncKeyword: return "async"
 		case ts.SyntaxKind.ConstKeyword: return "const"
@@ -21,7 +22,7 @@ export function createModifier(tsModifier: ts.ModifierLike): Modifier | undefine
 		case ts.SyntaxKind.Decorator: return undefined
 
 		default:
-			// console.error(`[Typezer] Unknown property tsModifier: ${ts.SyntaxKind[kind]}`)
+			console.error(`[Typezer] Unknown property tsModifier: ${ts.SyntaxKind[kind]}`)
 			return undefined
 	}
 }
