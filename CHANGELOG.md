@@ -1,5 +1,9 @@
 # Beta
 
+### 0.9.27
+- Don't throw when an unknown Modifier is found
+- Add modifiers 'declare', 'in' and 'out'
+
 ### 0.9.26
 - Use `moduleResolution: "node"` by default (more permissive than `"nodenext"`)
 

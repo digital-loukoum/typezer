@@ -1,18 +1,25 @@
-import ts from "typescript"
 import { Modifier } from "./Modifier.js"
+import ts from "typescript"
 
-export function createModifier(tsModifier: ts.Modifier): Modifier {
+export function createModifier(tsModifier: ts.Modifier): Modifier | undefined {
 	const { kind } = tsModifier
-	if (kind == ts.SyntaxKind.AbstractKeyword) return "abstract"
-	if (kind == ts.SyntaxKind.AsyncKeyword) return "async"
-	if (kind == ts.SyntaxKind.ConstKeyword) return "const"
-	if (kind == ts.SyntaxKind.DefaultKeyword) return "default"
-	if (kind == ts.SyntaxKind.ExportKeyword) return "export"
-	if (kind == ts.SyntaxKind.PrivateKeyword) return "private"
-	if (kind == ts.SyntaxKind.ProtectedKeyword) return "protected"
-	if (kind == ts.SyntaxKind.PublicKeyword) return "public"
-	if (kind == ts.SyntaxKind.OverrideKeyword) return "override"
-	if (kind == ts.SyntaxKind.ReadonlyKeyword) return "readonly"
-	if (kind == ts.SyntaxKind.StaticKeyword) return "static"
-	throw new Error(`Unknown property tsModifier: ${JSON.stringify(tsModifier)}`)
+	switch (tsModifier.kind) {
+		case ts.SyntaxKind.AbstractKeyword: return "abstract"
+		case ts.SyntaxKind.AsyncKeyword: return "async"
+		case ts.SyntaxKind.ConstKeyword: return "const"
+		case ts.SyntaxKind.DeclareKeyword: return "declare"
+		case ts.SyntaxKind.DefaultKeyword: return "default"
+		case ts.SyntaxKind.ExportKeyword: return "export"
+		case ts.SyntaxKind.InKeyword: return "in"
+		case ts.SyntaxKind.PrivateKeyword: return "private"
+		case ts.SyntaxKind.ProtectedKeyword: return "protected"
+		case ts.SyntaxKind.PublicKeyword: return "public"
+		case ts.SyntaxKind.OutKeyword: return "out"
+		case ts.SyntaxKind.OverrideKeyword: return "override"
+		case ts.SyntaxKind.ReadonlyKeyword: return "readonly"
+		case ts.SyntaxKind.StaticKeyword: return "static"
+		default:
+			console.error(`[Typezer] Unknown property tsModifier: ${ts.SyntaxKind[kind]}`)
+			return undefined
+	}
 }

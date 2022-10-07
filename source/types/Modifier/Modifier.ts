@@ -10,3 +10,6 @@ export type Modifier =
 	| "override"
 	| "readonly"
 	| "static"
+	| "declare"
+	| "in"
+	| "out"

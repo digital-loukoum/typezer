@@ -4,6 +4,7 @@ import { getRecordType } from "../../utilities/getRecordType.js"
 import { getTypeId } from "../../utilities/getTypeId.js"
 import { getTypeTarget } from "../../utilities/getTypeTarget.js"
 import { typeMatchFeatures } from "../../utilities/typeMatchFeatures.js"
+import { addModifier } from "../Modifier/addModifier.js"
 import { createModifier } from "../Modifier/createModifier.js"
 import { Properties } from "../Properties/Properties.js"
 import { Constructor } from "../Signature/Constructor.js"
@@ -660,7 +661,7 @@ export function creators(this: Typezer): {
 
 						member.modifiers?.forEach(modifier => {
 							const modifiers = (staticProperties[memberSymbol.name].modifiers ??= [])
-							modifiers.push(createModifier(modifier))
+							addModifier(modifiers, modifier)
 						})
 					}
 

@@ -1,4 +1,5 @@
 import ts from "typescript"
+import { addModifier } from "../../Modifier/addModifier.js"
 import { createModifier } from "../../Modifier/createModifier.js"
 import { Properties } from "../../Properties/Properties.js"
 import { Typezer } from "../Typezer.js"
@@ -22,7 +23,7 @@ export function createProperties(
 		// modifiers
 		property.valueDeclaration?.modifiers?.forEach(modifier => {
 			const modifiers = (properties[property.name].modifiers ??= [])
-			modifiers.push(createModifier(modifier))
+			addModifier(modifiers, modifier)
 		})
 	})
 
