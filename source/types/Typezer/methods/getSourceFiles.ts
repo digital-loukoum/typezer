@@ -1,6 +1,9 @@
+import { normalizePath } from "../../../utilities/normalizePath.js"
 import { Typezer } from "../Typezer.js"
 
 export function getSourceFiles(this: Typezer) {
+	const normalizedFiles = this.files.map(normalizePath)
+
 	this.sourceFiles = this.program.getSourceFiles()
 
 	// we find our local source files
@@ -8,7 +11,7 @@ export function getSourceFiles(this: Typezer) {
 		tsSourceFile => !tsSourceFile.fileName.includes("node_modules")
 	)
 
-	this.entrySourceFiles = this.localSourceFiles.filter(({ fileName }) =>
-		this.files.includes(fileName)
-	)
+	this.entrySourceFiles = this.localSourceFiles.filter(({ fileName }) => {
+		normalizedFiles.includes(fileName)
+	})
 }

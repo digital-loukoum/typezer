@@ -1,5 +1,8 @@
 # Beta
 
+### 0.9.28
+- Fix path comparison on windows
+
 ### 0.9.27
 - Don't throw when an unknown Modifier is found
 - Add modifiers 'declare', 'in' and 'out'
