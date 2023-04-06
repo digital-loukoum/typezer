@@ -8,10 +8,10 @@ export function getSourceFiles(this: Typezer) {
 
 	// we find our local source files
 	this.localSourceFiles = this.sourceFiles.filter(
-		tsSourceFile => !tsSourceFile.fileName.includes("node_modules")
+		({ fileName }) => !fileName.includes("node_modules")
 	)
 
 	this.entrySourceFiles = this.localSourceFiles.filter(({ fileName }) => {
-		normalizedFiles.includes(fileName)
+		return normalizedFiles.includes(fileName)
 	})
 }

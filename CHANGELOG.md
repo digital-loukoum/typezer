@@ -1,6 +1,6 @@
 # Beta
 
-### 0.9.28
+### 0.9.28 / 0.9.29
 - Fix path comparison on windows
 
 ### 0.9.27
